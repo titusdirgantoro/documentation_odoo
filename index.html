@@ -1209,6 +1209,8 @@
             <div class="sidebar-section">Arsitektur</div>
             <a href="#arch">Data Model &amp; Status Flow</a>
             <a href="#models">Penjelasan Setiap Model</a>
+            <div class="sidebar-section">Panduan</div>
+            <a href="#easy-relation">💡 Relasi Model — Sederhana</a>
             <div class="sidebar-section">Skenario</div>
             <a href="#s1">1 · Order Normal Full Range <span class="badge">S1</span></a>
             <a href="#s2">2 · Partial Delivery <span class="badge">S2</span></a>
@@ -1471,6 +1473,117 @@
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <!-- EASY RELATION -->
+            <section class="section" id="easy-relation">
+                <div class="section-header">
+                    <div class="section-num">💡</div>
+                    <div>
+                        <h2>Relasi Antar Model — Penjelasan Paling Sederhana</h2>
+                    </div>
+                </div>
+
+                <div class="context">
+                    <p>Bayangkan kamu adalah <strong>pemilik toko stiker keamanan</strong>. Kamu menjual stiker bernomor seri unik ke berbagai perusahaan. Setiap model di bawah ini ibarat <strong>dokumen atau buku catatan</strong> yang kamu buat dan simpan setiap harinya untuk mengelola bisnis ini.</p>
+                </div>
+
+                <h3>Setiap Model = Satu Jenis Dokumen di Toko Kamu</h3>
+                <div class="model-grid">
+
+                    <div class="model-card" style="grid-column:1/-1">
+                        <div class="model-name">seal.serial.range — SR</div>
+                        <div class="model-title">📜 SERTIFIKAT HAK MILIK NOMOR</div>
+                        <div class="model-desc">Saat PT. ABC pesan 1.000 stiker, kamu buat satu <strong>sertifikat</strong> yang bunyinya:<br><br><em>"Nomor UA001 sampai UA1000 adalah hak eksklusif milik PT. ABC. Tidak ada perusahaan lain yang boleh dapat nomor ini."</em><br><br>Sertifikat ini juga mencatat sisa nomor yang belum terkirim. Kalau sudah kirim UA001–UA300, berarti tersisa <strong>UA301–UA1000 yang belum dikirim</strong> — dan itu disimpan secara otomatis di dalam sertifikat ini.</div>
+                    </div>
+
+                    <div class="model-card mc-blue">
+                        <div class="model-name">seal.serial.allocation — SA</div>
+                        <div class="model-title">🚚 NOTA PENGIRIMAN</div>
+                        <div class="model-desc">Setiap kali gudang mengirim stiker ke PT. ABC, kamu cetak <strong>1 nota pengiriman baru</strong>.<br><br>Nota ini isinya: <em>"Dari sertifikat UA001–UA1000 tadi, kali ini kami kirim UA001–UA300 sebanyak 300 pcs."</em><br><br>Kalau ada 3 kali pengiriman terpisah → ada 3 nota. Nota ini juga yang digunakan sebagai <strong>bukti saat customer mau retur</strong> — sistem cek dulu apakah nomor yang mau diretur memang ada di salah satu nota.</div>
+                    </div>
+
+                    <div class="model-card mc-yellow">
+                        <div class="model-name">seal.returned.serial — RS</div>
+                        <div class="model-title">📋 FORMULIR RETUR (BAGIAN KEPALA)</div>
+                        <div class="model-desc">Saat PT. ABC bawa barang retur, kasir buat <strong>1 formulir retur</strong>. Formulir ini adalah "kepala" yang mencatat:<br>• Tanggal retur<br>• Nota pengiriman yang terkait<br>• Total berapa pcs dikembalikan<br><br>Satu formulir kepala bisa berisi banyak nomor serial yang dikembalikan.</div>
+                    </div>
+
+                    <div class="model-card mc-red">
+                        <div class="model-name">seal.returned.serial.line — RS.line</div>
+                        <div class="model-title">🏷 DAFTAR NOMOR DI FORMULIR RETUR</div>
+                        <div class="model-desc">Di dalam formulir retur tadi, setiap nomor ditulis satu per baris:<br><br>• Baris 1: UA510<br>• Baris 2: UA520<br>• Baris 3: UA575<br><br><strong>⛔ Begitu masuk daftar ini → nomor di-cap PENSIUN PERMANEN.</strong> Tidak bisa dipakai oleh siapapun lagi, termasuk customer yang berbeda sekalipun. Ini adalah "daftar hitam" nomor serial di seluruh sistem.</div>
+                    </div>
+
+                    <div class="model-card mc-green" style="grid-column:1/-1">
+                        <div class="model-name">seal.customer.serial.history</div>
+                        <div class="model-title">📊 BUKU CATATAN PELANGGAN (Ringkasan Cepat)</div>
+                        <div class="model-desc">Untuk tiap pelanggan, ada <strong>1 halaman di buku catatan toko</strong> yang selalu diperbarui otomatis:<br><br><em>"PT. ABC → Nomor terakhir yang diterima: UA1000 | Masih aktif di tangan mereka: 997 pcs | Sudah dikembalikan: 3 pcs"</em><br><br>Berguna agar tim sales <strong>langsung tahu harus mulai dari nomor berapa</strong> saat membuat order berikutnya — tanpa perlu membuka-buka semua dokumen lama satu per satu. Sistem juga otomatis menampilkan saran berdasarkan buku catatan ini.</div>
+                    </div>
+
+                </div>
+
+                <h3>Hubungan Antar Dokumen (dalam kalimat sederhana)</h3>
+                <div class="card">
+                    <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
+                        <div style="display:flex;align-items:flex-start;gap:12px">
+                            <span style="font-size:22px;flex-shrink:0">📜</span>
+                            <span><strong>1 Sertifikat (SR)</strong> = mewakili seluruh range nomor untuk 1 order dari 1 customer. Satu customer bisa punya banyak sertifikat (untuk banyak order).</span>
+                        </div>
+                        <div style="padding-left:24px;color:var(--text2);font-size:12px">└── memiliki banyak ↓</div>
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding-left:20px">
+                            <span style="font-size:22px;flex-shrink:0">🚚</span>
+                            <span><strong>1 Nota Pengiriman (SA)</strong> = dibuat setiap kali ada pengiriman. 1 sertifikat bisa menghasilkan banyak nota kalau pengiriman dilakukan bertahap.</span>
+                        </div>
+                        <div style="padding-left:44px;color:var(--text2);font-size:12px">└── memiliki banyak ↓</div>
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding-left:40px">
+                            <span style="font-size:22px;flex-shrink:0">📋</span>
+                            <span><strong>1 Formulir Retur (RS)</strong> = dibuat setiap kali customer mengembalikan barang. Terhubung ke nota pengiriman asalnya.</span>
+                        </div>
+                        <div style="padding-left:64px;color:var(--text2);font-size:12px">└── memiliki banyak ↓</div>
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding-left:60px">
+                            <span style="font-size:22px;flex-shrink:0">🏷</span>
+                            <span><strong>1 Baris Nomor (RS.line)</strong> = 1 nomor serial yang dikembalikan. Langsung berstatus PENSIUN permanen.</span>
+                        </div>
+                        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:flex-start;gap:12px">
+                            <span style="font-size:22px;flex-shrink:0">📊</span>
+                            <span><strong>1 Buku Catatan (History)</strong> per customer — merangkum semua sertifikat, nota, dan retur menjadi satu angka ringkasan yang selalu up-to-date.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Cerita Singkat dari Awal sampai Akhir</h3>
+                <div class="explain-box">
+                    <h4>📖 Alur Lengkap dalam Bahasa Sehari-hari</h4>
+                    <div class="data-row">
+                        <div class="dr-model">Langkah 1<br><span class="tag tb">Order Masuk</span></div>
+                        <div class="dr-val">PT. ABC pesan 1.000 stiker dengan range UA001–UA1000. Sistem langsung buat <strong>1 Sertifikat (SR-001)</strong> yang mengunci nomor itu khusus untuk mereka. Kalau ada customer lain yang coba pakai nomor yang sama → sistem langsung tolak.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Langkah 2<br><span class="tag ty">Barang Datang</span></div>
+                        <div class="dr-val">Vendor kirim 1.000 pcs ke gudang kamu. Stok fisik bertambah 1.000 pcs. Status Sertifikat berubah: <strong>"barang sudah ada di gudang (received)"</strong>. Sekarang siap dikirim ke customer.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Langkah 3<br><span class="tag tg">Kirim ke Customer</span></div>
+                        <div class="dr-val">Kamu kirim semua 1.000 pcs ke PT. ABC. Otomatis dibuat <strong>1 Nota Pengiriman (SA-001)</strong>: <em>"dari SR-001, sudah kirim UA001–UA1000 semua."</em> Buku Catatan PT. ABC langsung diperbarui: nomor terakhir = UA1000, aktif = 1.000.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Langkah 4<br><span class="tag tr">Customer Retur</span></div>
+                        <div class="dr-val">PT. ABC kembalikan 3 stiker: UA510, UA520, UA575. Sistem buat <strong>1 Formulir Retur (RS-001)</strong> + <strong>3 Baris (RS.line)</strong>. Ketiga nomor itu langsung berstatus <strong>PENSIUN</strong>. Nota SA-001 diperbarui: aktif tinggal 997. Buku Catatan juga ikut diperbarui.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Langkah 5<br><span class="tag tp">Order Berikutnya</span></div>
+                        <div class="dr-val">PT. ABC order lagi. Tim sales buka Buku Catatan → langsung terlihat nomor terakhir = UA1000. Sistem otomatis sarankan mulai dari <strong>UA1001</strong>. Dibuat Sertifikat baru SR-004 untuk UA1001–UA2000. Tidak ada tabrakan nomor, tidak ada kerja manual mencari nomor terakhir.</div>
+                    </div>
+                    <div class="why-box">💡 <strong>Intinya dalam satu kalimat per model:</strong><br><br>
+                        📜 <strong>SR</strong> = "Siapa berhak atas nomor ini dan berapa sisanya"<br>
+                        🚚 <strong>SA</strong> = "Kapan, berapa, dan nomor mana yang sudah terkirim"<br>
+                        📋 <strong>RS</strong> = "Kejadian retur: tanggal, dari nota mana, berapa pcs"<br>
+                        🏷 <strong>RS.line</strong> = "Nomor mana saja yang sudah pensiun selamanya"<br>
+                        📊 <strong>History</strong> = "Ringkasan cepat untuk tim sales agar tidak salah nomor"
+                    </div>
+                </div>
+
             </section>
 
             <!-- S1 -->
