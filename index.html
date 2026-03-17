@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Seal Serial — Walkthrough</title>
+    <title>Security Seal Serial — Walkthrough (Odoo 17)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
@@ -1203,7 +1203,7 @@
     <aside class="sidebar">
         <div class="sidebar-logo">
             <h2>Security Seal Serial</h2>
-            <p>Odoo Custom Module Walkthrough</p>
+            <p>Odoo <strong style="color:var(--purple)">17</strong> Custom Module Walkthrough</p>
         </div>
         <nav>
             <div class="sidebar-section">Arsitektur</div>
@@ -1229,10 +1229,9 @@
         <div class="hero">
             <div class="hero-badge">📘 Technical Walkthrough</div>
             <h1>Security Seal <span>Serial Range</span> Management</h1>
-            <p>Custom Odoo module untuk manajemen serial number berbasis range, validasi keunikan per customer, partial
-                delivery, dan retur acak.</p>
+            <p>Custom <strong>Odoo 17</strong> module untuk manajemen serial number berbasis range, validasi keunikan per customer, partial delivery, dan retur acak. Didesain untuk Odoo Community &amp; Enterprise versi 17.</p>
             <div class="hero-meta">
-                <div class="meta-item"><strong>Odoo 13+</strong>Versi Target</div>
+                <div class="meta-item"><strong>Odoo 17</strong>Versi Target</div>
                 <div class="meta-item"><strong>security_seal_serial</strong>Nama Modul</div>
                 <div class="meta-item"><strong>5 Model Custom</strong>+ 3 Extended</div>
                 <div class="meta-item"><strong>7 Skenario</strong>Dicakup</div>
@@ -2707,9 +2706,11 @@
                     </div>
                 </div>
 
-                <h3>Parsing Serial Number</h3>
+                <h3>Parsing Serial Number (Odoo 17)</h3>
                 <pre><span class="kw">import</span> re
+<span class="kw">from</span> odoo.exceptions <span class="kw">import</span> ValidationError
 
+<span class="cm"># Odoo 17: tidak perlu @api.multi — semua method otomatis bekerja sebagai recordset</span>
 <span class="kw">def</span> <span class="fn">parse_serial</span>(serial_str):
     match = re.<span class="fn">match</span>(<span class="str">r'^([A-Za-z\-]+)(\d+)$'</span>, serial_str.<span class="fn">strip</span>())
     <span class="kw">if not</span> match:
@@ -2723,6 +2724,29 @@
 <span class="cm"># format_serial('UA', 1, 3)    → 'UA001'</span>
 <span class="cm"># format_serial('UA', 1000, 3) → 'UA1000'</span></pre>
 
+                <h3>Fields Odoo 17 — remaining_segments</h3>
+                <pre><span class="kw">from</span> odoo <span class="kw">import</span> fields, models, api
+
+<span class="kw">class</span> <span class="fn">SealSerialRange</span>(models.Model):
+    _name = <span class="str">'seal.serial.range'</span>
+    _description = <span class="str">'Serial Range'</span>
+
+    prefix        = fields.<span class="fn">Char</span>(string=<span class="str">'Prefix'</span>, required=<span class="kw">True</span>)
+    serial_from   = fields.<span class="fn">Integer</span>(string=<span class="str">'Serial From'</span>, required=<span class="kw">True</span>)
+    serial_to     = fields.<span class="fn">Integer</span>(string=<span class="str">'Serial To'</span>, required=<span class="kw">True</span>)
+    customer_id   = fields.<span class="fn">Many2one</span>(<span class="str">'res.partner'</span>, string=<span class="str">'Customer'</span>)
+    sale_order_id = fields.<span class="fn">Many2one</span>(<span class="str">'sale.order'</span>, string=<span class="str">'Sales Order'</span>)
+    state         = fields.<span class="fn">Selection</span>([...], default=<span class="str">'draft'</span>)
+
+    <span class="cm"># Odoo 17: gunakan fields.Json (native), bukan fields.Text + json.loads manual</span>
+    remaining_segments = fields.<span class="fn">Json</span>(
+        string=<span class="str">'Remaining Segments'</span>,
+        default=<span class="kw">list</span>,  <span class="cm"># default: []</span>
+    )
+    allocation_ids = fields.<span class="fn">One2many</span>(
+        <span class="str">'seal.serial.allocation'</span>, <span class="str">'serial_range_id'</span>, string=<span class="str">'Allocations'</span>
+    )</pre>
+
                 <h3>Overlap Detection SQL</h3>
                 <pre><span class="cm">-- Deteksi overlap range untuk customer tertentu</span>
 <span class="kw">SELECT</span> sr.id, sr.prefix, sr.serial_from, sr.serial_to
@@ -2733,19 +2757,48 @@
   <span class="kw">AND</span>  sr.serial_to   <span class="op">&gt;=</span> <span class="op">%(new_from)s</span>
   <span class="kw">AND</span>  sr.state <span class="kw">NOT IN</span> (<span class="str">'cancelled'</span>);</pre>
 
-                <h3>Struktur Folder Modul</h3>
+                <h3>Hook stock.picking — Odoo 17</h3>
+                <pre><span class="kw">class</span> <span class="fn">StockPicking</span>(models.Model):
+    _inherit = <span class="str">'stock.picking'</span>
+
+    <span class="cm"># Odoo 17: override button_validate (bukan action_done)</span>
+    <span class="kw">def</span> <span class="fn">button_validate</span>(self):
+        result = <span class="fn">super</span>().<span class="fn">button_validate</span>()
+        <span class="cm"># Cek setelah validasi sukses — state berubah ke 'done'</span>
+        <span class="kw">for</span> picking <span class="kw">in</span> self:
+            <span class="kw">if</span> picking.picking_type_code == <span class="str">'outgoing'</span> <span class="kw">and</span> picking.state == <span class="str">'done'</span>:
+                picking.<span class="fn">_create_seal_allocation</span>()
+            <span class="kw">elif</span> picking.picking_type_code == <span class="str">'incoming'</span> <span class="kw">and</span> picking.state == <span class="str">'done'</span>:
+                picking.<span class="fn">_update_seal_range_received</span>()
+        <span class="kw">return</span> result</pre>
+
+                <h3>Sintaks View — Odoo 17</h3>
+                <pre><span class="cm">&lt;!-- ⛔ Odoo 17: attrs="{}" SUDAH DEPRECATED --&gt;</span>
+<span class="kw">&lt;field</span> name=<span class="str">"serial_from"</span> <span class="op">attrs</span>=<span class="str">"{'invisible': [('state', '=', 'draft')]}"</span><span class="kw">/&gt;</span>  <span class="cm">&lt;!-- SALAH --&gt;</span>
+
+<span class="cm">&lt;!-- ✅ Odoo 17: gunakan ekspresi inline langsung --&gt;</span>
+<span class="kw">&lt;field</span> name=<span class="str">"serial_from"</span>  <span class="op">invisible</span>=<span class="str">"state == 'draft'"</span><span class="kw">/&gt;</span>
+<span class="kw">&lt;field</span> name=<span class="str">"allocation_ids"</span> <span class="op">readonly</span>=<span class="str">"state not in ('received', 'partial_delivered')"</span><span class="kw">/&gt;</span>
+
+<span class="cm">&lt;!-- Odoo 17: states="" juga deprecated, pakai invisible/readonly langsung --&gt;</span>
+<span class="kw">&lt;button</span> name=<span class="str">"action_confirm"</span>
+        <span class="op">invisible</span>=<span class="str">"state != 'draft'"</span>
+        type=<span class="str">"object"</span> string=<span class="str">"Confirm"</span><span class="kw">/&gt;</span></pre>
+
+                <h3>Struktur Folder Modul (Odoo 17)</h3>
                 <pre>security_seal_serial/
-  __manifest__.py
+  <span class="fn">__manifest__.py</span>   <span class="cm"># Wajib: version='17.0.1.0.0', license='LGPL-3'</span>
   __init__.py
   <span class="fn">models/</span>
-    seal_serial_range.py          <span class="cm">← Model utama range</span>
-    seal_serial_allocation.py     <span class="cm">← Alokasi per DO</span>
-    seal_returned_serial.py       <span class="cm">← Header retur</span>
-    seal_returned_serial_line.py  <span class="cm">← Individual serial RETIRED</span>
-    seal_customer_history.py      <span class="cm">← Histori per customer</span>
-    sale_order.py                 <span class="cm">← Extend SO</span>
-    stock_picking.py              <span class="cm">← Extend DO + validasi</span>
-    purchase_order.py             <span class="cm">← Extend PO</span>
+    __init__.py
+    seal_serial_range.py          <span class="cm"># Model utama range</span>
+    seal_serial_allocation.py     <span class="cm"># Alokasi per DO</span>
+    seal_returned_serial.py       <span class="cm"># Header retur</span>
+    seal_returned_serial_line.py  <span class="cm"># Individual serial RETIRED</span>
+    seal_customer_history.py      <span class="cm"># Histori per customer</span>
+    sale_order.py                 <span class="cm"># Extend SO</span>
+    stock_picking.py              <span class="cm"># Extend DO — hook button_validate</span>
+    purchase_order.py             <span class="cm"># Extend PO</span>
   <span class="fn">views/</span>
     seal_serial_range_views.xml
     seal_customer_history_views.xml
@@ -2753,7 +2806,33 @@
     stock_picking_views.xml
     menus.xml
   <span class="fn">security/</span>
-    ir.model.access.csv</pre>
+    ir.model.access.csv
+  <span class="fn">data/</span>             <span class="cm"># Optional: sequence, default data</span></pre>
+
+                <h3>__manifest__.py — Odoo 17</h3>
+                <pre>{
+    <span class="str">'name'</span>:     <span class="str">'Security Seal Serial Range'</span>,
+    <span class="str">'version'</span>:  <span class="str">'17.0.1.0.0'</span>,  <span class="cm"># Format wajib: major.minor.patch</span>
+    <span class="str">'summary'</span>:  <span class="str">'Manajemen serial number berbasis range'</span>,
+    <span class="str">'author'</span>:   <span class="str">'Your Company'</span>,
+    <span class="str">'license'</span>:  <span class="str">'LGPL-3'</span>,         <span class="cm"># Wajib di Odoo 17</span>
+    <span class="str">'category'</span>: <span class="str">'Inventory'</span>,
+    <span class="str">'depends'</span>: [
+        <span class="str">'sale_management'</span>,   <span class="cm"># Odoo 17: sale_management (bukan sale)</span>
+        <span class="str">'stock'</span>,
+        <span class="str">'purchase'</span>,
+    ],
+    <span class="str">'data'</span>: [
+        <span class="str">'security/ir.model.access.csv'</span>,
+        <span class="str">'views/seal_serial_range_views.xml'</span>,
+        <span class="str">'views/seal_customer_history_views.xml'</span>,
+        <span class="str">'views/sale_order_views.xml'</span>,
+        <span class="str">'views/stock_picking_views.xml'</span>,
+        <span class="str">'views/menus.xml'</span>,
+    ],
+    <span class="str">'installable'</span>: <span class="kw">True</span>,
+    <span class="str">'application'</span>: <span class="kw">False</span>,
+}</pre>
 
                 <h3>Access Rights</h3>
                 <table class="records">
