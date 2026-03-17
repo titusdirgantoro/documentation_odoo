@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Seal Serial — Walkthrough</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg2: #161b22;
+            --bg3: #1c2128;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text2: #8b949e;
+            --purple: #7c3aed;
+            --blue: #3b82f6;
+            --green: #3fb950;
+            --red: #f85149;
+            --yellow: #d29922;
+            --pd: #7c3aed22;
+            --bd: #3b82f622;
+            --gd: #3fb95022;
+            --rd: #f8514922;
+            --yd: #d2992222;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            z-index: 100;
+            padding: 24px 0
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px
+        }
+
+        .sidebar-logo h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: .05em;
+            text-transform: uppercase
+        }
+
+        .sidebar-logo p {
+            font-size: 11px;
+            color: var(--text2);
+            margin-top: 4px
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px;
+            font-size: 13px;
+            color: var(--text2);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all .2s
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            color: var(--text);
+            background: var(--bg3);
+            border-left-color: var(--purple)
+        }
+
+        .sidebar nav a .badge {
+            margin-left: auto;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 99px;
+            background: var(--pd);
+            color: var(--purple)
+        }
+
+        .sidebar-section {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            padding: 16px 20px 6px
+        }
+
+        .main {
+            margin-left: 260px;
+            min-height: 100vh
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1a0533 0%, #0d1117 40%, #001a3a 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 60px 60px 50px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #7c3aed33, transparent 70%)
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--pd);
+            border: 1px solid var(--purple);
+            color: var(--purple);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 99px;
+            margin-bottom: 20px
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 12px
+        }
+
+        .hero h1 span {
+            background: linear-gradient(90deg, var(--purple), var(--blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: var(--text2);
+            max-width: 600px
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 24px;
+            margin-top: 28px;
+            flex-wrap: wrap
+        }
+
+        .meta-item {
+            font-size: 12px;
+            color: var(--text2)
+        }
+
+        .meta-item strong {
+            color: var(--text);
+            display: block;
+            font-size: 14px
+        }
+
+        .content {
+            padding: 48px 60px;
+            max-width: 1100px
+        }
+
+        .section {
+            margin-bottom: 80px;
+            scroll-margin-top: 20px
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .section-num {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            flex-shrink: 0
+        }
+
+        .section h2 {
+            font-size: 22px;
+            font-weight: 700
+        }
+
+        .section h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-top: 32px;
+            margin-bottom: 14px
+        }
+
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px
+        }
+
+        .context {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--blue);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px
+        }
+
+        .context p {
+            font-size: 13px;
+            color: var(--text2)
+        }
+
+        .context strong {
+            color: var(--text)
+        }
+
+        pre {
+            background: #0a0d13;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            margin: 16px 0
+        }
+
+        .ic {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px
+        }
+
+        .kw {
+            color: #ff7b72
+        }
+
+        .str {
+            color: #a5d6ff
+        }
+
+        .cm {
+            color: #8b949e
+        }
+
+        .fn {
+            color: #d2a8ff
+        }
+
+        .num {
+            color: #79c0ff
+        }
+
+        .op {
+            color: #ffa657
+        }
+
+        .records {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 16px 0
+        }
+
+        .records th {
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text2)
+        }
+
+        .records td {
+            padding: 10px 14px;
+            border: 1px solid var(--border)
+        }
+
+        .records tr:hover td {
+            background: var(--bg3)
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .tg {
+            background: var(--gd);
+            color: var(--green)
+        }
+
+        .tb {
+            background: var(--bd);
+            color: var(--blue)
+        }
+
+        .tr {
+            background: var(--rd);
+            color: var(--red)
+        }
+
+        .ty {
+            background: var(--yd);
+            color: var(--yellow)
+        }
+
+        .tp {
+            background: var(--pd);
+            color: var(--purple)
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start
+        }
+
+        .alert-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .alert-content p {
+            font-size: 13px
+        }
+
+        .as {
+            background: var(--gd);
+            border: 1px solid var(--green)
+        }
+
+        .ae {
+            background: var(--rd);
+            border: 1px solid var(--red)
+        }
+
+        .ai {
+            background: var(--bd);
+            border: 1px solid var(--blue)
+        }
+
+        .aw {
+            background: var(--yd);
+            border: 1px solid var(--yellow)
+        }
+
+        .diagram-wrap {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin: 20px 0;
+            overflow-x: auto
+        }
+
+        .diagram-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text2);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .diagram-title::before {
+            content: '';
+            width: 3px;
+            height: 14px;
+            background: var(--purple);
+            border-radius: 2px
+        }
+
+        .mermaid {
+            text-align: center
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px
+        }
+
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 16px 0
+        }
+
+        .fs {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--bg3);
+            border: 1px solid var(--border)
+        }
+
+        .fs.act {
+            background: var(--pd);
+            border-color: var(--purple);
+            color: var(--purple)
+        }
+
+        .fs.org {
+            background: #f9731622;
+            border-color: #f97316;
+            color: #f97316
+        }
+
+        .fa {
+            color: var(--text2);
+            font-size: 18px
+        }
+
+        .comp {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0
+        }
+
+        .cc {
+            border-radius: 10px;
+            padding: 20px
+        }
+
+        .cbad {
+            background: var(--rd);
+            border: 1px solid var(--red)
+        }
+
+        .cgood {
+            background: var(--gd);
+            border: 1px solid var(--green)
+        }
+
+        .cc h4 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px
+        }
+
+        .cbad h4 {
+            color: var(--red)
+        }
+
+        .cgood h4 {
+            color: var(--green)
+        }
+
+        .cc p {
+            font-size: 13px;
+            color: var(--text2)
+        }
+
+        .bnum {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1;
+            margin: 8px 0
+        }
+
+        .cbad .bnum {
+            color: var(--red)
+        }
+
+        .cgood .bnum {
+            color: var(--green)
+        }
+
+        /* ── Model explanation cards ───────────────────────────── */
+        .model-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 0 0 20px
+        }
+
+        .model-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .model-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: var(--purple)
+        }
+
+        .model-card.mc-blue::before { background: var(--blue) }
+        .model-card.mc-green::before { background: var(--green) }
+        .model-card.mc-red::before { background: var(--red) }
+        .model-card.mc-yellow::before { background: var(--yellow) }
+
+        .model-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--purple);
+            margin-bottom: 6px
+        }
+
+        .model-card.mc-blue .model-name { color: var(--blue) }
+        .model-card.mc-green .model-name { color: var(--green) }
+        .model-card.mc-red .model-name { color: var(--red) }
+        .model-card.mc-yellow .model-name { color: var(--yellow) }
+
+        .model-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px
+        }
+
+        .model-desc {
+            font-size: 12.5px;
+            color: var(--text2);
+            line-height: 1.7;
+            margin-bottom: 12px
+        }
+
+        .model-fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px
+        }
+
+        .field-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10.5px;
+            color: var(--text2)
+        }
+
+        .field-pill .fp-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--purple);
+            flex-shrink: 0
+        }
+
+        .model-card.mc-blue .fp-dot { background: var(--blue) }
+        .model-card.mc-green .fp-dot { background: var(--green) }
+        .model-card.mc-red .fp-dot { background: var(--red) }
+        .model-card.mc-yellow .fp-dot { background: var(--yellow) }
+
+        /* ── Data analysis boxes ───────────────────────────────── */
+        .explain-box {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 20px 0
+        }
+
+        .explain-box h4 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text2);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .explain-box h4::before {
+            content: '';
+            width: 3px; height: 12px;
+            background: var(--blue);
+            border-radius: 2px;
+            flex-shrink: 0
+        }
+
+        .data-row {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 10px 16px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 12.5px;
+            align-items: start
+        }
+
+        .data-row:last-child { border-bottom: none }
+
+        .data-row .dr-model {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--blue);
+            font-weight: 600
+        }
+
+        .data-row .dr-val {
+            color: var(--text2);
+            line-height: 1.6
+        }
+
+        .data-row .dr-val strong { color: var(--text) }
+
+        .why-box {
+            background: var(--pd);
+            border: 1px solid var(--purple);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-top: 16px;
+            font-size: 12.5px;
+            color: var(--text2);
+            line-height: 1.7
+        }
+
+        .why-box strong { color: var(--text) }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg2)
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                margin-left: 0
+            }
+
+            .content {
+                padding: 24px
+            }
+
+            .hero {
+                padding: 40px 24px
+            }
+
+            .grid2,
+            .comp {
+                grid-template-columns: 1fr
+            }
+        }
+
+        /* =============================================
+           PRINT / SAVE AS PDF STYLES
+           ============================================= */
+        .print-btn {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            color: #fff;
+            border: none;
+            border-radius: 99px;
+            padding: 12px 22px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.45);
+            transition: transform .2s, box-shadow .2s
+        }
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(124,58,237,0.55)
+        }
+
+        @media print {
+            /* ── Tata letak ────────────────────────────── */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            @page {
+                size: A4;
+                margin: 18mm 16mm 18mm 16mm;
+            }
+
+            /* Sembunyikan elemen interaktif */
+            .sidebar,
+            .print-btn {
+                display: none !important;
+            }
+
+            /* Area konten full-width */
+            .main {
+                margin-left: 0 !important;
+            }
+
+            body {
+                background: #fff !important;
+                color: #1a1a2e !important;
+                font-size: 11.5px;
+                line-height: 1.6;
+            }
+
+            /* ── Hero section ──────────────────────────── */
+            .hero {
+                background: linear-gradient(135deg, #f3eeff 0%, #eef4ff 100%) !important;
+                border-bottom: 2px solid #c4b5fd !important;
+                padding: 32px 40px 28px !important;
+                page-break-after: avoid;
+            }
+
+            .hero h1 {
+                font-size: 24px !important;
+                color: #1a1a2e !important;
+            }
+
+            .hero h1 span {
+                background: linear-gradient(90deg, #7c3aed, #3b82f6) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+            }
+
+            .hero p {
+                color: #4a5568 !important;
+                font-size: 12px !important;
+            }
+
+            .hero-badge {
+                background: #ede9fe !important;
+                border-color: #7c3aed !important;
+                color: #7c3aed !important;
+            }
+
+            .meta-item {
+                color: #4a5568 !important;
+            }
+
+            .meta-item strong {
+                color: #1a1a2e !important;
+            }
+
+            /* ── Content area ──────────────────────────── */
+            .content {
+                padding: 24px 40px !important;
+                max-width: 100% !important;
+            }
+
+            /* ── Section breaks ────────────────────────── */
+            .section {
+                margin-bottom: 40px !important;
+                page-break-inside: avoid;
+            }
+
+            .section-header {
+                border-bottom: 2px solid #e2e8f0 !important;
+                margin-bottom: 20px !important;
+                page-break-after: avoid;
+            }
+
+            .section h2 {
+                font-size: 16px !important;
+                color: #1a1a2e !important;
+            }
+
+            .section h3 {
+                color: #4a5568 !important;
+                font-size: 10px !important;
+            }
+
+            .section-num {
+                background: linear-gradient(135deg, #7c3aed, #3b82f6) !important;
+                color: #fff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* ── Cards ─────────────────────────────────── */
+            .card {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 8px !important;
+                page-break-inside: avoid;
+            }
+
+            .context {
+                background: #eff6ff !important;
+                border: 1px solid #bfdbfe !important;
+                border-left: 4px solid #3b82f6 !important;
+            }
+
+            .context p {
+                color: #1e40af !important;
+            }
+
+            .context strong {
+                color: #1e3a8a !important;
+            }
+
+            /* ── Diagrams ───────────────────────────────── */
+            .diagram-wrap {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                page-break-inside: avoid;
+                overflow: visible !important;
+            }
+
+            .diagram-title {
+                color: #4a5568 !important;
+            }
+
+            .diagram-title::before {
+                background: #7c3aed !important;
+            }
+
+            /* ── Mermaid diagrams — force light theme saat print ─── */
+            .mermaid svg {
+                max-width: 100% !important;
+                height: auto !important;
+                background: #f8fafc !important;
+            }
+
+            /* Semua teks SVG → gelap */
+            .mermaid svg text,
+            .mermaid svg tspan,
+            .mermaid svg .label,
+            .mermaid svg .messageText,
+            .mermaid svg .labelText,
+            .mermaid svg .loopText,
+            .mermaid svg .loopText tspan,
+            .mermaid svg .noteText,
+            .mermaid svg .noteText tspan,
+            .mermaid svg .actor,
+            .mermaid svg .actor-line,
+            .mermaid svg .sequenceNumber,
+            .mermaid svg span {
+                fill: #1a1a2e !important;
+                color: #1a1a2e !important;
+                stroke: none !important;
+            }
+
+            /* Baris/garis aktor → abu gelap */
+            .mermaid svg line,
+            .mermaid svg path.actor-line {
+                stroke: #475569 !important;
+            }
+
+            /* Kotak aktor (persegi panjang) */
+            .mermaid svg rect.actor,
+            .mermaid svg .actor-box rect,
+            .mermaid svg polygon {
+                fill: #e2e8f0 !important;
+                stroke: #7c3aed !important;
+            }
+
+            /* Panah / arrow */
+            .mermaid svg .arrowhead path,
+            .mermaid svg marker path,
+            .mermaid svg defs marker path {
+                fill: #475569 !important;
+                stroke: #475569 !important;
+            }
+
+            /* Garis pesan (message lines) */
+            .mermaid svg .messageLine0,
+            .mermaid svg .messageLine1,
+            .mermaid svg path[stroke] {
+                stroke: #475569 !important;
+            }
+
+            /* Loop / alt box */
+            .mermaid svg rect.loopLine,
+            .mermaid svg .loopLine {
+                fill: #eff6ff !important;
+                stroke: #3b82f6 !important;
+            }
+
+            /* Note box */
+            .mermaid svg .note,
+            .mermaid svg rect.note {
+                fill: #fef3c7 !important;
+                stroke: #d29922 !important;
+            }
+
+            /* Label background */
+            .mermaid svg .labelBox {
+                fill: #ede9fe !important;
+                stroke: #7c3aed !important;
+            }
+
+            /* Flowchart/ER nodes */
+            .mermaid svg .node rect,
+            .mermaid svg .node circle,
+            .mermaid svg .node ellipse,
+            .mermaid svg .node polygon,
+            .mermaid svg .node path {
+                fill: #f1f5f9 !important;
+                stroke: #7c3aed !important;
+            }
+
+            .mermaid svg .node .label {
+                color: #1a1a2e !important;
+            }
+
+            /* ER diagram */
+            .mermaid svg .er.entityBox {
+                fill: #e2e8f0 !important;
+                stroke: #7c3aed !important;
+            }
+
+            .mermaid svg .er.attributeBoxOdd,
+            .mermaid svg .er.attributeBoxEven {
+                fill: #f8fafc !important;
+                stroke: #cbd5e1 !important;
+            }
+
+            /* Semua stroke default → abu gelap */
+            .mermaid svg [stroke="#8b949e"],
+            .mermaid svg [stroke="white"],
+            .mermaid svg [stroke="#ffffff"],
+            .mermaid svg [stroke="#fff"] {
+                stroke: #475569 !important;
+            }
+
+            /* Semua fill putih → abu muda */
+            .mermaid svg [fill="#ffffff"],
+            .mermaid svg [fill="white"],
+            .mermaid svg [fill="#0d1117"],
+            .mermaid svg [fill="#161b22"],
+            .mermaid svg [fill="#1c2128"] {
+                fill: #f8fafc !important;
+            }
+
+            /* Semua fill teks terang → gelap */
+            .mermaid svg [fill="#e6edf3"],
+            .mermaid svg [fill="#c9d1d9"] {
+                fill: #1a1a2e !important;
+            }
+
+
+            /* ── Code blocks ───────────────────────────── */
+            pre {
+                background: #f1f5f9 !important;
+                border: 1px solid #e2e8f0 !important;
+                color: #1a1a2e !important;
+                font-size: 10px !important;
+                page-break-inside: avoid;
+                overflow: visible !important;
+                white-space: pre-wrap !important;
+                word-break: break-word !important;
+            }
+
+            .kw  { color: #c0392b !important; }
+            .str { color: #2980b9 !important; }
+            .cm  { color: #7f8c8d !important; }
+            .fn  { color: #8e44ad !important; }
+            .num { color: #2471a3 !important; }
+            .op  { color: #d35400 !important; }
+
+            .ic {
+                background: #e2e8f0 !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #1a1a2e !important;
+            }
+
+            /* ── Tables ─────────────────────────────────── */
+            .records th {
+                background: #f1f5f9 !important;
+                border: 1px solid #e2e8f0 !important;
+                color: #4a5568 !important;
+                font-size: 9.5px !important;
+            }
+
+            .records td {
+                border: 1px solid #e2e8f0 !important;
+                color: #1a1a2e !important;
+                font-size: 10.5px !important;
+            }
+
+            .records tr:hover td {
+                background: transparent !important;
+            }
+
+            /* ── Tags & badges ──────────────────────────── */
+            .tag    { font-size: 9.5px !important; }
+            .tg     { background: #dcfce7 !important; color: #166534 !important; }
+            .tb     { background: #dbeafe !important; color: #1e40af !important; }
+            .tr     { background: #fee2e2 !important; color: #991b1b !important; }
+            .ty     { background: #fef3c7 !important; color: #92400e !important; }
+            .tp     { background: #ede9fe !important; color: #6d28d9 !important; }
+
+            /* ── Alerts ─────────────────────────────────── */
+            .alert { page-break-inside: avoid; }
+            .as { background: #dcfce7 !important; border: 1px solid #86efac !important; }
+            .ae { background: #fee2e2 !important; border: 1px solid #fca5a5 !important; }
+            .ai { background: #dbeafe !important; border: 1px solid #93c5fd !important; }
+            .aw { background: #fef3c7 !important; border: 1px solid #fcd34d !important; }
+
+            .alert-content p { color: #1a1a2e !important; }
+
+            /* ── Flow steps ─────────────────────────────── */
+            .fs {
+                background: #f1f5f9 !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #1a1a2e !important;
+            }
+            .fs.act {
+                background: #ede9fe !important;
+                border-color: #7c3aed !important;
+                color: #6d28d9 !important;
+            }
+            .fs.org {
+                background: #fff7ed !important;
+                border-color: #f97316 !important;
+                color: #c2410c !important;
+            }
+            .fa { color: #64748b !important; }
+
+            /* ── Comparison cards ───────────────────────── */
+            .cbad  { background: #fee2e2 !important; border: 1px solid #fca5a5 !important; }
+            .cgood { background: #dcfce7 !important; border: 1px solid #86efac !important; }
+            .cbad  h4, .cbad  .bnum { color: #991b1b !important; }
+            .cgood h4, .cgood .bnum { color: #166534 !important; }
+            .cc p { color: #374151 !important; }
+
+            /* ── Grid layout ─────────────────────────────── */
+            .grid2, .comp {
+                grid-template-columns: 1fr 1fr;
+                page-break-inside: avoid;
+            }
+
+            /* ── Model cards ─────────────────────────────── */
+            .model-grid {
+                grid-template-columns: 1fr 1fr;
+                page-break-inside: avoid;
+            }
+
+            .model-card {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                page-break-inside: avoid;
+            }
+
+            .model-card::before {
+                background: #7c3aed !important;
+            }
+            .model-card.mc-blue::before { background: #3b82f6 !important; }
+            .model-card.mc-green::before { background: #16a34a !important; }
+            .model-card.mc-red::before { background: #dc2626 !important; }
+            .model-card.mc-yellow::before { background: #ca8a04 !important; }
+
+            .model-name { color: #6d28d9 !important; }
+            .model-card.mc-blue .model-name { color: #1d4ed8 !important; }
+            .model-card.mc-green .model-name { color: #15803d !important; }
+            .model-card.mc-red .model-name { color: #b91c1c !important; }
+            .model-card.mc-yellow .model-name { color: #92400e !important; }
+
+            .model-title { color: #1a1a2e !important; font-size: 12px !important; }
+            .model-desc { color: #374151 !important; font-size: 11px !important; }
+
+            .field-pill {
+                background: #f1f5f9 !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #374151 !important;
+                font-size: 9.5px !important;
+            }
+
+            /* ── Explain boxes ───────────────────────────── */
+            .explain-box {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                page-break-inside: avoid;
+            }
+
+            .explain-box h4 {
+                color: #4a5568 !important;
+                font-size: 10px !important;
+            }
+
+            .explain-box h4::before {
+                background: #3b82f6 !important;
+            }
+
+            .data-row {
+                border-bottom: 1px solid #e2e8f0 !important;
+            }
+
+            .data-row .dr-model {
+                color: #1d4ed8 !important;
+                font-size: 10px !important;
+            }
+
+            .data-row .dr-val {
+                color: #374151 !important;
+                font-size: 10.5px !important;
+            }
+
+            .data-row .dr-val strong { color: #1a1a2e !important; }
+
+            .why-box {
+                background: #ede9fe !important;
+                border: 1px solid #c4b5fd !important;
+                color: #374151 !important;
+                font-size: 10.5px !important;
+            }
+
+            .why-box strong { color: #1a1a2e !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Tombol Save as PDF -->
+    <button class="print-btn" id="printBtn" title="Save as PDF / Print">
+        🖨 Save as PDF
+    </button>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h2>Security Seal Serial</h2>
+            <p>Odoo Custom Module Walkthrough</p>
+        </div>
+        <nav>
+            <div class="sidebar-section">Arsitektur</div>
+            <a href="#arch">Data Model &amp; Status Flow</a>
+            <a href="#models">Penjelasan Setiap Model</a>
+            <div class="sidebar-section">Skenario</div>
+            <a href="#s1">1 · Order Normal Full Range <span class="badge">S1</span></a>
+            <a href="#s2">2 · Partial Delivery <span class="badge">S2</span></a>
+            <a href="#s3">3 · Retur Serial Acak <span class="badge">S3</span></a>
+            <a href="#s4">4 · Reuse Barang Retur <span class="badge">S4</span></a>
+            <a href="#s5">5 · Order Kedua (Same Customer) <span class="badge">S5</span></a>
+            <a href="#s6">6 · Validasi Error / Duplikat <span class="badge">S6</span></a>
+            <a href="#s7">7 · Histori Serial Customer <span class="badge">S7</span></a>
+            <div class="sidebar-section">Teknis</div>
+            <a href="#summary">Ringkasan Record DB</a>
+            <a href="#impl">Implementasi</a>
+        </nav>
+    </aside>
+
+    <div class="main">
+        <div class="hero">
+            <div class="hero-badge">📘 Technical Walkthrough</div>
+            <h1>Security Seal <span>Serial Range</span> Management</h1>
+            <p>Custom Odoo module untuk manajemen serial number berbasis range, validasi keunikan per customer, partial
+                delivery, dan retur acak.</p>
+            <div class="hero-meta">
+                <div class="meta-item"><strong>Odoo 13+</strong>Versi Target</div>
+                <div class="meta-item"><strong>security_seal_serial</strong>Nama Modul</div>
+                <div class="meta-item"><strong>5 Model Custom</strong>+ 3 Extended</div>
+                <div class="meta-item"><strong>7 Skenario</strong>Dicakup</div>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- ARCH -->
+            <section class="section" id="arch">
+                <div class="section-header">
+                    <div class="section-num">🏗</div>
+                    <div>
+                        <h2>Arsitektur Data Model</h2>
+                    </div>
+                </div>
+
+                <div class="diagram-wrap">
+                    <div class="diagram-title">Relasi Antar Model</div>
+                    <div class="mermaid">
+                        erDiagram
+                        SALE_ORDER ||--o{ SALE_ORDER_LINE : has
+                        SALE_ORDER_LINE ||--o| SEAL_SERIAL_RANGE : defines
+                        SEAL_SERIAL_RANGE ||--o{ SEAL_SERIAL_ALLOCATION : allocates
+                        SEAL_SERIAL_RANGE ||--o{ SEAL_RETURNED_SERIAL : returns
+                        SEAL_RETURNED_SERIAL ||--o{ SEAL_RETURNED_SERIAL_LINE : contains
+                        SEAL_SERIAL_ALLOCATION }|--|| STOCK_PICKING : links
+                        STOCK_PICKING ||--o{ STOCK_MOVE : has
+                        STOCK_MOVE ||--|| STOCK_MOVE_LINE : has
+                        SALE_ORDER }o--|| SEAL_CUSTOMER_HIST : updates
+                    </div>
+                </div>
+
+                <h3>Status Flow Model</h3>
+                <div class="card">
+                    <div style="font-size:13px;font-weight:700;margin-bottom:12px">🔄 seal.serial.range</div>
+                    <div class="flow">
+                        <span class="fs">draft</span><span class="fa">→</span>
+                        <span class="fs">confirmed</span><span class="fa">→</span>
+                        <span class="fs">received</span><span class="fa">→</span>
+                        <span class="fs act">partial_delivered</span><span class="fa">→</span>
+                        <span class="fs">delivered</span><span class="fa">→</span>
+                        <span class="fs">closed</span>
+                    </div>
+                    <div class="flow">
+                        <span class="fs" style="opacity:.5">received</span><span class="fa">→</span>
+                        <span class="fs org">partial_returned</span>
+                    </div>
+                </div>
+                <div class="grid2">
+                    <div class="card">
+                        <div style="font-size:13px;font-weight:700;margin-bottom:12px">📦 seal.serial.allocation</div>
+                        <div class="flow"><span class="fs">draft</span><span class="fa">→</span><span
+                                class="fs">done</span><span class="fa">→</span><span
+                                class="fs org">partial_returned</span><span class="fa">→</span><span
+                                class="fs">fully_returned</span></div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size:13px;font-weight:700;margin-bottom:12px">↩ seal.returned.serial</div>
+                        <div class="flow"><span class="fs">draft</span><span class="fa">→</span><span
+                                class="fs">validated</span><span class="fa">→</span><span class="fs">restocked</span>
+                        </div>
+                        <div style="margin-top:10px"><span class="tag tr">returned.line → RETIRED (global)</span></div>
+                    </div>
+                </div>
+
+                <div class="diagram-wrap">
+                    <div class="diagram-title">Overview Alur Bisnis Lengkap</div>
+                    <div class="mermaid">
+                        flowchart TD
+                        A([Sales Order\nPT.ABC · UA001-UA1000]) --> B[seal.serial.range SR-001\nstate: confirmed]
+                        B --> C[Purchase Order ke Vendor]
+                        C --> D[Receipt WH/IN/00001]
+                        D --> E[SR-001 state: received\nstock.quant +1000]
+                        E --> F{Full atau\nPartial Delivery?}
+                        F -->|Full| G[DO Full WH/OUT/00001\nQty: 1000]
+                        F -->|Partial| H[DO Partial WH/OUT/000x\nQty: sebagian]
+                        G --> I[SA-001 done\nstock.quant 0]
+                        H --> J[SA-00x done\nstok berkurang]
+                        J --> K{Sisa\nrange?}
+                        K -->|Ya| L[Backorder DO]
+                        K -->|Tidak| M([Selesai])
+                        L --> J
+                        I --> N{Ada\nRetur?}
+                        N -->|Tidak| M
+                        N -->|Ya acak| O[Return Transfer\nWH/RETURN/00001]
+                        O --> P[returned.line\nUA510,UA520,UA575\nSTATE: RETIRED]
+                        P --> Q[stok +3 kembali]
+                        Q --> R([Jual lagi\nserial BARU])
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODELS -->
+            <section class="section" id="models">
+                <div class="section-header">
+                    <div class="section-num">📦</div>
+                    <div>
+                        <h2>Penjelasan Setiap Model</h2>
+                    </div>
+                </div>
+
+                <div class="context">
+                    <p>Modul <strong>security_seal_serial</strong> terdiri dari <strong>5 model custom baru</strong> dan <strong>3 model Odoo standar yang di-extend</strong>. Berikut penjelasan fungsi masing-masing model, field kunci, dan perannya dalam alur bisnis.</p>
+                </div>
+
+                <h3>Model Custom Utama</h3>
+                <div class="model-grid">
+
+                    <!-- Model 1 -->
+                    <div class="model-card" style="grid-column:1/-1">
+                        <div class="model-name">seal.serial.range</div>
+                        <div class="model-title">📋 Range Serial per Sales Order</div>
+                        <div class="model-desc">
+                            Model <strong>inti</strong> dari seluruh modul. Setiap kali customer memesan produk Security Seal, satu record <code class="ic">seal.serial.range</code> dibuat untuk menyimpan range serial number yang dialokasikan khusus untuk SO tersebut. Model ini mencegah tumpang-tindih range antar customer maupun antar order dari customer yang sama, dan melacak sisa range yang belum dikirim (remaining segments) saat partial delivery.
+                        </div>
+                        <div class="model-desc">
+                            <strong>Kenapa diperlukan?</strong> Odoo standar menggunakan <code class="ic">stock.lot</code> per serial → untuk 1.000 pcs harus buat 1.000 record. Model ini cukup 1 record untuk 1.000 pcs dengan menyimpan angka awal dan akhir saja.
+                        </div>
+                        <div class="model-fields">
+                            <span class="field-pill"><span class="fp-dot"></span>prefix (UA, UB, UX)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>serial_from (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>serial_to (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>state (draft/confirmed/received/partial/delivered/closed)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>customer_id (res.partner)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>sale_order_id</span>
+                            <span class="field-pill"><span class="fp-dot"></span>remaining_segments (JSON)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>allocation_ids (O2M)</span>
+                        </div>
+                    </div>
+
+                    <!-- Model 2 -->
+                    <div class="model-card mc-blue">
+                        <div class="model-name">seal.serial.allocation</div>
+                        <div class="model-title">🚚 Alokasi Serial per Delivery</div>
+                        <div class="model-desc">
+                            Setiap kali sebagian (atau seluruh) range dikirim melalui satu Delivery Order, dibuat 1 record <code class="ic">seal.serial.allocation</code>. Record ini menghubungkan antara <em>range induk</em> (seal.serial.range) dengan <em>stock.picking</em> (DO) dan mencatat sub-range yang dikirim pada pengiriman tersebut.
+                        </div>
+                        <div class="model-desc">
+                            Fungsi utama: menjadi dasar <strong>validasi retur</strong> — saat customer meretur serial tertentu, sistem cek apakah serial tersebut memang ada di salah satu allocation record customer itu.
+                        </div>
+                        <div class="model-fields">
+                            <span class="field-pill"><span class="fp-dot"></span>serial_range_id (M2O)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>picking_id (stock.picking)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>serial_from (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>serial_to (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>qty_allocated (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>active_qty (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>state (draft/done/partial_returned/fully_returned)</span>
+                        </div>
+                    </div>
+
+                    <!-- Model 3 -->
+                    <div class="model-card mc-yellow">
+                        <div class="model-name">seal.returned.serial</div>
+                        <div class="model-title">↩ Header Retur Serial</div>
+                        <div class="model-desc">
+                            Model <em>header</em> untuk event pengembalian barang. Setiap kali customer meretur 1 atau lebih serial number, 1 record <code class="ic">seal.returned.serial</code> dibuat sebagai "kepala" retur tersebut. Header ini menyimpan informasi DO asal, jumlah total yang dikembalikan, dan status proses retur (draft → validated → restocked).
+                        </div>
+                        <div class="model-fields">
+                            <span class="field-pill"><span class="fp-dot"></span>allocation_id (M2O)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>return_picking_id (stock.picking)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>qty_returned (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>state (draft/validated/restocked)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>line_ids (O2M → .line)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>return_date</span>
+                        </div>
+                    </div>
+
+                    <!-- Model 4 -->
+                    <div class="model-card mc-red">
+                        <div class="model-name">seal.returned.serial.line</div>
+                        <div class="model-title">🏷 Detail Serial Diretur (RETIRED)</div>
+                        <div class="model-desc">
+                            Model <em>baris</em> dari retur — setiap serial number yang dikembalikan mendapat 1 record di sini. Begitu record ini dibuat dan divalidasi, state-nya langsung menjadi <strong>RETIRED</strong> secara permanen dan global: serial tersebut tidak dapat digunakan kembali oleh siapapun, termasuk customer berbeda sekalipun.
+                        </div>
+                        <div class="model-desc">
+                            Inilah "daftar hitam" serial number. Setiap kali ada range baru yang ingin dibuat, sistem akan mengecek tabel ini untuk memastikan tidak ada serial yang sudah RETIRED masuk ke dalam range baru.
+                        </div>
+                        <div class="model-fields">
+                            <span class="field-pill"><span class="fp-dot"></span>returned_serial_id (M2O header)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>prefix (UA)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>serial_number (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>serial_display (UA510)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>state (RETIRED — permanen)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>retired_date</span>
+                            <span class="field-pill"><span class="fp-dot"></span>original_customer_id</span>
+                        </div>
+                    </div>
+
+                    <!-- Model 5 -->
+                    <div class="model-card mc-green">
+                        <div class="model-name">seal.customer.serial.history</div>
+                        <div class="model-title">📊 Histori & Saran Next Range</div>
+                        <div class="model-desc">
+                            Model ringkasan yang selalu diperbarui setiap kali ada delivery ke customer. Menyimpan serial terakhir yang terkirim (<code class="ic">last_serial_number</code>) sehingga pengguna dapat langsung tahu dari nomor berapa order berikutnya harus dimulai — tanpa perlu menelusuri semua SO lama secara manual.
+                        </div>
+                        <div class="model-desc">
+                            Model ini juga menjadi sumber <strong>Smart Suggestion</strong> di form Sales Order: sistem otomatis menyarankan nomor awal untuk order baru berdasarkan histori ini.
+                        </div>
+                        <div class="model-fields">
+                            <span class="field-pill"><span class="fp-dot"></span>customer_id (res.partner)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>product_id</span>
+                            <span class="field-pill"><span class="fp-dot"></span>prefix</span>
+                            <span class="field-pill"><span class="fp-dot"></span>last_serial_number (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>total_active_delivered (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>total_returned (int)</span>
+                            <span class="field-pill"><span class="fp-dot"></span>last_updated</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <h3>Model Odoo Standar yang Di-extend</h3>
+                <div class="grid2">
+                    <div class="card">
+                        <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--blue)">sale.order / sale.order.line</div>
+                        <div class="model-desc" style="margin-bottom:8px">Ditambahkan field <code class="ic">seal_serial_range_id</code> di order line untuk menghubungkan SO line ke range yang dibuat. Saat SO dikonfirmasi, validasi overlap range dipicu dari sini.</div>
+                        <div class="model-fields">
+                            <span class="field-pill"><span class="fp-dot" style="background:var(--blue)"></span>serial_range_id (M2O)</span>
+                            <span class="field-pill"><span class="fp-dot" style="background:var(--blue)"></span>serial_from_display</span>
+                            <span class="field-pill"><span class="fp-dot" style="background:var(--blue)"></span>serial_to_display</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--blue)">stock.picking (DO / Return)</div>
+                        <div class="model-desc" style="margin-bottom:8px">Ditambahkan wizard/button untuk <em>alokasi range</em> saat delivery dan <em>input serial retur</em> saat return transfer. Setelah validasi DO, trigger otomatis membuat <code class="ic">seal.serial.allocation</code>.</div>
+                        <div class="model-fields">
+                            <span class="field-pill"><span class="fp-dot" style="background:var(--blue)"></span>allocation_ids (O2M)</span>
+                            <span class="field-pill"><span class="fp-dot" style="background:var(--blue)"></span>returned_serial_ids (O2M)</span>
+                        </div>
+                    </div>
+                    <div class="card" style="grid-column:1/-1">
+                        <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--blue)">purchase.order</div>
+                        <div class="model-desc" style="margin-bottom:8px">Ditambahkan link ke <code class="ic">seal.serial.range</code> agar saat receipt dikonfirmasi sistem tahu range mana yang stoknya baru masuk dan otomatis mengubah state range menjadi <strong>received</strong>.</div>
+                        <div class="model-fields">
+                            <span class="field-pill"><span class="fp-dot" style="background:var(--blue)"></span>sale_serial_range_id (M2O)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- S1 -->
+            <section class="section" id="s1">
+                <div class="section-header">
+                    <div class="section-num">1</div>
+                    <div>
+                        <h2>Order Normal Penuh (Full Range)</h2>
+                    </div>
+                </div>
+                <div class="context">
+                    <p>Customer: <strong>PT. ABC</strong> &nbsp;|&nbsp; Produk: <strong>Security Tag Type-A</strong>
+                        &nbsp;|&nbsp;
+                        Qty: <strong>1000 pcs</strong> &nbsp;|&nbsp; Range: <strong>UA001 – UA1000</strong><br>
+                        Proses: Make to Order → PO ke vendor → Receipt → Full Delivery</p>
+                </div>
+
+                <div class="diagram-wrap">
+                    <div class="diagram-title">Sequence Diagram — Skenario 1: Order Normal Full</div>
+                    <div class="mermaid">
+                        sequenceDiagram
+                        actor U as User
+                        participant SO as Sales Order
+                        participant SR as seal.serial.range
+                        participant PO as Purchase Order
+                        participant RC as Receipt WH/IN
+                        participant SQ as stock.quant
+                        participant DO as Delivery WH/OUT
+                        participant SA as seal.serial.allocation
+                        participant CH as customer.serial.history
+
+                        U->>SO: Create SO (PT.ABC, 1000pcs)
+                        U->>SO: Input range UA001-UA1000
+                        SO->>SR: validate_range()
+                        SR-->>SO: VALID (no overlap found)
+                        SO->>SR: Create SR-001 state=confirmed
+                        U->>SO: Confirm SO
+
+                        U->>PO: Create PO ke Vendor
+                        PO->>SR: link sale_serial_range_id = SR-001
+                        U->>PO: Confirm PO
+
+                        U->>RC: Validate Receipt
+                        RC->>SQ: +1000 qty di WH/Stock
+                        RC->>SR: state = received
+
+                        U->>DO: Create and Validate Delivery
+                        U->>DO: Allocate UA001-UA1000
+                        DO->>SA: Create SA-001 (from=1, to=1000)
+                        DO->>SQ: -1000 qty
+                        DO->>SR: state = delivered
+                        DO->>CH: last_serial = 1000
+                    </div>
+                </div>
+
+                <h3>Records yang Terbentuk</h3>
+                <table class="records">
+                    <tr>
+                        <th>Model</th>
+                        <th>Record</th>
+                        <th>Qty</th>
+                        <th>State</th>
+                    </tr>
+                    <tr>
+                        <td>stock.picking (IN)</td>
+                        <td>WH/IN/00001</td>
+                        <td>1000</td>
+                        <td><span class="tag tg">done</span></td>
+                    </tr>
+                    <tr>
+                        <td>stock.move</td>
+                        <td>Security Tag Type-A</td>
+                        <td>1000</td>
+                        <td><span class="tag tg">done</span></td>
+                    </tr>
+                    <tr>
+                        <td>stock.move.line</td>
+                        <td><strong>1 record saja!</strong></td>
+                        <td>1000</td>
+                        <td><span class="tag tg">done</span></td>
+                    </tr>
+                    <tr>
+                        <td>stock.lot</td>
+                        <td colspan="3"><span class="tag tr">❌ Tidak dibuat sama sekali</span></td>
+                    </tr>
+                    <tr>
+                        <td>stock.picking (OUT)</td>
+                        <td>WH/OUT/00001</td>
+                        <td>1000</td>
+                        <td><span class="tag tg">done</span></td>
+                    </tr>
+                    <tr>
+                        <td>seal.serial.range</td>
+                        <td>SR-001 (UA001–UA1000)</td>
+                        <td>1000</td>
+                        <td><span class="tag tp">delivered</span></td>
+                    </tr>
+                    <tr>
+                        <td>seal.serial.allocation</td>
+                        <td>SA-001 (from:1, to:1000)</td>
+                        <td>1000</td>
+                        <td><span class="tag tg">done</span></td>
+                    </tr>
+                    <tr>
+                        <td>seal.customer.serial.history</td>
+                        <td>PT.ABC | last: UA1000</td>
+                        <td>—</td>
+                        <td><span class="tag tb">updated</span></td>
+                    </tr>
+                </table>
+
+                <div class="comp">
+                    <div class="cc cbad">
+                        <h4>❌ Odoo Standar (Serial Tracking)</h4>
+                        <p>Untuk 1000 pcs dengan serial</p>
+                        <div class="bnum">1000</div>
+                        <p>stock.lot + stock.move.line records</p>
+                    </div>
+                    <div class="cc cgood">
+                        <h4>✅ Solusi Custom Range</h4>
+                        <p>Untuk 1000 pcs dengan range</p>
+                        <div class="bnum">1</div>
+                        <p>stock.move.line + 1 seal.serial.range</p>
+                    </div>
+                </div>
+
+                <div class="explain-box">
+                    <h4>Analisa Data yang Terbentuk — Skenario 1</h4>
+                    <div class="data-row">
+                        <div class="dr-model">seal.serial.range<br><span class="tag tp">SR-001</span></div>
+                        <div class="dr-val">Record <strong>1 buah</strong> dengan <code class="ic">prefix=UA</code>, <code class="ic">serial_from=1</code>, <code class="ic">serial_to=1000</code>. Ini adalah "sertifikat" bahwa PT. ABC memiliki hak eksklusif atas serial UA001–UA1000. State bergerak: <strong>confirmed → received → delivered</strong>. Field <code class="ic">remaining_segments</code> menjadi <code class="ic">[]</code> (kosong) setelah delivery penuh.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">seal.serial.allocation<br><span class="tag tg">SA-001</span></div>
+                        <div class="dr-val">Record <strong>1 buah</strong> yang menghubungkan SR-001 ke DO WH/OUT/00001. Mencatat <code class="ic">serial_from=1</code>, <code class="ic">serial_to=1000</code>, <code class="ic">qty_allocated=1000</code>, <code class="ic">active_qty=1000</code>. Record ini menjadi bukti sah bahwa 1000 serial tersebut telah benar-benar dikirim ke customer — dan akan digunakan sebagai referensi saat validasi retur di masa mendatang.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">stock.move.line<br><span class="tag tg">1 record</span></div>
+                        <div class="dr-val">Hanya <strong>1 record</strong> dengan <code class="ic">qty_done=1000</code> — bukan 1000 record seperti Odoo standar dengan serial tracking. Penghematan <strong>99.9%</strong> jumlah record di database. Tidak ada <code class="ic">stock.lot</code> yang dibuat sama sekali.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">seal.customer.serial.history<br><span class="tag tb">updated</span></div>
+                        <div class="dr-val">Record di-<em>upsert</em> (buat atau update) untuk pasangan <code class="ic">(PT.ABC, Security Tag Type-A, UA)</code>. Field <code class="ic">last_serial_number=1000</code> dan <code class="ic">total_active_delivered=1000</code>. Inilah yang akan muncul sebagai saran di order berikutnya.</div>
+                    </div>
+                    <div class="why-box">💡 <strong>Kesimpulan S1:</strong> Satu order penuh menghasilkan hanya <strong>4 model records custom</strong> (1 SR + 1 SA + updated history) dan <strong>2 stock.move.line</strong> (IN + OUT). Bandingkan dengan Odoo standar yang akan menghasilkan 1000+ records untuk jumlah yang sama.</div>
+                </div>
+            </section>
+
+            <!-- S2 -->
+            <section class="section" id="s2">
+                <div class="section-header">
+                    <div class="section-num">2</div>
+                    <div>
+                        <h2>Partial Delivery dari 1 Range</h2>
+                    </div>
+                </div>
+                <div class="context">
+                    <p>Customer: <strong>PT. XYZ</strong> &nbsp;|&nbsp; Range: <strong>UB001–UB500</strong> (500
+                        pcs)<br>
+                        DO1: <strong>UB300–UB400</strong> · DO2: <strong>UB001–UB299</strong> · DO3:
+                        <strong>UB401–UB500</strong></p>
+                </div>
+
+                <div class="diagram-wrap">
+                    <div class="diagram-title">Sequence Diagram — Skenario 2: Partial Delivery</div>
+                    <div class="mermaid">
+                        sequenceDiagram
+                        actor U as User
+                        participant SR as SR-002 UB001-UB500
+                        participant SQ as stock.quant
+                        participant DO1 as DO1 WH/OUT/00002
+                        participant DO2 as DO2 WH/OUT/00003
+                        participant DO3 as DO3 WH/OUT/00004
+                        participant SA as seal.serial.allocation
+
+                        Note over SR: state=received, qty=500
+
+                        U->>DO1: Allocate UB300-UB400 (101 pcs)
+                        DO1->>SA: check_no_overlap(300,400) OK
+                        DO1->>SA: Create SA-002 (300→400)
+                        DO1->>SQ: -101 qty, sisa=399
+                        DO1->>SR: state=partial, remaining=[(1,299),(401,500)]
+
+                        U->>DO2: Allocate UB001-UB299 (299 pcs)
+                        DO2->>SA: check_no_overlap(1,299) OK
+                        DO2->>SA: Create SA-003 (1→299)
+                        DO2->>SQ: -299 qty, sisa=100
+                        DO2->>SR: remaining=[(401,500)]
+
+                        U->>DO3: Allocate UB401-UB500 (100 pcs)
+                        DO3->>SA: Create SA-004 (401→500)
+                        DO3->>SQ: -100 qty, sisa=0
+                        DO3->>SR: state=delivered, remaining=[]
+                    </div>
+                </div>
+
+                <h3>State setelah tiap Delivery</h3>
+                <table class="records">
+                    <tr>
+                        <th>Event</th>
+                        <th>DO</th>
+                        <th>Qty Kirim</th>
+                        <th>Quant Sisa</th>
+                        <th>Remaining Segments</th>
+                        <th>Range State</th>
+                    </tr>
+                    <tr>
+                        <td>Awal (received)</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>500</td>
+                        <td>[(1,500)]</td>
+                        <td><span class="tag tb">received</span></td>
+                    </tr>
+                    <tr>
+                        <td>Delivery 1</td>
+                        <td>WH/OUT/00002</td>
+                        <td>101</td>
+                        <td>399</td>
+                        <td>[(1,299),(401,500)]</td>
+                        <td><span class="tag ty">partial</span></td>
+                    </tr>
+                    <tr>
+                        <td>Delivery 2</td>
+                        <td>WH/OUT/00003</td>
+                        <td>299</td>
+                        <td>100</td>
+                        <td>[(401,500)]</td>
+                        <td><span class="tag ty">partial</span></td>
+                    </tr>
+                    <tr>
+                        <td>Delivery 3</td>
+                        <td>WH/OUT/00004</td>
+                        <td>100</td>
+                        <td>0</td>
+                        <td>[]</td>
+                        <td><span class="tag tg">delivered</span></td>
+                    </tr>
+                </table>
+
+                <h3>Algoritma Komputasi Sisa Segmen</h3>
+                <pre><span class="kw">def</span> <span class="fn">compute_remaining_segments</span>(range_rec):
+    total = (range_rec.serial_from, range_rec.serial_to)
+    allocs = <span class="fn">sorted</span>(range_rec.allocation_ids, key=<span class="kw">lambda</span> a: a.serial_from)
+    segments, current = [], total[<span class="num">0</span>]
+    <span class="kw">for</span> alloc <span class="kw">in</span> allocs:
+        <span class="kw">if</span> current &lt; alloc.serial_from:
+            segments.<span class="fn">append</span>((current, alloc.serial_from - <span class="num">1</span>))
+        current = alloc.serial_to + <span class="num">1</span>
+    <span class="kw">if</span> current &lt;= total[<span class="num">1</span>]:
+        segments.<span class="fn">append</span>((current, total[<span class="num">1</span>]))
+    <span class="kw">return</span> segments
+<span class="cm"># Setelah DO1 (300-400): → [(1,299),(401,500)]</span>
+<span class="cm"># Setelah DO2 (1-299)  : → [(401,500)]</span>
+<span class="cm"># Setelah DO3 (401-500): → []  ✓</span></pre>
+
+                <div class="explain-box">
+                    <h4>Analisa Data yang Terbentuk — Skenario 2</h4>
+                    <div class="data-row">
+                        <div class="dr-model">seal.serial.range<br><span class="tag tp">SR-002</span></div>
+                        <div class="dr-val">Tetap <strong>1 record</strong> untuk keseluruhan range UB001–UB500. Yang berubah adalah field <code class="ic">state</code> dan <code class="ic">remaining_segments</code>. Setelah DO1: <code class="ic">remaining=[(1,299),(401,500)]</code>. Setelah DO2: <code class="ic">remaining=[(401,500)]</code>. Setelah DO3: <code class="ic">remaining=[]</code>, state=<strong>delivered</strong>. Satu range record ini cukup untuk melacak 3 batch pengiriman berbeda.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">seal.serial.allocation<br><span class="tag tg">SA-002, 003, 004</span></div>
+                        <div class="dr-val"><strong>3 record</strong> allocation, masing-masing merepresentasikan satu pengiriman:<br>• <strong>SA-002</strong>: serial_from=300, serial_to=400, qty=101 (DO WH/OUT/00002)<br>• <strong>SA-003</strong>: serial_from=1, serial_to=299, qty=299 (DO WH/OUT/00003)<br>• <strong>SA-004</strong>: serial_from=401, serial_to=500, qty=100 (DO WH/OUT/00004)<br>Perhatikan urutan pengiriman tidak harus berurutan (300-400 dikirim sebelum 1-299) — sistem tetap bisa memvalidasi dengan benar karena setiap allocation mencatat sub-range-nya sendiri.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Overlap validation<br><span class="tag tg">3x cek</span></div>
+                        <div class="dr-val">Setiap kali allocation baru dibuat, sistem menjalankan query: "apakah range (from, to) yang baru ini tumpang tindih dengan allocation lain di SR-002?" — ini mencegah pengiriman serial yang sama dua kali ke customer yang berbeda dalam satu batch pengiriman parsial.</div>
+                    </div>
+                    <div class="why-box">💡 <strong>Kesimpulan S2:</strong> Partial delivery menghasilkan <strong>1 SR + 3 SA records</strong>. Jumlah SA = jumlah pengiriman yang dilakukan. SR tetap 1 dan cukup melacak sisa segmen secara efisien menggunakan array JSON.</div>
+                </div>
+            </section>
+
+            <!-- S3 -->
+            <section class="section" id="s3">
+                <div class="section-header">
+                    <div class="section-num">3</div>
+                    <div>
+                        <h2>Retur Sebagian Serial Acak</h2>
+                    </div>
+                </div>
+                <div class="context">
+                    <p>Customer: <strong>PT. ABC</strong> — meretur <strong>UA510, UA520, UA575</strong> (3 pcs acak,
+                        tidak berurutan)<br>
+                        dari pengiriman sebelumnya UA001–UA1000</p>
+                </div>
+
+                <div class="diagram-wrap">
+                    <div class="diagram-title">Sequence Diagram — Skenario 3: Retur Serial Acak</div>
+                    <div class="mermaid">
+                        sequenceDiagram
+                        actor U as User
+                        participant DO as DO Asal WH/OUT/00001
+                        participant RT as Return Transfer
+                        participant VAL as Validator
+                        participant RL as returned.serial.line
+                        participant RS as seal.returned.serial
+                        participant SQ as stock.quant
+                        participant SA as SA-001 allocation
+
+                        U->>DO: Klik Return
+                        DO->>RT: Buat reverse transfer draft
+                        U->>RT: Input: UA510, UA520, UA575
+                        U->>RT: Klik Parse and Validate
+
+                        loop Untuk setiap serial
+                        RT->>VAL: check_delivered(UA510, PT.ABC)
+                        VAL->>SA: search allocation covering 510
+                        SA-->>VAL: SA-001 covers (1-1000) VALID
+                        VAL->>RL: check_not_retired(UA510)
+                        RL-->>VAL: Not found VALID
+                        end
+
+                        U->>RT: Validate Return
+                        RT->>SQ: +3 qty ke WH/Stock
+                        RT->>RS: Create RS-001 qty=3
+                        RS->>RL: UA510 state=RETIRED
+                        RS->>RL: UA520 state=RETIRED
+                        RS->>RL: UA575 state=RETIRED
+                        RS->>SA: state=partial_returned, active_qty=997
+                    </div>
+                </div>
+
+                <h3>Records yang Terbentuk</h3>
+                <table class="records">
+                    <tr>
+                        <th>Model</th>
+                        <th>Detail</th>
+                        <th>State</th>
+                    </tr>
+                    <tr>
+                        <td>stock.picking (RETURN)</td>
+                        <td>WH/RETURN/00001, qty: 3</td>
+                        <td><span class="tag tg">done</span></td>
+                    </tr>
+                    <tr>
+                        <td>stock.move.line</td>
+                        <td>qty: 3 — <strong>1 record</strong> (bukan 3)</td>
+                        <td><span class="tag tg">done</span></td>
+                    </tr>
+                    <tr>
+                        <td>stock.quant</td>
+                        <td>+3 kembali ke WH/Stock</td>
+                        <td><span class="tag tb">updated</span></td>
+                    </tr>
+                    <tr>
+                        <td>seal.returned.serial</td>
+                        <td>RS-001, qty_returned: 3</td>
+                        <td><span class="tag ty">validated</span></td>
+                    </tr>
+                    <tr>
+                        <td>seal.returned.serial.line</td>
+                        <td>UA510, UA520, UA575</td>
+                        <td><span class="tag tr">RETIRED</span></td>
+                    </tr>
+                    <tr>
+                        <td>seal.serial.allocation</td>
+                        <td>SA-001, active_qty: 997</td>
+                        <td><span class="tag ty">partial_returned</span></td>
+                    </tr>
+                </table>
+
+                <div class="alert aw">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-content">
+                        <p><strong>Penting:</strong> Serial RETIRED bersifat <strong>global dan permanen</strong>.
+                            UA510, UA520, UA575 tidak dapat digunakan kembali oleh customer manapun di masa mendatang —
+                            termasuk untuk customer berbeda sekalipun.</p>
+                    </div>
+                </div>
+
+                <div class="explain-box">
+                    <h4>Analisa Data yang Terbentuk — Skenario 3</h4>
+                    <div class="data-row">
+                        <div class="dr-model">seal.returned.serial<br><span class="tag ty">RS-001</span></div>
+                        <div class="dr-val"><strong>1 record header</strong> yang mencatat event retur ini secara keseluruhan. Field: <code class="ic">allocation_id=SA-001</code> (referensi ke pengiriman asal), <code class="ic">return_picking_id=WH/RETURN/00001</code>, <code class="ic">qty_returned=3</code>, <code class="ic">state=validated</code>. Header ini menjadi "tanda terima" retur yang bisa dilihat di history customer.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">seal.returned.serial.line<br><span class="tag tr">3 RETIRED records</span></div>
+                        <div class="dr-val"><strong>3 record baris</strong> — satu per serial yang dikembalikan:<br>• Line 1: <code class="ic">prefix=UA, serial_number=510, state=RETIRED</code><br>• Line 2: <code class="ic">prefix=UA, serial_number=520, state=RETIRED</code><br>• Line 3: <code class="ic">prefix=UA, serial_number=575, state=RETIRED</code><br>State RETIRED bersifat <strong>final dan tidak bisa diubah</strong>. Tabel ini adalah satu-satunya blacklist serial di seluruh sistem.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">seal.serial.allocation<br><span class="tag ty">SA-001 diupdate</span></div>
+                        <div class="dr-val">Record SA-001 yang sudah ada <strong>diupdate</strong> (bukan dibuat baru): <code class="ic">active_qty: 1000 → 997</code>, <code class="ic">state: done → partial_returned</code>. Ini memastikan laporan "berapa serial yang masih aktif di tangan customer" selalu akurat.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">stock.quant<br><span class="tag tb">+3 qty</span></div>
+                        <div class="dr-val">Stok fisik kembali +3 di WH/Stock. Odoo standar menangani ini secara otomatis melalui return picking — modul custom tidak perlu override mekanisme ini, cukup menambahkan pencatatan serial RETIRED.</div>
+                    </div>
+                    <div class="why-box">💡 <strong>Kesimpulan S3:</strong> Retur 3 serial menghasilkan <strong>1 RS header + 3 RS lines</strong>. Jumlah RS lines = jumlah serial yang dikembalikan. Penting: retired lines tidak bisa dihapus — ini adalah audit trail permanen untuk keamanan produk.</div>
+                </div>
+            </section>
+
+            <!-- S4 -->
+            <section class="section" id="s4">
+                <div class="section-header">
+                    <div class="section-num">4</div>
+                    <div>
+                        <h2>Reuse Barang Retur dengan Serial Baru</h2>
+                    </div>
+                </div>
+                <div class="context">
+                    <p>3 pcs barang fisik dari retur PT. ABC kembali ke stok. Dijual ke <strong>PT. DEF</strong> dengan
+                        serial <strong>baru: UX001–UX003</strong>.<br>
+                        Serial lama (UA510/UA520/UA575) tetap RETIRED — tidak pernah dipakai lagi.</p>
+                </div>
+
+                <div class="diagram-wrap">
+                    <div class="diagram-title">Sequence Diagram — Skenario 4: Reuse Barang Retur</div>
+                    <div class="mermaid">
+                        sequenceDiagram
+                        actor U as User
+                        participant SQ as stock.quant
+                        participant SO2 as SO Baru PT.DEF
+                        participant VAL as Validator
+                        participant RL as returned.serial.line
+                        participant SR3 as SR-003 UX001-UX003
+                        participant DO4 as DO WH/OUT/00004
+
+                        Note over SQ: qty=3 dari retur PT.ABC
+                        Note over RL: UA510,UA520,UA575 RETIRED
+
+                        U->>SO2: Buat SO PT.DEF, qty:3
+                        U->>SO2: Input range UX001-UX003
+                        SO2->>VAL: validate_range(UX, 1, 3, PT.DEF)
+                        VAL->>SR3: overlap PT.DEF prefix UX: NONE OK
+                        VAL->>RL: retired in range UX 1-3: NONE OK
+                        SO2->>SR3: Create SR-003 confirmed
+
+                        U->>DO4: Validate Delivery ke PT.DEF
+                        DO4->>SQ: -3 qty (pakai stok retur)
+                        DO4->>SR3: Create SA-005, state=delivered
+
+                        Note over RL: UA510,UA520,UA575 masih RETIRED
+                        Note over SR3: UX001-UX003 DELIVERED ke PT.DEF
+                    </div>
+                </div>
+
+                <div class="alert as">
+                    <div class="alert-icon">✅</div>
+                    <div class="alert-content">
+                        <p><strong>Kunci desain:</strong> Barang <em>fisik</em> yang sama (3 pcs) kembali ke stok dan
+                            dijual lagi, tetapi serial number-nya menjadi <strong>UX001–UX003 (baru
+                                sepenuhnya)</strong>. Serial lama UA510/UA520/UA575 tetap RETIRED selamanya dan tidak
+                            muncul di mana pun.</p>
+                    </div>
+                </div>
+
+                <div class="explain-box">
+                    <h4>Analisa Data yang Terbentuk — Skenario 4</h4>
+                    <div class="data-row">
+                        <div class="dr-model">seal.serial.range<br><span class="tag tp">SR-003 (BARU)</span></div>
+                        <div class="dr-val">Record range <strong>baru SR-003</strong> dibuat untuk PT. DEF dengan <code class="ic">prefix=UX</code>, <code class="ic">serial_from=1</code>, <code class="ic">serial_to=3</code>. Validasi lolos karena: (1) prefix UX belum pernah dipakai PT. DEF, (2) tidak ada retired lines dengan prefix UX di range 1–3. Barang fisik yang digunakan adalah stok retur dari PT. ABC, tetapi <em>identitas serialnya sama sekali berbeda</em>.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">seal.serial.allocation<br><span class="tag tg">SA-005 (BARU)</span></div>
+                        <div class="dr-val">Record allocation baru <strong>SA-005</strong> yang menghubungkan SR-003 ke DO WH/OUT/00004 (pengiriman ke PT. DEF). <code class="ic">serial_from=1, serial_to=3, qty_allocated=3, state=done</code>. SA-001 (milik PT. ABC) tidak terpengaruh sama sekali — kedua customer memiliki allocation record-nya masing-masing secara terpisah.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">seal.returned.serial.line<br><span class="tag tr">UA510, UA520, UA575</span></div>
+                        <div class="dr-val">Ketiga records RETIRED ini <strong>tidak berubah sama sekali</strong>. Mereka tetap tercatat sebagai RETIRED meskipun barang fisiknya sudah dijual lagi ke PT. DEF. Ini adalah desain yang disengaja: riwayat serial "original" selalu terlacak secara terpisah dari riwayat serial "baru" yang menggantikannya.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">stock.quant<br><span class="tag tb">-3 qty</span></div>
+                        <div class="dr-val">Stok 3 pcs yang masuk dari retur PT. ABC sebelumnya kini keluar lagi ke PT. DEF. <code class="ic">stock.quant</code> kembali ke 0. Siklus barang fisik selesai, namun trail serial number tercatat lengkap di kedua sisi.</div>
+                    </div>
+                    <div class="why-box">💡 <strong>Kesimpulan S4:</strong> Reuse barang retur menghasilkan <strong>SR + SA baru untuk customer baru</strong>, tanpa menyentuh records customer lama. "Barang fisik" dan "identity serial" dipisahkan dengan bersih — inilah keunggulan desain modul ini.</div>
+                </div>
+            </section>
+
+            <!-- S5 -->
+            <section class="section" id="s5">
+                <div class="section-header">
+                    <div class="section-num">5</div>
+                    <div>
+                        <h2>Order Kedua dari Customer yang Sama</h2>
+                    </div>
+                </div>
+                <div class="context">
+                    <p>Customer: <strong>PT. ABC</strong> (sudah order UA001–UA1000) ingin order <strong>1000 pcs
+                            lagi</strong>.<br>
+                        User cek histori → tahu serial terakhir UA1000 → lanjut dari <strong>UA1001</strong></p>
+                </div>
+
+                <div class="diagram-wrap">
+                    <div class="diagram-title">Sequence Diagram — Skenario 5: Order Kedua</div>
+                    <div class="mermaid">
+                        sequenceDiagram
+                        actor U as User
+                        participant CH as customer.serial.history
+                        participant SO2 as SO Baru PT.ABC
+                        participant VAL as Validator
+                        participant SR as seal.serial.range DB
+
+                        U->>CH: Buka Customer Serial History
+                        CH-->>U: PT.ABC | UA prefix | last=UA1000 | active=997 | returned=3
+
+                        Note over U: Tahu order baru mulai UA1001
+
+                        U->>SO2: Buka New SO, Customer: PT.ABC
+                        SO2->>CH: get_suggestion(PT.ABC, UA)
+                        CH-->>SO2: Saran: mulai dari UA1001
+                        Note over SO2: Tampilkan suggestion di form
+
+                        U->>SO2: Input UA1001-UA2000
+                        SO2->>VAL: validate_range(UA, 1001, 2000, PT.ABC)
+                        VAL->>SR: overlap check: SR-001 (UA1-UA1000)
+                        Note over VAL: 1001 > 1000, tidak overlap
+                        VAL->>SR: retired check UA 1001-2000: NONE
+                        VAL-->>SO2: VALID
+                        SO2->>SR: Create SR-004 (UA1001-UA2000) confirmed
+                    </div>
+                </div>
+
+                <h3>Smart Suggestion UI</h3>
+                <div class="card" style="border-color:var(--blue)">
+                    <div style="display:flex;gap:12px;align-items:flex-start">
+                        <div style="font-size:28px">💡</div>
+                        <div>
+                            <div style="font-weight:600;margin-bottom:6px">Saran Serial Berikutnya untuk PT. ABC</div>
+                            <div style="color:var(--text2);font-size:13px">Berdasarkan histori: serial terakhir terkirim
+                                adalah <span class="ic">UA1000</span></div>
+                            <div style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                                <span style="font-size:13px;color:var(--text2)">Saran next range:</span>
+                                <span class="tag tb" style="font-size:13px;padding:4px 10px">UA1001 – ?</span>
+                                <span
+                                    style="background:var(--purple);color:#fff;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Apply
+                                    Suggestion</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="explain-box">
+                    <h4>Analisa Data yang Terbentuk — Skenario 5</h4>
+                    <div class="data-row">
+                        <div class="dr-model">seal.serial.range<br><span class="tag tp">SR-004 (BARU)</span></div>
+                        <div class="dr-val">Record baru <strong>SR-004</strong> dengan <code class="ic">prefix=UA</code>, <code class="ic">serial_from=1001</code>, <code class="ic">serial_to=2000</code>. Validasi sukses: range 1001–2000 tidak bertabrakan dengan SR-001 (1–1000) karena 1001 &gt; 1000. Ini menunjukkan sistem bisa menangani order serial <strong>lanjutan</strong> dari customer yang sama tanpa konflik.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">seal.customer.serial.history<br><span class="tag tb">dipakai sebagai sumber saran</span></div>
+                        <div class="dr-val">Record history PT. ABC (dari S1) sudah punya <code class="ic">last_serial_number=1000</code>. Saat form SO baru dibuka untuk PT. ABC, sistem query model ini dan menampilkan saran: <strong>"mulai dari UA1001"</strong>. Setelah order baru dikonfirmasi dan dikirim, history diupdate: <code class="ic">last_serial_number=2000</code>, <code class="ic">total_active_delivered=1997</code> (1000 dari S1 – 3 retur + 1000 dari S5).</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Retired check<br><span class="tag tg">LULUS</span></div>
+                        <div class="dr-val">Sistem juga mengecek apakah ada serial RETIRED di range UA1001–2000 — tidak ada (UA510/520/575 berada di luar range ini). Query: <code class="ic">SELECT WHERE prefix='UA' AND number BETWEEN 1001 AND 2000 AND state='retired'</code> → 0 rows. Validasi lolos.</div>
+                    </div>
+                    <div class="why-box">💡 <strong>Kesimpulan S5:</strong> Order kedua dari customer yang sama menghasilkan <strong>1 SR baru (SR-004)</strong>, tidak ada konflik dengan records lama. Smart suggestion dari model history menghilangkan risiko human error dalam menentukan nomor awal range.</div>
+                </div>
+            </section>
+
+            <!-- S6 -->
+            <section class="section" id="s6">
+                <div class="section-header">
+                    <div class="section-num">6</div>
+                    <div>
+                        <h2>Validasi Error — Duplikat &amp; Serial Retired</h2>
+                    </div>
+                </div>
+
+                <div class="diagram-wrap">
+                    <div class="diagram-title">Sequence Diagram — Skenario 6A: Overlap Range</div>
+                    <div class="mermaid">
+                        sequenceDiagram
+                        actor U as User
+                        participant SO as Sales Order
+                        participant VAL as Validator
+                        participant SR as seal.serial.range DB
+
+                        U->>SO: Input UA500-UA1500 untuk PT.ABC
+                        SO->>VAL: validate_range(UA, 500, 1500, PT.ABC)
+                        VAL->>SR: SELECT where customer=PT.ABC AND prefix=UA\n AND serial_from<=1500 AND serial_to>=500
+                            SR-->>VAL: Found SR-001 (UA1-UA1000)
+                            Note over VAL: Overlap: UA500-UA1000 terdeteksi
+                            VAL-->>SO: ValidationError
+                            SO-->>U: ERROR Duplikat Range Terdeteksi
+                    </div>
+                </div>
+
+                <div class="alert ae">
+                    <div class="alert-icon">⛔</div>
+                    <div class="alert-content">
+                        <p><strong>Duplikat Serial Terdeteksi!</strong><br>
+                            Range UA500–UA1500 tumpang tindih dengan range yang sudah ada:<br>
+                            ► SR-001: UA001–UA1000 (SO/2026/0001, Status: Delivered)<br>
+                            ► Overlap terjadi pada: UA500 – UA1000<br><br>
+                            Silakan gunakan range mulai dari <strong>UA1001</strong> atau lebih.</p>
+                    </div>
+                </div>
+
+                <div class="diagram-wrap" style="margin-top:32px">
+                    <div class="diagram-title">Sequence Diagram — Skenario 6B: Serial Retired</div>
+                    <div class="mermaid">
+                        sequenceDiagram
+                        actor U as User
+                        participant SO as Sales Order
+                        participant VAL as Validator
+                        participant RL as returned.serial.line DB
+
+                        U->>SO: Input UA500-UA525 untuk PT.XYZ
+                        SO->>VAL: validate_range(UA, 500, 525, PT.XYZ)
+                        Note over VAL: Overlap check PT.XYZ prefix UA: CLEAR
+                        VAL->>RL: SELECT where prefix=UA AND number BETWEEN 500 AND 525 AND state=retired
+                        RL-->>VAL: Found UA510 retired 2026-03-15
+                        RL-->>VAL: Found UA520 retired 2026-03-15
+                        VAL-->>SO: ValidationError retired serials found
+                        SO-->>U: ERROR Serial Retired dalam Range
+                    </div>
+                </div>
+
+                <div class="alert ae">
+                    <div class="alert-icon">⛔</div>
+                    <div class="alert-content">
+                        <p><strong>Serial Retired Terdeteksi!</strong><br>
+                            Range UA500–UA525 mengandung serial yang sudah diretur dan dipensiunkan:<br>
+                            ► UA510 — dikirim ke PT. ABC, diretur 2026-03-15<br>
+                            ► UA520 — dikirim ke PT. ABC, diretur 2026-03-15<br><br>
+                            Serial retired <strong>tidak dapat digunakan kembali</strong> untuk alasan keamanan. Gunakan
+                            range lain.</p>
+                    </div>
+                </div>
+
+                <div class="explain-box">
+                    <h4>Analisa Data yang Terbentuk — Skenario 6</h4>
+                    <div class="data-row">
+                        <div class="dr-model">Records dibuat<br><span class="tag tr">NOL — tidak ada</span></div>
+                        <div class="dr-val">Inilah poin krusial: pada skenario error, <strong>tidak ada satu record pun yang dibuat</strong>. Validasi terjadi di layer Python (ORM constraint) sebelum transaksi database di-commit. Jika validasi gagal, Odoo men-raise <code class="ic">ValidationError</code> dan seluruh transaksi di-rollback otomatis.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">S6A — Overlap check<br><span class="tag ty">query SQL</span></div>
+                        <div class="dr-val">Query yang dijalankan: <code class="ic">SELECT id FROM seal_serial_range WHERE customer_id=X AND prefix='UA' AND serial_from&lt;=1500 AND serial_to&gt;=500 AND state NOT IN ('cancelled')</code>. Jika query ini mengembalikan baris apapun, validasi gagal. Hasilnya: SR-001 ditemukan (serial_from=1 ≤ 1500 dan serial_to=1000 ≥ 500) → Error.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">S6B — Retired check<br><span class="tag tr">cross-customer</span></div>
+                        <div class="dr-val">Query: <code class="ic">SELECT serial_number FROM seal_returned_serial_line WHERE prefix='UA' AND serial_number BETWEEN 500 AND 525 AND state='retired'</code>. Perhatikan: query ini <strong>tidak membatasi per customer</strong> — RETIRED bersifat global. PT. XYZ pun tidak bisa mendapatkan range yang mengandung UA510 meskipun beda customer dengan PT. ABC.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Error message<br><span class="tag ty">user-friendly</span></div>
+                        <div class="dr-val">Sistem menampilkan pesan yang informatif: menyebutkan record mana yang konflik (SR-001), range mana yang overlap, dan saran perbaikan ("gunakan mulai UA1001"). Ini menghilangkan kebutuhan user untuk "menebak" nomor yang aman.</div>
+                    </div>
+                    <div class="why-box">💡 <strong>Kesimpulan S6:</strong> Skenario validasi gagal = <strong>0 records dibuat</strong>. Validasi terjadi di 2 lapisan: (1) overlap range per-customer, (2) retired serial check lintas customer. Keduanya harus lulus agar record bisa disimpan.</div>
+                </div>
+            </section>
+
+            <!-- S7 -->
+            <section class="section" id="s7">
+                <div class="section-header">
+                    <div class="section-num">7</div>
+                    <div>
+                        <h2>Histori Serial per Customer</h2>
+                    </div>
+                </div>
+                <div class="context">
+                    <p>Menu: <strong>Inventory → Serial Management → Customer Serial History</strong><br>
+                        Menampilkan ringkasan serial terakhir per customer untuk referensi order berikutnya.</p>
+                </div>
+
+                <h3>Tampilan Ringkasan</h3>
+                <table class="records">
+                    <tr>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Prefix</th>
+                        <th>Last Serial</th>
+                        <th>Active Delivered</th>
+                        <th>Returned (Retired)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>PT. ABC</strong></td>
+                        <td>Security Tag Type-A</td>
+                        <td><span class="ic">UA</span></td>
+                        <td><span class="tag tb">UA1000</span></td>
+                        <td>997</td>
+                        <td><span class="tag tr">3</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>PT. XYZ</strong></td>
+                        <td>Security Tag Type-A</td>
+                        <td><span class="ic">UB</span></td>
+                        <td><span class="tag tb">UB500</span></td>
+                        <td>500</td>
+                        <td><span class="tag tg">0</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>PT. DEF</strong></td>
+                        <td>Security Tag Type-A</td>
+                        <td><span class="ic">UX</span></td>
+                        <td><span class="tag tb">UX003</span></td>
+                        <td>3</td>
+                        <td><span class="tag tg">0</span></td>
+                    </tr>
+                </table>
+
+                <h3>Detail Drill-Down: PT. ABC</h3>
+                <table class="records">
+                    <tr>
+                        <th>SO</th>
+                        <th>Range</th>
+                        <th>Delivery Order</th>
+                        <th>Status</th>
+                        <th>Serials Diretur</th>
+                    </tr>
+                    <tr>
+                        <td>SO/2026/0001</td>
+                        <td><span class="ic">UA001–UA1000</span></td>
+                        <td>WH/OUT/00001</td>
+                        <td><span class="tag ty">partial_returned</span></td>
+                        <td><span class="tag tr">UA510, UA520, UA575</span></td>
+                    </tr>
+                    <tr>
+                        <td>SO/2026/0002</td>
+                        <td><span class="ic">UA1001–UA2000</span></td>
+                        <td>WH/OUT/00005</td>
+                        <td><span class="tag tg">delivered</span></td>
+                        <td>—</td>
+                    </tr>
+                </table>
+
+                <div class="explain-box">
+                    <h4>Analisa Data yang Terbentuk — Skenario 7</h4>
+                    <div class="data-row">
+                        <div class="dr-model">seal.customer.serial.history<br><span class="tag tg">3 records</span></div>
+                        <div class="dr-val">Setelah semua skenario S1–S5 dijalankan, tabel ini berisi <strong>3 records</strong>, satu per customer:
+                            <br>• <strong>PT. ABC (UA)</strong>: last=UA1000, active=997 (1000 – 3 retur), returned=3
+                            <br>• <strong>PT. XYZ (UB)</strong>: last=UB500, active=500, returned=0
+                            <br>• <strong>PT. DEF (UX)</strong>: last=UX003, active=3, returned=0
+                            <br>Nilai-nilai ini di-compute secara otomatis setiap kali ada delivery atau retur yang tervalidasi.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Bagaimana active_delivered dihitung<br><span class="tag tb">formula</span></div>
+                        <div class="dr-val">Formula: <code class="ic">total_active_delivered = SUM(allocation.active_qty WHERE customer=X)</code>. Untuk PT. ABC: SA-001 punya <code class="ic">active_qty=997</code> (setelah retur 3) + SA dari S5 punya <code class="ic">active_qty=1000</code> = total 1997 jika SO/2026/0002 sudah dikonfirmasi.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Drill-down PT. ABC<br><span class="tag tp">view relational</span></div>
+                        <div class="dr-val">View drill-down menampilkan semua <code class="ic">seal.serial.range</code> yang dimiliki PT. ABC beserta allocation dan retur-nya. Ini bukan data tersimpan terpisah — melainkan query join dari SR, SA, dan RS lines yang sudah ada. <strong>Tidak ada duplikasi data</strong>, semua dibaca dari sumber tunggal.</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="dr-model">Kegunaan praktis<br><span class="tag tg">bisnis</span></div>
+                        <div class="dr-val">User bagian penjualan dapat membuka menu ini sebelum membuat SO baru untuk mengetahui: (1) serial terakhir yang sudah terkirim, (2) berapa yang sudah kembali, dan (3) saran nomor awal untuk order berikutnya — semua dalam satu tampilan, tanpa harus buka-tutup banyak form.</div>
+                    </div>
+                    <div class="why-box">💡 <strong>Kesimpulan S7:</strong> Model history adalah model <em>denormalized summary</em> yang mempercepat akses informasi tanpa query kompleks. Data aslinya tetap ada di SR, SA, dan RS lines — history hanya menyediakan "shortcut" yang selalu up-to-date.</div>
+                </div>
+            </section>
+
+            <!-- SUMMARY -->
+            <section class="section" id="summary">
+                <div class="section-header">
+                    <div class="section-num">📊</div>
+                    <div>
+                        <h2>Ringkasan Record di Database</h2>
+                    </div>
+                </div>
+
+                <table class="records">
+                    <tr>
+                        <th>Skenario</th>
+                        <th>stock.move</th>
+                        <th>stock.move.line</th>
+                        <th>stock.lot</th>
+                        <th>seal.serial.range</th>
+                        <th>seal.serial.allocation</th>
+                        <th>returned.line</th>
+                    </tr>
+                    <tr>
+                        <td>S1: Order 1000pcs full</td>
+                        <td>2</td>
+                        <td><strong>2</strong></td>
+                        <td><span class="tag tg">0</span></td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>S2: Partial delivery 3x</td>
+                        <td>4</td>
+                        <td><strong>4</strong></td>
+                        <td><span class="tag tg">0</span></td>
+                        <td>1</td>
+                        <td>3</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>S3: Retur 3 serial acak</td>
+                        <td>1</td>
+                        <td><strong>1</strong></td>
+                        <td><span class="tag tg">0</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td><span class="tag tr">3</span></td>
+                    </tr>
+                    <tr>
+                        <td>S4: Reuse barang retur</td>
+                        <td>2</td>
+                        <td><strong>2</strong></td>
+                        <td><span class="tag tg">0</span></td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                    </tr>
+                </table>
+
+                <div class="alert ai" style="margin-top:24px">
+                    <div class="alert-icon">📌</div>
+                    <div class="alert-content">
+                        <p><strong>Perbandingan efisiensi:</strong> Odoo standar dengan serial tracking untuk 1000 pcs
+                            menghasilkan <strong>1000 stock.lot + 1000 stock.move.line</strong>. Solusi ini hanya
+                            menghasilkan <strong>1 stock.move.line + 1 seal.serial.range</strong> — penghematan hingga
+                            <strong>99.9% jumlah record</strong>.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IMPL -->
+            <section class="section" id="impl">
+                <div class="section-header">
+                    <div class="section-num">⚙</div>
+                    <div>
+                        <h2>Implementasi Teknis</h2>
+                    </div>
+                </div>
+
+                <h3>Parsing Serial Number</h3>
+                <pre><span class="kw">import</span> re
+
+<span class="kw">def</span> <span class="fn">parse_serial</span>(serial_str):
+    match = re.<span class="fn">match</span>(<span class="str">r'^([A-Za-z\-]+)(\d+)$'</span>, serial_str.<span class="fn">strip</span>())
+    <span class="kw">if not</span> match:
+        <span class="kw">raise</span> ValidationError(<span class="str">f"Format serial tidak valid: {serial_str}"</span>)
+    prefix = match.<span class="fn">group</span>(<span class="num">1</span>).<span class="fn">upper</span>()
+    number = <span class="fn">int</span>(match.<span class="fn">group</span>(<span class="num">2</span>))
+    <span class="kw">return</span> prefix, number
+
+<span class="kw">def</span> <span class="fn">format_serial</span>(prefix, number, padding=<span class="num">3</span>):
+    <span class="kw">return</span> <span class="str">f"{prefix}{str(number).zfill(padding)}"</span>
+<span class="cm"># format_serial('UA', 1, 3)    → 'UA001'</span>
+<span class="cm"># format_serial('UA', 1000, 3) → 'UA1000'</span></pre>
+
+                <h3>Overlap Detection SQL</h3>
+                <pre><span class="cm">-- Deteksi overlap range untuk customer tertentu</span>
+<span class="kw">SELECT</span> sr.id, sr.prefix, sr.serial_from, sr.serial_to
+<span class="kw">FROM</span>   seal_serial_range sr
+<span class="kw">WHERE</span>  sr.customer_id  = <span class="op">%(customer_id)s</span>
+  <span class="kw">AND</span>  sr.prefix       = <span class="op">%(prefix)s</span>
+  <span class="kw">AND</span>  sr.serial_from <span class="op">&lt;=</span> <span class="op">%(new_to)s</span>
+  <span class="kw">AND</span>  sr.serial_to   <span class="op">&gt;=</span> <span class="op">%(new_from)s</span>
+  <span class="kw">AND</span>  sr.state <span class="kw">NOT IN</span> (<span class="str">'cancelled'</span>);</pre>
+
+                <h3>Struktur Folder Modul</h3>
+                <pre>security_seal_serial/
+  __manifest__.py
+  __init__.py
+  <span class="fn">models/</span>
+    seal_serial_range.py          <span class="cm">← Model utama range</span>
+    seal_serial_allocation.py     <span class="cm">← Alokasi per DO</span>
+    seal_returned_serial.py       <span class="cm">← Header retur</span>
+    seal_returned_serial_line.py  <span class="cm">← Individual serial RETIRED</span>
+    seal_customer_history.py      <span class="cm">← Histori per customer</span>
+    sale_order.py                 <span class="cm">← Extend SO</span>
+    stock_picking.py              <span class="cm">← Extend DO + validasi</span>
+    purchase_order.py             <span class="cm">← Extend PO</span>
+  <span class="fn">views/</span>
+    seal_serial_range_views.xml
+    seal_customer_history_views.xml
+    sale_order_views.xml
+    stock_picking_views.xml
+    menus.xml
+  <span class="fn">security/</span>
+    ir.model.access.csv</pre>
+
+                <h3>Access Rights</h3>
+                <table class="records">
+                    <tr>
+                        <th>Role</th>
+                        <th>Baca</th>
+                        <th>Buat</th>
+                        <th>Edit</th>
+                        <th>Hapus</th>
+                    </tr>
+                    <tr>
+                        <td>Sales User</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅ (draft)</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Inventory User</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                        <td>✅ (allocation)</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Inventory Manager</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Administrator</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                </table>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        // ── Konfigurasi tema dark (layar normal) ──────────────────────
+        const DARK_CONFIG = {
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#7c3aed', primaryTextColor: '#e6edf3',
+                primaryBorderColor: '#30363d', lineColor: '#8b949e',
+                secondaryColor: '#161b22', tertiaryColor: '#1c2128',
+                background: '#0d1117', mainBkg: '#161b22',
+                nodeBorder: '#30363d', clusterBkg: '#1c2128',
+                titleColor: '#e6edf3', edgeLabelBackground: '#1c2128',
+                actorBkg: '#1c2128', actorBorder: '#7c3aed',
+                actorTextColor: '#e6edf3', actorLineColor: '#30363d',
+                signalColor: '#8b949e', signalTextColor: '#e6edf3',
+                labelBoxBkgColor: '#161b22', labelBoxBorderColor: '#30363d',
+                labelTextColor: '#e6edf3', loopTextColor: '#e6edf3',
+                noteBorderColor: '#d29922', noteBkgColor: '#d2992222',
+                noteTextColor: '#e6edf3', activationBorderColor: '#7c3aed',
+                activationBkgColor: '#7c3aed22',
+            },
+            sequence: { wrap: true, width: 160, useMaxWidth: true },
+            flowchart: { useMaxWidth: true, htmlLabels: true },
+            er: { useMaxWidth: true },
+        };
+
+        // ── Konfigurasi tema light (untuk PDF/print) ──────────────────
+        const LIGHT_CONFIG = {
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e0e7ff',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#7c3aed',
+                lineColor: '#475569',
+                secondaryColor: '#f1f5f9',
+                tertiaryColor: '#f8fafc',
+                background: '#ffffff',
+                mainBkg: '#f1f5f9',
+                nodeBorder: '#7c3aed',
+                clusterBkg: '#e2e8f0',
+                titleColor: '#1a1a2e',
+                edgeLabelBackground: '#e0e7ff',
+                actorBkg: '#e2e8f0',
+                actorBorder: '#7c3aed',
+                actorTextColor: '#1a1a2e',
+                actorLineColor: '#475569',
+                signalColor: '#475569',
+                signalTextColor: '#1a1a2e',
+                labelBoxBkgColor: '#ede9fe',
+                labelBoxBorderColor: '#7c3aed',
+                labelTextColor: '#1a1a2e',
+                loopTextColor: '#1a1a2e',
+                noteBorderColor: '#d29922',
+                noteBkgColor: '#fef3c7',
+                noteTextColor: '#1a1a2e',
+                activationBorderColor: '#7c3aed',
+                activationBkgColor: '#ede9fe',
+                fontSize: '14px',
+            },
+            sequence: { wrap: true, width: 160, useMaxWidth: true },
+            flowchart: { useMaxWidth: true, htmlLabels: true },
+            er: { useMaxWidth: true },
+        };
+
+        // ── PENTING: simpan source code SEBELUM render pertama ────────
+        document.querySelectorAll('.mermaid').forEach(el => {
+            el.setAttribute('data-source', el.textContent.trim());
+        });
+
+        // ── Render awal dengan dark theme ─────────────────────────────
+        mermaid.initialize(DARK_CONFIG);
+        mermaid.run();
+
+        // ── Helper: re-render semua diagram dengan config baru ─────────
+        async function reRenderMermaid(config) {
+            mermaid.initialize(config);
+            const diagrams = document.querySelectorAll('.mermaid');
+            for (const el of diagrams) {
+                const source = el.getAttribute('data-source');
+                if (!source) continue;
+                const id = 'mer-' + Math.random().toString(36).substr(2, 8);
+                try {
+                    const { svg } = await mermaid.render(id, source);
+                    el.innerHTML = svg;
+                } catch (e) {
+                    console.warn('Mermaid render error:', e);
+                }
+            }
+        }
+
+        // ── Simpan SVG gelap setelah render selesai ────────────────────
+        let darkSVGs = [];
+        let isPrintMode = false;
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelectorAll('.mermaid').forEach((el, i) => {
+                    darkSVGs[i] = el.innerHTML;
+                });
+            }, 2500);
+        });
+
+        // ── Tombol Save as PDF: re-render light DULU, baru print ──────
+        document.getElementById('printBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('printBtn');
+            btn.textContent = '⏳ Mempersiapkan...';
+            btn.disabled = true;
+
+            // Simpan SVG gelap terkini
+            document.querySelectorAll('.mermaid').forEach((el, i) => {
+                darkSVGs[i] = el.innerHTML;
+            });
+
+            // Re-render ke light theme, tunggu selesai
+            isPrintMode = true;
+            await reRenderMermaid(LIGHT_CONFIG);
+
+            // Buka print dialog setelah render selesai
+            window.print();
+
+            // Kembalikan dark theme setelah delay
+            setTimeout(async () => {
+                document.querySelectorAll('.mermaid').forEach((el, i) => {
+                    if (darkSVGs[i]) el.innerHTML = darkSVGs[i];
+                });
+                isPrintMode = false;
+                btn.innerHTML = '🖨 Save as PDF';
+                btn.disabled = false;
+            }, 1000);
+        });
+
+        // ── Fallback: Ctrl+P juga trigger light theme ─────────────────
+        // (beforeprint tidak bisa async, tapi ini setidaknya handle restore)
+        window.addEventListener('afterprint', () => {
+            if (isPrintMode) return; // sudah dihandle oleh tombol
+            document.querySelectorAll('.mermaid').forEach((el, i) => {
+                if (darkSVGs[i]) el.innerHTML = darkSVGs[i];
+            });
+        });
+
+        // ── Sidebar active link observer ───────────────────────────────
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.sidebar nav a');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    const link = document.querySelector('.sidebar nav a[href="#' + e.target.id + '"]');
+                    if (link) link.classList.add('active');
+                }
+            });
+        }, { threshold: 0.25 });
+        sections.forEach(s => observer.observe(s));
+    </script>
+</body>
+
+</html>
