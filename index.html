@@ -1617,6 +1617,62 @@
                     </div>
                     <div class="why-box">💡 <strong>Kesimpulan S1:</strong> Satu order penuh menghasilkan hanya <strong>4 model records custom</strong> (1 SR + 1 SA + updated history) dan <strong>2 stock.move.line</strong> (IN + OUT). Bandingkan dengan Odoo standar yang akan menghasilkan 1000+ records untuk jumlah yang sama.</div>
                 </div>
+
+                <h3>Detail Field-by-Field — Record yang Terbentuk (S1)</h3>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📋 seal.serial.range — SR-001</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Value</th></tr>
+                        <tr><td><span class="ic">prefix</span></td><td>UA</td></tr>
+                        <tr><td><span class="ic">serial_from</span></td><td>1</td></tr>
+                        <tr><td><span class="ic">serial_to</span></td><td>1000</td></tr>
+                        <tr><td><span class="ic">customer_id</span></td><td>PT. ABC</td></tr>
+                        <tr><td><span class="ic">sale_order_id</span></td><td>SO/2026/0001</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tb">confirmed</span> → <span class="tag ty">received</span> → <span class="tag tp">delivered</span></td></tr>
+                        <tr><td><span class="ic">remaining_segments</span></td><td><span class="ic">[(1,1000)]</span> → <span class="ic">[]</span> setelah full delivery</td></tr>
+                        <tr><td><span class="ic">allocation_ids</span></td><td>[SA-001]</td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:8px">🚚 seal.serial.allocation — SA-001</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Value</th></tr>
+                        <tr><td><span class="ic">serial_range_id</span></td><td>SR-001</td></tr>
+                        <tr><td><span class="ic">picking_id</span></td><td>WH/OUT/00001</td></tr>
+                        <tr><td><span class="ic">serial_from</span></td><td>1</td></tr>
+                        <tr><td><span class="ic">serial_to</span></td><td>1000</td></tr>
+                        <tr><td><span class="ic">qty_allocated</span></td><td>1000</td></tr>
+                        <tr><td><span class="ic">active_qty</span></td><td>1000</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tg">done</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📊 seal.customer.serial.history — PT. ABC (upsert)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Value</th></tr>
+                        <tr><td><span class="ic">customer_id</span></td><td>PT. ABC</td></tr>
+                        <tr><td><span class="ic">product_id</span></td><td>Security Tag Type-A</td></tr>
+                        <tr><td><span class="ic">prefix</span></td><td>UA</td></tr>
+                        <tr><td><span class="ic">last_serial_number</span></td><td>1000</td></tr>
+                        <tr><td><span class="ic">total_active_delivered</span></td><td>1000</td></tr>
+                        <tr><td><span class="ic">total_returned</span></td><td>0</td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📦 stock.picking &amp; stock.move.line</div>
+                    <table class="records">
+                        <tr><th>Model</th><th>Record</th><th>qty_done</th><th>State</th></tr>
+                        <tr><td>stock.picking (IN)</td><td>WH/IN/00001</td><td>1000</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.move.line (IN)</td><td><strong>1 record saja</strong></td><td>1000</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.picking (OUT)</td><td>WH/OUT/00001</td><td>1000</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.move.line (OUT)</td><td><strong>1 record saja</strong></td><td>1000</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.lot</td><td colspan="3"><span class="tag tr">❌ Tidak dibuat sama sekali</span></td></tr>
+                    </table>
+                </div>
             </section>
 
             <!-- S2 -->
@@ -1743,6 +1799,48 @@
                     </div>
                     <div class="why-box">💡 <strong>Kesimpulan S2:</strong> Partial delivery menghasilkan <strong>1 SR + 3 SA records</strong>. Jumlah SA = jumlah pengiriman yang dilakukan. SR tetap 1 dan cukup melacak sisa segmen secara efisien menggunakan array JSON.</div>
                 </div>
+
+                <h3>Detail Field-by-Field — Record yang Terbentuk (S2)</h3>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📋 seal.serial.range — SR-002 (1 record, berubah state &amp; remaining)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Awal (received)</th><th>Setelah DO1</th><th>Setelah DO2</th><th>Setelah DO3</th></tr>
+                        <tr><td><span class="ic">prefix</span></td><td>UB</td><td>UB</td><td>UB</td><td>UB</td></tr>
+                        <tr><td><span class="ic">serial_from</span></td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td><span class="ic">serial_to</span></td><td>500</td><td>500</td><td>500</td><td>500</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tb">received</span></td><td><span class="tag ty">partial_delivered</span></td><td><span class="tag ty">partial_delivered</span></td><td><span class="tag tg">delivered</span></td></tr>
+                        <tr><td><span class="ic">remaining_segments</span></td><td><span class="ic">[(1,500)]</span></td><td><span class="ic">[(1,299),(401,500)]</span></td><td><span class="ic">[(401,500)]</span></td><td><span class="ic">[]</span></td></tr>
+                        <tr><td><span class="ic">stock.quant sisa</span></td><td>500</td><td>399</td><td>100</td><td>0</td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:8px">🚚 seal.serial.allocation — SA-002, SA-003, SA-004</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>SA-002</th><th>SA-003</th><th>SA-004</th></tr>
+                        <tr><td><span class="ic">serial_range_id</span></td><td>SR-002</td><td>SR-002</td><td>SR-002</td></tr>
+                        <tr><td><span class="ic">picking_id</span></td><td>WH/OUT/00002</td><td>WH/OUT/00003</td><td>WH/OUT/00004</td></tr>
+                        <tr><td><span class="ic">serial_from</span></td><td>300</td><td>1</td><td>401</td></tr>
+                        <tr><td><span class="ic">serial_to</span></td><td>400</td><td>299</td><td>500</td></tr>
+                        <tr><td><span class="ic">qty_allocated</span></td><td>101</td><td>299</td><td>100</td></tr>
+                        <tr><td><span class="ic">active_qty</span></td><td>101</td><td>299</td><td>100</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tg">done</span></td><td><span class="tag tg">done</span></td><td><span class="tag tg">done</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📦 stock.picking &amp; stock.move.line</div>
+                    <table class="records">
+                        <tr><th>Model</th><th>Record</th><th>qty_done</th><th>State</th></tr>
+                        <tr><td>stock.picking (IN)</td><td>WH/IN/00002</td><td>500</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.move.line (IN)</td><td>1 record</td><td>500</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.picking (OUT) DO1</td><td>WH/OUT/00002</td><td>101</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.picking (OUT) DO2</td><td>WH/OUT/00003</td><td>299</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.picking (OUT) DO3</td><td>WH/OUT/00004</td><td>100</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.lot</td><td colspan="3"><span class="tag tr">❌ Tidak dibuat sama sekali</span></td></tr>
+                    </table>
+                </div>
             </section>
 
             <!-- S3 -->
@@ -1863,6 +1961,54 @@
                     </div>
                     <div class="why-box">💡 <strong>Kesimpulan S3:</strong> Retur 3 serial menghasilkan <strong>1 RS header + 3 RS lines</strong>. Jumlah RS lines = jumlah serial yang dikembalikan. Penting: retired lines tidak bisa dihapus — ini adalah audit trail permanen untuk keamanan produk.</div>
                 </div>
+
+                <h3>Detail Field-by-Field — Record yang Terbentuk (S3)</h3>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--yellow);font-family:'JetBrains Mono',monospace;margin-bottom:8px">↩ seal.returned.serial — RS-001 (Header Retur)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Value</th></tr>
+                        <tr><td><span class="ic">allocation_id</span></td><td>SA-001 (referensi pengiriman asal WH/OUT/00001)</td></tr>
+                        <tr><td><span class="ic">return_picking_id</span></td><td>WH/RETURN/00001</td></tr>
+                        <tr><td><span class="ic">qty_returned</span></td><td>3</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag ty">validated</span></td></tr>
+                        <tr><td><span class="ic">return_date</span></td><td>2026-03-15</td></tr>
+                        <tr><td><span class="ic">line_ids</span></td><td>[Line UA510, Line UA520, Line UA575]</td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--red);font-family:'JetBrains Mono',monospace;margin-bottom:8px">🏷 seal.returned.serial.line — 3 records RETIRED (permanen)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Line 1</th><th>Line 2</th><th>Line 3</th></tr>
+                        <tr><td><span class="ic">returned_serial_id</span></td><td>RS-001</td><td>RS-001</td><td>RS-001</td></tr>
+                        <tr><td><span class="ic">prefix</span></td><td>UA</td><td>UA</td><td>UA</td></tr>
+                        <tr><td><span class="ic">serial_number</span></td><td>510</td><td>520</td><td>575</td></tr>
+                        <tr><td><span class="ic">serial_display</span></td><td>UA510</td><td>UA520</td><td>UA575</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tr">RETIRED</span></td><td><span class="tag tr">RETIRED</span></td><td><span class="tag tr">RETIRED</span></td></tr>
+                        <tr><td><span class="ic">retired_date</span></td><td>2026-03-15</td><td>2026-03-15</td><td>2026-03-15</td></tr>
+                        <tr><td><span class="ic">original_customer_id</span></td><td>PT. ABC</td><td>PT. ABC</td><td>PT. ABC</td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:8px">🚚 seal.serial.allocation — SA-001 (diupdate, bukan dibuat baru)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Sebelum Retur</th><th>Sesudah Retur</th></tr>
+                        <tr><td><span class="ic">active_qty</span></td><td>1000</td><td><strong>997</strong></td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tg">done</span></td><td><span class="tag ty">partial_returned</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📦 stock.picking &amp; stock.quant</div>
+                    <table class="records">
+                        <tr><th>Model</th><th>Detail</th><th>State</th></tr>
+                        <tr><td>stock.picking (RETURN)</td><td>WH/RETURN/00001, qty: 3</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.move.line</td><td><strong>1 record</strong> (bukan 3), qty_done: 3</td><td><span class="tag tg">done</span></td></tr>
+                        <tr><td>stock.quant</td><td>+3 kembali ke WH/Stock</td><td><span class="tag tb">updated</span></td></tr>
+                    </table>
+                </div>
             </section>
 
             <!-- S4 -->
@@ -1939,6 +2085,54 @@
                         <div class="dr-val">Stok 3 pcs yang masuk dari retur PT. ABC sebelumnya kini keluar lagi ke PT. DEF. <code class="ic">stock.quant</code> kembali ke 0. Siklus barang fisik selesai, namun trail serial number tercatat lengkap di kedua sisi.</div>
                     </div>
                     <div class="why-box">💡 <strong>Kesimpulan S4:</strong> Reuse barang retur menghasilkan <strong>SR + SA baru untuk customer baru</strong>, tanpa menyentuh records customer lama. "Barang fisik" dan "identity serial" dipisahkan dengan bersih — inilah keunggulan desain modul ini.</div>
+                </div>
+
+                <h3>Detail Field-by-Field — Record yang Terbentuk (S4)</h3>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:8px">✅ Validasi yang Dilalui Sebelum Record Dibuat</div>
+                    <table class="records">
+                        <tr><th>Cek</th><th>Query</th><th>Hasil</th></tr>
+                        <tr><td>Overlap range (PT. DEF, prefix UX)</td><td><span class="ic">customer=PT.DEF AND prefix='UX' AND serial_from&lt;=3 AND serial_to&gt;=1</span></td><td><span class="tag tg">0 rows → LOLOS</span></td></tr>
+                        <tr><td>Retired serial (global)</td><td><span class="ic">prefix='UX' AND number BETWEEN 1 AND 3 AND state='retired'</span></td><td><span class="tag tg">0 rows → LOLOS</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📋 seal.serial.range — SR-003 (baru untuk PT. DEF)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Value</th></tr>
+                        <tr><td><span class="ic">prefix</span></td><td>UX</td></tr>
+                        <tr><td><span class="ic">serial_from</span></td><td>1</td></tr>
+                        <tr><td><span class="ic">serial_to</span></td><td>3</td></tr>
+                        <tr><td><span class="ic">customer_id</span></td><td>PT. DEF</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tp">delivered</span></td></tr>
+                        <tr><td><span class="ic">remaining_segments</span></td><td><span class="ic">[]</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:8px">🚚 seal.serial.allocation — SA-005 (baru untuk PT. DEF)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Value</th></tr>
+                        <tr><td><span class="ic">serial_range_id</span></td><td>SR-003</td></tr>
+                        <tr><td><span class="ic">picking_id</span></td><td>WH/OUT/00004</td></tr>
+                        <tr><td><span class="ic">serial_from</span></td><td>1</td></tr>
+                        <tr><td><span class="ic">serial_to</span></td><td>3</td></tr>
+                        <tr><td><span class="ic">qty_allocated</span></td><td>3</td></tr>
+                        <tr><td><span class="ic">active_qty</span></td><td>3</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tg">done</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:8px">🔒 Records yang TIDAK Berubah</div>
+                    <table class="records">
+                        <tr><th>Model</th><th>Record</th><th>Keterangan</th></tr>
+                        <tr><td>seal.returned.serial.line</td><td>UA510, UA520, UA575</td><td>Tetap <span class="tag tr">RETIRED</span> — tidak terpengaruh sama sekali</td></tr>
+                        <tr><td>seal.serial.allocation</td><td>SA-001 (PT. ABC)</td><td>Tetap <span class="tag ty">partial_returned</span>, active_qty=997</td></tr>
+                        <tr><td>stock.quant</td><td>WH/Stock</td><td>−3 qty (stok retur keluar ke PT. DEF) → kembali ke 0</td></tr>
+                    </table>
                 </div>
             </section>
 
@@ -2020,6 +2214,54 @@
                         <div class="dr-val">Sistem juga mengecek apakah ada serial RETIRED di range UA1001–2000 — tidak ada (UA510/520/575 berada di luar range ini). Query: <code class="ic">SELECT WHERE prefix='UA' AND number BETWEEN 1001 AND 2000 AND state='retired'</code> → 0 rows. Validasi lolos.</div>
                     </div>
                     <div class="why-box">💡 <strong>Kesimpulan S5:</strong> Order kedua dari customer yang sama menghasilkan <strong>1 SR baru (SR-004)</strong>, tidak ada konflik dengan records lama. Smart suggestion dari model history menghilangkan risiko human error dalam menentukan nomor awal range.</div>
+                </div>
+
+                <h3>Detail Field-by-Field — Record yang Terbentuk (S5)</h3>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📊 seal.customer.serial.history — Dibaca sebagai Smart Suggestion</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Value saat dibaca</th></tr>
+                        <tr><td><span class="ic">customer_id</span></td><td>PT. ABC</td></tr>
+                        <tr><td><span class="ic">prefix</span></td><td>UA</td></tr>
+                        <tr><td><span class="ic">last_serial_number</span></td><td>1000</td></tr>
+                        <tr><td><span class="ic">total_active_delivered</span></td><td>997 (1000 – 3 retur)</td></tr>
+                        <tr><td><span class="ic">total_returned</span></td><td>3</td></tr>
+                        <tr><td>Saran sistem</td><td><span class="tag tb">Mulai dari UA1001</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:8px">✅ Validasi yang Dilalui</div>
+                    <table class="records">
+                        <tr><th>Cek</th><th>Query</th><th>Hasil</th></tr>
+                        <tr><td>Overlap PT. ABC prefix UA</td><td><span class="ic">serial_from&lt;=2000 AND serial_to&gt;=1001</span> → SR-001: to=1000 &lt; 1001</td><td><span class="tag tg">Tidak overlap → LOLOS</span></td></tr>
+                        <tr><td>Retired check UA 1001–2000</td><td><span class="ic">prefix='UA' AND number BETWEEN 1001 AND 2000 AND state='retired'</span></td><td><span class="tag tg">0 rows → LOLOS</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📋 seal.serial.range — SR-004 (baru)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Value</th></tr>
+                        <tr><td><span class="ic">prefix</span></td><td>UA</td></tr>
+                        <tr><td><span class="ic">serial_from</span></td><td>1001</td></tr>
+                        <tr><td><span class="ic">serial_to</span></td><td>2000</td></tr>
+                        <tr><td><span class="ic">customer_id</span></td><td>PT. ABC</td></tr>
+                        <tr><td><span class="ic">sale_order_id</span></td><td>SO/2026/0002</td></tr>
+                        <tr><td><span class="ic">state</span></td><td><span class="tag tb">confirmed</span> → <span class="tag ty">received</span> → <span class="tag tp">delivered</span></td></tr>
+                        <tr><td><span class="ic">remaining_segments</span></td><td><span class="ic">[]</span> setelah full delivery</td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📊 seal.customer.serial.history — PT. ABC (diupdate setelah delivery S5)</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Sebelum S5</th><th>Sesudah S5</th></tr>
+                        <tr><td><span class="ic">last_serial_number</span></td><td>1000</td><td><strong>2000</strong></td></tr>
+                        <tr><td><span class="ic">total_active_delivered</span></td><td>997</td><td><strong>1997</strong> (997 + 1000)</td></tr>
+                        <tr><td><span class="ic">total_returned</span></td><td>3</td><td>3 (tidak berubah)</td></tr>
+                    </table>
                 </div>
             </section>
 
@@ -2113,6 +2355,34 @@
                         <div class="dr-val">Sistem menampilkan pesan yang informatif: menyebutkan record mana yang konflik (SR-001), range mana yang overlap, dan saran perbaikan ("gunakan mulai UA1001"). Ini menghilangkan kebutuhan user untuk "menebak" nomor yang aman.</div>
                     </div>
                     <div class="why-box">💡 <strong>Kesimpulan S6:</strong> Skenario validasi gagal = <strong>0 records dibuat</strong>. Validasi terjadi di 2 lapisan: (1) overlap range per-customer, (2) retired serial check lintas customer. Keduanya harus lulus agar record bisa disimpan.</div>
+                </div>
+
+                <h3>Detail Field-by-Field — Proses Validasi (S6)</h3>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--red);font-family:'JetBrains Mono',monospace;margin-bottom:8px">⛔ S6A — Overlap Range (PT. ABC input UA500–UA1500)</div>
+                    <table class="records">
+                        <tr><th>Step</th><th>Detail</th></tr>
+                        <tr><td>Input</td><td>prefix=<span class="ic">UA</span>, serial_from=<span class="ic">500</span>, serial_to=<span class="ic">1500</span>, customer=PT. ABC</td></tr>
+                        <tr><td>Query dijalankan</td><td><span class="ic">SELECT id WHERE customer=PT.ABC AND prefix='UA' AND serial_from&lt;=1500 AND serial_to&gt;=500 AND state NOT IN ('cancelled')</span></td></tr>
+                        <tr><td>Hasil query</td><td>SR-001 ditemukan: serial_from=1 ≤ 1500 &amp; serial_to=1000 ≥ 500 → <span class="tag tr">OVERLAP</span></td></tr>
+                        <tr><td>Action</td><td><span class="ic">raise ValidationError</span></td></tr>
+                        <tr><td>Records dibuat</td><td><span class="tag tr">❌ NOL — rollback otomatis</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--red);font-family:'JetBrains Mono',monospace;margin-bottom:8px">⛔ S6B — Serial Retired dalam Range (PT. XYZ input UA500–UA525)</div>
+                    <table class="records">
+                        <tr><th>Step</th><th>Detail</th></tr>
+                        <tr><td>Input</td><td>prefix=<span class="ic">UA</span>, serial_from=<span class="ic">500</span>, serial_to=<span class="ic">525</span>, customer=PT. XYZ</td></tr>
+                        <tr><td>Cek overlap PT. XYZ</td><td><span class="ic">customer=PT.XYZ AND prefix='UA'...</span> → <span class="tag tg">0 rows → LOLOS</span></td></tr>
+                        <tr><td>Cek retired (global)</td><td><span class="ic">SELECT serial_number WHERE prefix='UA' AND number BETWEEN 500 AND 525 AND state='retired'</span></td></tr>
+                        <tr><td>Hasil query</td><td>UA510 (retired 2026-03-15), UA520 (retired 2026-03-15) → <span class="tag tr">FOUND</span></td></tr>
+                        <tr><td>Catatan kritis</td><td>Query <strong>tidak membatasi per customer</strong> — RETIRED bersifat global lintas semua customer</td></tr>
+                        <tr><td>Action</td><td><span class="ic">raise ValidationError</span></td></tr>
+                        <tr><td>Records dibuat</td><td><span class="tag tr">❌ NOL — rollback otomatis</span></td></tr>
+                    </table>
                 </div>
             </section>
 
@@ -2213,6 +2483,37 @@
                         <div class="dr-val">User bagian penjualan dapat membuka menu ini sebelum membuat SO baru untuk mengetahui: (1) serial terakhir yang sudah terkirim, (2) berapa yang sudah kembali, dan (3) saran nomor awal untuk order berikutnya — semua dalam satu tampilan, tanpa harus buka-tutup banyak form.</div>
                     </div>
                     <div class="why-box">💡 <strong>Kesimpulan S7:</strong> Model history adalah model <em>denormalized summary</em> yang mempercepat akses informasi tanpa query kompleks. Data aslinya tetap ada di SR, SA, dan RS lines — history hanya menyediakan "shortcut" yang selalu up-to-date.</div>
+                </div>
+
+                <h3>Detail Field-by-Field — Data Kumulatif (S7)</h3>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📊 seal.customer.serial.history — 3 Records (setelah S1–S5)</div>
+                    <table class="records">
+                        <tr><th>customer_id</th><th>prefix</th><th>last_serial_number</th><th>total_active_delivered</th><th>total_returned</th></tr>
+                        <tr><td><strong>PT. ABC</strong></td><td><span class="ic">UA</span></td><td><span class="tag tb">1000</span> (atau 2000 setelah S5)</td><td>997 (atau 1997)</td><td><span class="tag tr">3</span></td></tr>
+                        <tr><td><strong>PT. XYZ</strong></td><td><span class="ic">UB</span></td><td><span class="tag tb">500</span></td><td>500</td><td><span class="tag tg">0</span></td></tr>
+                        <tr><td><strong>PT. DEF</strong></td><td><span class="ic">UX</span></td><td><span class="tag tb">3</span></td><td>3</td><td><span class="tag tg">0</span></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:8px">📝 Formula Komputasi Field</div>
+                    <table class="records">
+                        <tr><th>Field</th><th>Formula</th><th>Contoh (PT. ABC)</th></tr>
+                        <tr><td><span class="ic">total_active_delivered</span></td><td><span class="ic">SUM(allocation.active_qty WHERE customer=X)</span></td><td>SA-001(997) + SA dari S5(1000) = <strong>1997</strong></td></tr>
+                        <tr><td><span class="ic">last_serial_number</span></td><td>MAX serial_to dari allocation terakhir terdeliver</td><td>SA-004: serial_to=2000 → <strong>2000</strong></td></tr>
+                        <tr><td><span class="ic">total_returned</span></td><td><span class="ic">COUNT(returned_serial_line WHERE customer=X)</span></td><td>UA510 + UA520 + UA575 = <strong>3</strong></td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom:20px">
+                    <div style="font-size:12px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;margin-bottom:8px">🔍 Drill-down PT. ABC — Semua SO &amp; Allocation</div>
+                    <table class="records">
+                        <tr><th>SO</th><th>Range (SR)</th><th>Delivery Order</th><th>SA State</th><th>Serials Diretur</th></tr>
+                        <tr><td>SO/2026/0001</td><td><span class="ic">UA001–UA1000</span> (SR-001)</td><td>WH/OUT/00001</td><td><span class="tag ty">partial_returned</span></td><td><span class="tag tr">UA510, UA520, UA575</span></td></tr>
+                        <tr><td>SO/2026/0002</td><td><span class="ic">UA1001–UA2000</span> (SR-004)</td><td>WH/OUT/00005</td><td><span class="tag tg">delivered</span></td><td>—</td></tr>
+                    </table>
                 </div>
             </section>
 
