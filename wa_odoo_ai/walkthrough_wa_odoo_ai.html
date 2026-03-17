@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walkthrough: Integrasi WhatsApp - AI - Odoo Database</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a2e;
+            --text-secondary: #555;
+            --accent: #2563eb;
+            --accent-light: #dbeafe;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+            --info: #0ea5e9;
+            --card-bg: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.7;
+            padding: 40px 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Print / PDF styling */
+        @media print {
+            body { padding: 20px 30px; font-size: 11pt; }
+            .page-break { page-break-before: always; }
+            .no-print { display: none; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table, .diagram-container, .alert-box { page-break-inside: avoid; }
+        }
+
+        /* Header */
+        .doc-header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+            color: white;
+            border-radius: 16px;
+        }
+        .doc-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .doc-header .subtitle {
+            font-size: 14px;
+            opacity: 0.85;
+            font-weight: 300;
+        }
+        .doc-header .date {
+            margin-top: 16px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* Print Button */
+        .print-btn {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px 0 40px;
+            transition: background 0.2s;
+        }
+        .print-btn:hover { background: #1d4ed8; }
+
+        /* Section Headers */
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 40px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid var(--accent-light);
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin: 24px 0 12px;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 28px;
+            font-size: 13px;
+        }
+        thead th {
+            background: #1e3a5f;
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        tbody td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        tbody tr:nth-child(even) { background: #f1f5f9; }
+        tbody tr:hover { background: var(--accent-light); }
+
+        /* Diagram containers */
+        .diagram-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0 32px;
+            text-align: center;
+            overflow-x: auto;
+        }
+        .diagram-container .mermaid {
+            display: inline-block;
+        }
+        .diagram-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* Alert Boxes */
+        .alert-box {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0 24px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .alert-box.important {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+        .alert-box.caution {
+            background: #fee2e2;
+            border-left: 4px solid var(--danger);
+            color: #991b1b;
+        }
+        .alert-box.info {
+            background: #e0f2fe;
+            border-left: 4px solid var(--info);
+            color: #0c4a6e;
+        }
+        .alert-box strong { font-weight: 700; }
+
+        /* Numbered Steps */
+        .phase-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 12px 0;
+        }
+        .phase-card h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .phase-card p {
+            font-size: 13px;
+            margin: 0;
+        }
+
+        /* Topology box */
+        .topology-box {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 24px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            overflow-x: auto;
+            margin: 16px 0 28px;
+            white-space: pre;
+        }
+        .topology-box .highlight { color: #38bdf8; }
+        .topology-box .green { color: #4ade80; }
+        .topology-box .yellow { color: #facc15; }
+
+        /* Section number badge */
+        .section-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        /* Footer */
+        .doc-footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* Code blocks */
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        ul, ol {
+            margin: 8px 0 16px 24px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        li { margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="doc-header">
+        <h1>📘 Walkthrough: Integrasi WhatsApp - AI - Odoo</h1>
+        <div class="subtitle">Arsitektur Sistem Pelaporan Manajerial Berbasis AI</div>
+        <div class="subtitle">Python (FastAPI + LangChain) · PostgreSQL · Meta WA Cloud API</div>
+        <div class="date">Dokumen Arsitektur — Maret 2026</div>
+    </div>
+
+    <!-- PRINT BUTTON -->
+    <div style="text-align: center;" class="no-print">
+        <button class="print-btn" onclick="window.print()">📄 Simpan sebagai PDF (Ctrl+P)</button>
+    </div>
+
+    <!-- SECTION 1: RINGKASAN -->
+    <h2><span class="section-num">1</span> Ringkasan Sistem</h2>
+    <p>Sistem ini memungkinkan <strong>Manajer</strong> mendapatkan laporan data ERP (penjualan, stok, gudang, dll.) cukup dengan mengirim pesan WhatsApp ke Bot. AI akan menerjemahkan pertanyaan tersebut menjadi SQL query, mengeksekusinya ke database Odoo, lalu mengirim hasilnya kembali dalam format yang mudah dibaca.</p>
+
+    <table>
+        <thead>
+            <tr><th>Komponen</th><th>Teknologi</th><th>Lokasi</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>WhatsApp Gateway</td><td>Meta Cloud API</td><td>Cloud (Meta)</td></tr>
+            <tr><td>Middleware / Bot Engine</td><td>Python (FastAPI + LangChain)</td><td>Ubuntu 24 (Docker/Native)</td></tr>
+            <tr><td>AI Provider (LLM)</td><td>OpenAI GPT-4o / Gemini</td><td>Cloud (API)</td></tr>
+            <tr><td>Database</td><td>PostgreSQL 16+ (Native)</td><td>Ubuntu 24 (Host OS)</td></tr>
+            <tr><td>Odoo ERP</td><td>Odoo 17/18 (Docker)</td><td>Ubuntu 24 (Docker)</td></tr>
+        </tbody>
+    </table>
+
+    <!-- SECTION 2: ARSITEKTUR -->
+    <h2><span class="section-num">2</span> Diagram Arsitektur Sistem</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+flowchart TD
+    classDef user fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px
+    classDef cloud fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef python fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    classDef db fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+
+    subgraph UserLayer ["📱 Pengguna"]
+        Manager["Manajer via WhatsApp"]:::user
+    end
+
+    subgraph CloudLayer ["☁️ Layanan Cloud"]
+        WA_API["Meta WhatsApp Cloud API"]:::cloud
+        LLM["AI Provider - OpenAI / Gemini"]:::cloud
+    end
+
+    subgraph ServerLayer ["🖥️ Server Ubuntu 24"]
+        subgraph Middleware ["🐍 Python Middleware"]
+            Webhook["Webhook Receiver - FastAPI"]:::python
+            Auth["Validator Whitelist"]:::python
+            Agent["AI SQL Agent - LangChain"]:::python
+            Formatter["Data Formatter"]:::python
+        end
+        subgraph DBLayer ["🐘 Database Layer"]
+            Views["Read-Only Views"]:::db
+            OdooDB[("PostgreSQL - Odoo Database")]:::db
+        end
+        OdooApp["📦 Odoo App - Docker"]:::db
+    end
+
+    Manager <-->|Kirim dan Terima Pesan| WA_API
+    WA_API -->|Webhook HTTPS| Webhook
+    Webhook --> Auth
+    Auth --> Agent
+    Agent <-->|Prompt + Skema DB| LLM
+    Agent -->|SQL SELECT| Views
+    Views --> OdooDB
+    OdooDB -->|Raw Data| Agent
+    Agent -->|Data Mentah| LLM
+    LLM -->|Teks Rangkuman| Formatter
+    Formatter -->|Pesan Rapi| WA_API
+    OdooApp -->|Read/Write via ORM| OdooDB
+        </div>
+    </div>
+    <div class="diagram-label">Gambar 1 — Arsitektur Sistem Integrasi WA - AI - Odoo</div>
+
+    <div class="alert-box important">
+        <strong>⚠️ PENTING:</strong> Middleware <strong>TIDAK menyentuh Odoo App</strong> sama sekali. Middleware terhubung langsung ke PostgreSQL melalui user Read-Only khusus, melewati Odoo sepenuhnya. Ini menciptakan jalur data tercepat dan paling ringan.
+    </div>
+
+    <!-- SECTION 3: SEQUENCE DIAGRAM -->
+    <div class="page-break"></div>
+    <h2><span class="section-num">3</span> Diagram Alur Pesan (Sequence)</h2>
+    <p>Berikut adalah urutan persis apa yang terjadi saat Manajer mengirim pesan ke Bot WhatsApp:</p>
+
+    <div class="diagram-container">
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor M as 📱 Manajer
+    participant WA as 🌐 Meta WA API
+    participant MW as ⚙️ Middleware
+    participant AI as 🧠 AI - LLM
+    participant DB as 🗄️ Odoo DB
+
+    M->>WA: Berapa total penjualan hari ini?
+    WA->>MW: Forward Pesan via Webhook POST
+
+    rect rgb(255, 235, 238)
+        Note over MW: FASE 1 — Keamanan
+        MW->>MW: Cek Nomor di Whitelist
+        alt Nomor Tidak Terdaftar
+            MW-->>WA: Akses Ditolak
+            WA-->>M: Pesan Penolakan
+        end
+    end
+
+    rect rgb(227, 242, 253)
+        Note over MW,AI: FASE 2 — Translasi ke SQL
+        MW->>AI: Skema View + Pertanyaan User
+        AI-->>MW: SQL Query yang Valid
+    end
+
+    rect rgb(232, 245, 233)
+        Note over MW,DB: FASE 3 — Eksekusi Read-Only
+        MW->>DB: Jalankan SQL SELECT
+        DB-->>MW: Raw Data Array
+    end
+
+    rect rgb(255, 243, 224)
+        Note over MW,AI: FASE 4 — Formatting Hasil
+        MW->>AI: Data Mentah + Instruksi Format
+        AI-->>MW: Teks Rangkuman Rapi
+    end
+
+    MW->>WA: Kirim Balasan
+    WA->>M: Total penjualan hari ini Rp 15.050.000 📈
+        </div>
+    </div>
+    <div class="diagram-label">Gambar 2 — Sequence Diagram: Alur Perjalanan Pesan End-to-End</div>
+
+    <!-- FASE EXPLANATIONS -->
+    <h3>Penjelasan Per Fase</h3>
+
+    <div class="phase-card">
+        <h4>🔴 Fase 1 — Keamanan (Validasi Identitas)</h4>
+        <p>Middleware menerima pesan dari Meta API, lalu <strong>langsung mengecek nomor pengirim</strong>. Jika nomor tidak ada di daftar whitelist manajer, proses berhenti total — AI tidak dipanggil, database tidak disentuh. Ini menghemat resource dan mencegah akses ilegal.</p>
+    </div>
+    <div class="phase-card">
+        <h4>🔵 Fase 2 — Translasi Bahasa Manusia ke SQL</h4>
+        <p>Middleware mengirimkan <strong>pertanyaan manajer</strong> beserta <strong>skema database</strong> (daftar kolom dari View yang sudah disederhanakan) ke AI. AI menganalisis konteks dan menghasilkan SQL query yang tepat. Contoh: <code>SELECT SUM(total_penjualan) FROM view_ai_sales_report WHERE tanggal = CURRENT_DATE</code></p>
+    </div>
+    <div class="phase-card">
+        <h4>🟢 Fase 3 — Eksekusi Data (Read-Only)</h4>
+        <p>Middleware mengeksekusi SQL buatan AI ke PostgreSQL. Koneksi menggunakan akun <code>ai_reader</code> yang <strong>hanya bisa SELECT</strong>. Sekalipun AI membuat perintah DELETE atau DROP, PostgreSQL akan menolaknya.</p>
+    </div>
+    <div class="phase-card">
+        <h4>🟠 Fase 4 — Formatting Hasil</h4>
+        <p>Data mentah dari database (misal: <code>[(15050000,)]</code>) dikirim kembali ke AI untuk diubah menjadi kalimat yang ramah, profesional, dan mudah dibaca di layar HP WhatsApp.</p>
+    </div>
+
+    <!-- SECTION 4: KEUNGGULAN -->
+    <div class="page-break"></div>
+    <h2><span class="section-num">4</span> Keunggulan Arsitektur</h2>
+    <table>
+        <thead>
+            <tr><th>#</th><th>Keunggulan</th><th>Penjelasan</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td>⚡ Real-time</td><td>Manajer mendapat laporan dalam 2-5 detik tanpa login ke Odoo</td></tr>
+            <tr><td>2</td><td>💬 Natural Language</td><td>Cukup ketik bahasa sehari-hari, tidak perlu paham SQL atau menu Odoo</td></tr>
+            <tr><td>3</td><td>🚀 Performa Tinggi</td><td>Query langsung ke PostgreSQL, bypass ORM Odoo yang lebih lambat</td></tr>
+            <tr><td>4</td><td>🧩 Mudah Dikembangkan</td><td>Bisa tambah view baru (Gudang, Keuangan, HR) kapan saja</td></tr>
+            <tr><td>5</td><td>🐍 Ekosistem AI Terbaik</td><td>Python + LangChain = akses framework AI paling matang di dunia</td></tr>
+            <tr><td>6</td><td>📱 Familiar</td><td>Manajer tidak perlu belajar tools baru, cukup WhatsApp saja</td></tr>
+        </tbody>
+    </table>
+
+    <!-- SECTION 5: KEAMANAN -->
+    <h2><span class="section-num">5</span> Arsitektur Keamanan (4 Lapis)</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+flowchart TB
+    subgraph L1 ["🔒 Lapis 1: Transport"]
+        A["HTTPS + SSL Certificate<br/>Webhook terenkripsi end-to-end"]
+    end
+    subgraph L2 ["🔒 Lapis 2: Identitas"]
+        B["Whitelist Nomor WA<br/>Hanya manajer terdaftar yang diproses"]
+    end
+    subgraph L3 ["🔒 Lapis 3: Database"]
+        C["User PostgreSQL Read-Only<br/>Tidak bisa INSERT / UPDATE / DELETE"]
+    end
+    subgraph L4 ["🔒 Lapis 4: Scope Data"]
+        D["Database Views<br/>AI hanya melihat view yang diizinkan"]
+    end
+    L1 --> L2 --> L3 --> L4
+        </div>
+    </div>
+    <div class="diagram-label">Gambar 3 — 4 Lapis Keamanan (Defense in Depth)</div>
+
+    <table>
+        <thead>
+            <tr><th>Lapis</th><th>Ancaman yang Ditangkal</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Transport (HTTPS)</strong></td><td>Man-in-the-middle, penyadapan data saat transit</td></tr>
+            <tr><td><strong>Whitelist Nomor</strong></td><td>Akses oleh karyawan non-manajer atau pihak luar</td></tr>
+            <tr><td><strong>Read-Only User</strong></td><td>AI berhalusinasi membuat perintah modifikasi atau penghapusan data</td></tr>
+            <tr><td><strong>Database Views</strong></td><td>AI mengakses tabel sensitif (password user, data pribadi karyawan)</td></tr>
+        </tbody>
+    </table>
+
+    <div class="alert-box caution">
+        <strong>🚨 PERINGATAN:</strong> Tanpa lapis ke-4 (Database Views), AI akan memiliki akses ke seluruh <strong>800+ tabel Odoo</strong> termasuk <code>res_users</code> yang menyimpan hash password. Membuat Views khusus adalah <strong>WAJIB</strong>.
+    </div>
+
+    <!-- SECTION 6: KEKURANGAN -->
+    <div class="page-break"></div>
+    <h2><span class="section-num">6</span> Kekurangan &amp; Risiko</h2>
+    <table>
+        <thead>
+            <tr><th>#</th><th>Kekurangan</th><th>Dampak</th><th>Mitigasi</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><strong>Computed Fields Odoo tidak terlihat</strong></td>
+                <td>Field yang dihitung oleh Python ORM (bukan disimpan di DB) tidak bisa di-query</td>
+                <td>Buat logika kalkulasi di dalam SQL View</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><strong>Ketergantungan Cloud</strong></td>
+                <td>Jika Meta WA API atau OpenAI/Gemini down, bot tidak berfungsi</td>
+                <td>Siapkan fallback notifikasi / antrian pesan</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><strong>Risiko Halusinasi AI (±1-2%)</strong></td>
+                <td>AI bisa salah menginterpretasi pertanyaan ambigu</td>
+                <td>Tambahkan disclaimer di balasan + validasi query</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><strong>Biaya API LLM</strong></td>
+                <td>Setiap pertanyaan memakan token berbayar (~Rp 200-1000/pertanyaan)</td>
+                <td>Monitor usage, batasi jumlah pertanyaan/hari</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><strong>Maintenance View</strong></td>
+                <td>Jika struktur tabel Odoo berubah (upgrade modul), View harus diperbarui</td>
+                <td>Dokumentasikan View dan jadwalkan review berkala</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- SECTION 7: TECH STACK -->
+    <h2><span class="section-num">7</span> Tech Stack Lengkap</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+graph LR
+    subgraph Frontend
+        WA["📱 WhatsApp"]
+    end
+    subgraph Gateway
+        META["Meta Cloud API"]
+    end
+    subgraph Backend
+        FAST["FastAPI"]
+        LANG["LangChain"]
+        SQLA["SQLAlchemy"]
+    end
+    subgraph AI
+        GPT["OpenAI GPT-4o"]
+        GEM["Gemini 1.5 Pro"]
+    end
+    subgraph Database
+        PG["PostgreSQL 16+"]
+        VIEWS["Custom Views"]
+    end
+    subgraph ERP
+        ODOO["Odoo 17/18 Docker"]
+    end
+
+    WA --> META --> FAST
+    FAST --> LANG --> GPT
+    LANG -.-> GEM
+    LANG --> SQLA --> VIEWS --> PG
+    ODOO --> PG
+        </div>
+    </div>
+    <div class="diagram-label">Gambar 4 — Tech Stack & Keterhubungan Komponen</div>
+
+    <!-- SECTION 8: TOPOLOGI SERVER -->
+    <h2><span class="section-num">8</span> Topologi Server (Ubuntu 24)</h2>
+    <div class="topology-box"><span class="highlight">┌─────────────────────────────────────────────────────────┐</span>
+<span class="highlight">│</span>                    <span class="green">Ubuntu 24 Server</span>                      <span class="highlight">│</span>
+<span class="highlight">│</span>                                                         <span class="highlight">│</span>
+<span class="highlight">│</span>  ┌───────────────────┐       ┌────────────────────────┐  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  <span class="yellow">Docker</span>            │       │  <span class="yellow">Native Services</span>       │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  ┌───────────────┐ │       │  ┌──────────────────┐  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  │ <span class="green">Odoo App</span>      │ │       │  │ <span class="green">PostgreSQL 16+</span>   │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  │ (Port 8069)   │ │──────▶│  │ (Port 5432)      │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  └───────────────┘ │       │  │  ┌──────────────┐ │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │                    │       │  │  │ <span class="green">odoo_db</span>      │ │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  ┌───────────────┐ │       │  │  │ ├─ sale_order │ │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  │ <span class="green">Middleware</span>    │ │       │  │  │ ├─ res_partner│ │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  │ (FastAPI)     │ │──────▶│  │  │ └─ view_ai_* │ │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  │ (Port 8000)   │ │       │  │  └──────────────┘ │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  │  └───────────────┘ │       │  └──────────────────┘  │  <span class="highlight">│</span>
+<span class="highlight">│</span>  └───────────────────┘       │                        │  <span class="highlight">│</span>
+<span class="highlight">│</span>                               │  ┌──────────────────┐  │  <span class="highlight">│</span>
+<span class="highlight">│</span>                               │  │ <span class="green">Nginx Rev. Proxy</span> │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>                               │  │ (Port 443 SSL)   │  │  <span class="highlight">│</span>
+<span class="highlight">│</span>                               │  └──────────────────┘  │  <span class="highlight">│</span>
+<span class="highlight">│</span>                               └────────────────────────┘  <span class="highlight">│</span>
+<span class="highlight">└─────────────────────────────────────────────────────────┘</span>
+                ▲                              ▲
+                │                              │
+       Odoo Web Access                Meta WA Webhook
+       (Browser Admin)                (HTTPS Inbound)</div>
+
+    <!-- SECTION 9: CONTOH SKENARIO -->
+    <div class="page-break"></div>
+    <h2><span class="section-num">9</span> Contoh Skenario Penggunaan</h2>
+    <table>
+        <thead>
+            <tr><th>Pertanyaan Manajer (WA)</th><th>SQL yang Dihasilkan AI</th><th>Balasan Bot</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><em>"Total sales hari ini berapa?"</em></td>
+                <td><code>SELECT SUM(total_penjualan) FROM view_ai_sales_report WHERE tanggal = CURRENT_DATE</code></td>
+                <td><em>"Total penjualan hari ini adalah <strong>Rp 15.050.000</strong> dari <strong>12 transaksi</strong> 📈"</em></td>
+            </tr>
+            <tr>
+                <td><em>"Siapa customer terbesar bulan ini?"</em></td>
+                <td><code>SELECT nama_klien, SUM(total_penjualan) ... ORDER BY total DESC LIMIT 5</code></td>
+                <td><em>"5 customer terbesar: 1. PT ABC — <strong>Rp 50jt</strong> 2. CV XYZ — <strong>Rp 35jt</strong> ..."</em></td>
+            </tr>
+            <tr>
+                <td><em>"Ada berapa transaksi pending?"</em></td>
+                <td><code>SELECT COUNT(*) FROM view_ai_sales_report WHERE status_order = 'draft'</code></td>
+                <td><em>"Terdapat <strong>8 transaksi</strong> berstatus pending."</em></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- FOOTER -->
+    <div class="doc-footer">
+        <p>📘 Walkthrough: Integrasi WhatsApp - AI - Odoo Database &nbsp;|&nbsp; Dokumen Arsitektur &nbsp;|&nbsp; Maret 2026</p>
+        <p style="margin-top:6px;">Klik tombol <strong>"Simpan sebagai PDF"</strong> di atas atau tekan <strong>Ctrl+P</strong> → pilih <strong>"Save as PDF"</strong></p>
+    </div>
+
+    <!-- Initialize Mermaid -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: true, htmlLabels: true },
+            sequence: { useMaxWidth: true }
+        });
+    </script>
+</body>
+</html>
