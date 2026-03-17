@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odoo 17 vs Odoo 19 — Perbandingan Arsitektur Teknis</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+  :root {
+    --bg:#0a0e1a; --bg2:#0f1629; --bg3:#141d35; --card:#1a2340;
+    --border:#2a3a60; --accent:#4f8ef7; --accent2:#7c3aed;
+    --accent3:#10b981; --accent4:#f59e0b; --accent5:#ef4444;
+    --v17:#7c3aed; --v19:#10b981;
+    --text:#e2e8f0; --text2:#94a3b8; --text3:#64748b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+
+  /* HERO */
+  .hero{background:linear-gradient(135deg,#0a0e1a 0%,#0d1b3e 50%,#0a1f10 100%);
+    padding:80px 60px 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 70% 50%,rgba(16,185,129,.12) 0%,transparent 60%),
+               radial-gradient(ellipse at 20% 80%,rgba(124,58,237,.10) 0%,transparent 50%);}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;
+    background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);
+    border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;
+    color:var(--accent3);letter-spacing:1px;text-transform:uppercase;margin-bottom:24px;}
+  .hero h1{font-size:48px;font-weight:800;line-height:1.15;
+    background:linear-gradient(135deg,#fff 20%,#10b981 60%,#7c3aed 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:20px;position:relative;}
+  .hero p{font-size:18px;color:var(--text2);max-width:700px;position:relative;}
+  .hero-meta{display:flex;gap:32px;margin-top:32px;position:relative;flex-wrap:wrap;}
+  .hero-meta-item{display:flex;align-items:center;gap:8px;}
+  .hero-meta-item .dot{width:8px;height:8px;border-radius:50%;}
+  .hero-meta-item span{font-size:13px;color:var(--text2);}
+  .vs-badge{display:inline-flex;align-items:center;gap:16px;margin-top:32px;position:relative;}
+  .ver-pill{padding:6px 20px;border-radius:24px;font-size:14px;font-weight:700;}
+  .v17-pill{background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);color:#c4b5fd;}
+  .v19-pill{background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;}
+  .vs-text{font-size:18px;color:var(--text3);font-weight:700;}
+
+  /* LAYOUT */
+  .container{max-width:1200px;margin:0 auto;padding:60px 40px;}
+
+  /* SECTION HEADERS */
+  .section-header{display:flex;align-items:center;gap:16px;margin-bottom:32px;}
+  .section-num{width:42px;height:42px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:18px;flex-shrink:0;}
+  .section-header h2{font-size:26px;font-weight:700;}
+  .section-header p{font-size:14px;color:var(--text2);margin-top:2px;}
+
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+  .card h3{font-size:16px;font-weight:600;margin-bottom:8px;}
+  .card p{font-size:14px;color:var(--text2);}
+
+  /* COMPARE TABLE */
+  .cmp-table{width:100%;border-collapse:collapse;font-size:14px;}
+  .cmp-table th{padding:14px 18px;text-align:left;font-size:11px;text-transform:uppercase;
+    letter-spacing:1px;font-weight:700;border-bottom:2px solid var(--border);}
+  .cmp-table th:nth-child(1){background:var(--bg3);color:var(--text3);}
+  .cmp-table th:nth-child(2){background:rgba(124,58,237,.1);color:#c4b5fd;}
+  .cmp-table th:nth-child(3){background:rgba(16,185,129,.1);color:#6ee7b7;}
+  .cmp-table td{padding:12px 18px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .cmp-table td:first-child{color:var(--text);font-weight:500;}
+  .cmp-table td:nth-child(2){color:#c4b5fd;background:rgba(124,58,237,.03);}
+  .cmp-table td:nth-child(3){color:#6ee7b7;background:rgba(16,185,129,.03);}
+  .cmp-table tr:hover td{filter:brightness(1.1);}
+
+  /* ARCH DIAGRAM */
+  .arch-diagram{background:var(--bg2);border:1px solid var(--border);
+    border-radius:20px;padding:32px;margin:24px 0;font-family:'JetBrains Mono',monospace;}
+  .arch-layer{border-radius:12px;padding:14px 18px;margin-bottom:10px;}
+  .arch-layer-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
+  .arch-boxes{display:flex;gap:8px;flex-wrap:wrap;}
+  .arch-box{border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;white-space:nowrap;}
+  .arch-arrow{text-align:center;color:var(--text3);font-size:18px;margin:3px 0;}
+
+  .l-client{background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.25);}
+  .l-client .arch-layer-title{color:#4f8ef7;}
+  .l-client .arch-box{background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.3);color:#7eb3ff;}
+
+  .l-app{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);}
+  .l-app .arch-layer-title{color:#a78bfa;}
+  .l-app .arch-box{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+
+  .l-service{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);}
+  .l-service .arch-layer-title{color:#10b981;}
+  .l-service .arch-box{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;}
+
+  .l-data{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);}
+  .l-data .arch-layer-title{color:#f59e0b;}
+  .l-data .arch-box{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fcd34d;}
+
+  .l-infra{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);}
+  .l-infra .arch-layer-title{color:#ef4444;}
+  .l-infra .arch-box{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
+
+  /* GRID */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+
+  /* SIDE BY SIDE */
+  .side-by-side{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}
+  .side-panel{border-radius:16px;padding:24px;}
+  .side-panel.v17{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.25);}
+  .side-panel.v19{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25);}
+  .side-panel h3{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  .side-panel.v17 h3{color:#c4b5fd;}
+  .side-panel.v19 h3{color:#6ee7b7;}
+  .side-panel ul{padding-left:0;list-style:none;}
+  .side-panel ul li{font-size:13px;color:var(--text2);padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;}
+  .side-panel ul li::before{content:'▸';opacity:.5;flex-shrink:0;}
+
+  /* CODE */
+  .code-block{background:#060a14;border:1px solid var(--border);border-radius:12px;
+    padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:12px;
+    line-height:1.8;overflow-x:auto;margin:12px 0;}
+  .code-block .kw{color:#a78bfa;} .code-block .str{color:#6ee7b7;}
+  .code-block .cmt{color:#475569;} .code-block .fn{color:#4f8ef7;}
+  .code-block .cls{color:#fcd34d;} .code-block .num{color:#f87171;}
+  .code-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+    padding:4px 12px;border-radius:6px 6px 0 0;display:inline-block;margin-top:12px;}
+  .v17-label{background:rgba(124,58,237,.2);color:#c4b5fd;}
+  .v19-label{background:rgba(16,185,129,.2);color:#6ee7b7;}
+
+  /* TAGS */
+  .tag{display:inline-block;border-radius:6px;padding:2px 10px;font-size:11px;font-weight:600;margin:2px;}
+  .tag-green{background:rgba(16,185,129,.15);color:#6ee7b7;}
+  .tag-blue{background:rgba(79,142,247,.15);color:#7eb3ff;}
+  .tag-purple{background:rgba(124,58,237,.15);color:#c4b5fd;}
+  .tag-yellow{background:rgba(245,158,11,.15);color:#fcd34d;}
+  .tag-red{background:rgba(239,68,68,.15);color:#fca5a5;}
+  .tag-new{background:rgba(16,185,129,.25);color:#6ee7b7;border:1px solid rgba(16,185,129,.4);}
+  .tag-imp{background:rgba(245,158,11,.25);color:#fcd34d;border:1px solid rgba(245,158,11,.4);}
+
+  /* ALERT */
+  .alert{border-radius:12px;padding:16px 20px;margin:20px 0;display:flex;gap:14px;align-items:flex-start;font-size:14px;}
+  .alert-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+  .alert-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:#fcd34d;}
+  .alert-info{background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.25);color:#7eb3ff;}
+  .alert-tip{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;}
+  .alert-v17{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#c4b5fd;}
+
+  /* TIMELINE */
+  .timeline{position:relative;padding-left:32px;}
+  .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;
+    width:2px;background:linear-gradient(180deg,#7c3aed,#4f8ef7,#10b981);border-radius:2px;}
+  .timeline-item{position:relative;margin-bottom:28px;}
+  .timeline-dot{position:absolute;left:-28px;top:4px;width:14px;height:14px;border-radius:50%;border:2px solid var(--bg2);}
+  .timeline-item h4{font-size:15px;font-weight:600;margin-bottom:6px;}
+  .timeline-item p{font-size:13px;color:var(--text2);}
+  .timeline-item ul{margin-top:8px;padding-left:18px;}
+  .timeline-item ul li{font-size:13px;color:var(--text2);margin-bottom:4px;}
+
+  /* PERF BARS */
+  .perf-item{margin-bottom:18px;}
+  .perf-label{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;}
+  .perf-label span:first-child{color:var(--text2);}
+  .perf-track{background:var(--bg3);border-radius:20px;height:10px;overflow:hidden;position:relative;}
+  .perf-bar17{height:100%;border-radius:20px;background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+  .perf-bar19{height:100%;border-radius:20px;background:linear-gradient(90deg,#10b981,#6ee7b7);}
+  .perf-legend{display:flex;gap:16px;margin:12px 0;font-size:12px;}
+  .perf-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+
+  /* SEP */
+  .section-sep{height:1px;background:var(--border);margin:50px 0;}
+
+  /* FOOTER */
+  .footer{background:var(--bg2);border-top:1px solid var(--border);
+    padding:40px;text-align:center;color:var(--text3);font-size:13px;}
+  .footer strong{color:var(--text2);}
+
+  /* MIGRATION MATRIX */
+  .mig-matrix{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;}
+  .mig-cell{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .mig-cell h4{font-size:13px;font-weight:700;margin-bottom:8px;}
+  .mig-cell p{font-size:12px;color:var(--text2);}
+  .mig-easy{border-color:rgba(16,185,129,.4);} .mig-easy h4{color:#6ee7b7;}
+  .mig-med{border-color:rgba(245,158,11,.4);} .mig-med h4{color:#fcd34d;}
+  .mig-hard{border-color:rgba(239,68,68,.4);} .mig-hard h4{color:#fca5a5;}
+
+  @media(max-width:768px){
+    .grid-2,.grid-3,.side-by-side,.mig-matrix{grid-template-columns:1fr;}
+    .hero{padding:50px 24px 40px;} .hero h1{font-size:30px;}
+    .container{padding:40px 20px;}
+  }
+  @media print{
+    body{background:white;color:#111;}
+    .hero{background:#f0f4ff !important;}
+    .card,.arch-diagram,.code-block{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🏗️ Technical Architecture Walkthrough · 2025–2026</div>
+  <h1>Odoo 17 vs Odoo 19<br>Arsitektur Teknis Lengkap</h1>
+  <p>Perbandingan mendalam arsitektur, tech stack, ORM, frontend framework, API, AI integrasi, dan strategi migrasi antara Odoo 17 (LTS) dan Odoo 19 (2025).</p>
+  <div class="vs-badge">
+    <span class="ver-pill v17-pill">⚙️ Odoo 17 LTS</span>
+    <span class="vs-text">VS</span>
+    <span class="ver-pill v19-pill">🚀 Odoo 19</span>
+  </div>
+  <div class="hero-meta" style="margin-top:24px;">
+    <div class="hero-meta-item"><div class="dot" style="background:#7c3aed"></div><span>Odoo 17 — Rilis Oktober 2023 (LTS)</span></div>
+    <div class="hero-meta-item"><div class="dot" style="background:#10b981"></div><span>Odoo 19 — Rilis September 2025</span></div>
+    <div class="hero-meta-item"><div class="dot" style="background:#4f8ef7"></div><span>8 Aspek Teknis Dibandingkan</span></div>
+    <div class="hero-meta-item"><div class="dot" style="background:#f59e0b"></div><span>Panduan Migrasi Lengkap</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ========== SECTION 1: TECH STACK OVERVIEW ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(79,142,247,.15);color:#4f8ef7;">1</div>
+    <div>
+      <h2>Tech Stack Overview</h2>
+      <p>Perbandingan fundamental komponen teknologi antara kedua versi</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <table class="cmp-table">
+      <thead>
+        <tr><th>Komponen</th><th>⚙️ Odoo 17 (LTS)</th><th>🚀 Odoo 19</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Python</td><td>Python 3.10 – 3.11</td><td>Python 3.10+ (wajib), optimal 3.12</td></tr>
+        <tr><td>PostgreSQL</td><td>PostgreSQL 12.0+</td><td>PostgreSQL 14+ (rekomendasi 16)</td></tr>
+        <tr><td>Frontend Framework</td><td>OWL 1.x (Odoo Web Library)</td><td>OWL 2 + Vue.js integration</td></tr>
+        <tr><td>Asset Bundling</td><td>Webpack (legacy)</td><td>ES6 modules + dynamic asset loading</td></tr>
+        <tr><td>State Management</td><td>Manual this.render() calls</td><td>Reactive state (auto re-render)</td></tr>
+        <tr><td>REST API</td><td>JSON-RPC + basic REST</td><td>Enterprise REST API (OAuth2, token)</td></tr>
+        <tr><td>Real-time</td><td>Polling / Long-polling</td><td>WebSocket native support</td></tr>
+        <tr><td>AI / ML</td><td>Basic (OCR, suggestions)</td><td>Deep AI: IDR, Predictive Analytics, NLP</td></tr>
+        <tr><td>Template Engine</td><td>QWeb (t-esc)</td><td>QWeb t-out + mode="inner" inheritance</td></tr>
+        <tr><td>ORM Performance</td><td>Baseline</td><td>+30–40% (new query planner + batch prefetch)</td></tr>
+        <tr><td>HTTP Config</td><td>xmlrpc_port</td><td>http_port (renamed)</td></tr>
+        <tr><td>Mobile</td><td>Responsive (partial)</td><td>Mobile-first: swipe, bottom-sheet nav</td></tr>
+        <tr><td>Dark Mode</td><td>❌ Tidak ada</td><td>✅ Native (light/dark/system)</td></tr>
+        <tr><td>Navigation UI</td><td>Top menu bar</td><td>Collapsible sidebar (persistent)</td></tr>
+        <tr><td>Deployment</td><td>Cloud + On-Premise</td><td>Cloud-native + GitOps + DevOps</td></tr>
+        <tr><td>Inventory Val.</td><td>stock.valuation.layer</td><td>Langsung di stock.move (simplified)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- ========== SECTION 2: ARCHITECTURE ODOO 17 ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(124,58,237,.15);color:#a78bfa;">2</div>
+    <div>
+      <h2>Arsitektur Layer: Odoo 17</h2>
+      <p>Multi-tier client-server — presentation, business logic, data</p>
+    </div>
+  </div>
+
+  <div class="arch-diagram">
+    <div class="arch-layer l-client">
+      <div class="arch-layer-title">🖥️ L1 — Presentation (Client)</div>
+      <div class="arch-boxes">
+        <div class="arch-box">OWL 1.x Components</div>
+        <div class="arch-box">QWeb Templates (t-esc)</div>
+        <div class="arch-box">List / Form / Kanban Views</div>
+        <div class="arch-box">Webpack Assets</div>
+        <div class="arch-box">ES6 JS Modules</div>
+        <div class="arch-box">CSS / SCSS</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ JSON-RPC / HTTP (Long-polling untuk realtime)</div>
+    <div class="arch-layer l-app">
+      <div class="arch-layer-title">⚙️ L2 — Application Server (Python)</div>
+      <div class="arch-boxes">
+        <div class="arch-box">Odoo Core (Python 3.10+)</div>
+        <div class="arch-box">HTTP Controllers</div>
+        <div class="arch-box">Business Logic</div>
+        <div class="arch-box">ir.cron (Scheduled Actions)</div>
+        <div class="arch-box">QWeb Report Engine (PDF)</div>
+        <div class="arch-box">Email Engine</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ ORM Layer (Python ↔ SQL abstraction)</div>
+    <div class="arch-layer l-service">
+      <div class="arch-layer-title">🔧 L3 — ORM & Module System</div>
+      <div class="arch-boxes">
+        <div class="arch-box">ORM (create/write/search)</div>
+        <div class="arch-box">Model Inheritance (_inherit)</div>
+        <div class="arch-box">Access Control (ir.rule)</div>
+        <div class="arch-box">Computed Fields</div>
+        <div class="arch-box">stock.valuation.layer</div>
+        <div class="arch-box">Module Registry</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ psycopg2 Driver</div>
+    <div class="arch-layer l-data">
+      <div class="arch-layer-title">🗄️ L4 — Data Storage</div>
+      <div class="arch-boxes">
+        <div class="arch-box">PostgreSQL 12+</div>
+        <div class="arch-box">ir.attachment (FileStore)</div>
+        <div class="arch-box">Redis (session/cache)</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ Nginx (Reverse Proxy)</div>
+    <div class="arch-layer l-infra">
+      <div class="arch-layer-title">🌐 L5 — Infrastructure</div>
+      <div class="arch-boxes">
+        <div class="arch-box">Nginx Reverse Proxy</div>
+        <div class="arch-box">Gunicorn Workers</div>
+        <div class="arch-box">Odoo.sh / On-Premise</div>
+        <div class="arch-box">Separate DB Server</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- ========== SECTION 3: ARCHITECTURE ODOO 19 ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(16,185,129,.15);color:#10b981;">3</div>
+    <div>
+      <h2>Arsitektur Layer: Odoo 19</h2>
+      <p>Cloud-native evolution — API-first, AI-native, WebSocket, OWL 2</p>
+    </div>
+  </div>
+
+  <div class="arch-diagram">
+    <div class="arch-layer l-client">
+      <div class="arch-layer-title">🖥️ L1 — Presentation (Client) — UPGRADED</div>
+      <div class="arch-boxes">
+        <div class="arch-box">OWL 2 (Reactive State)</div>
+        <div class="arch-box">Vue.js Components</div>
+        <div class="arch-box">QWeb (t-out)</div>
+        <div class="arch-box">Collapsible Sidebar Nav</div>
+        <div class="arch-box">Dark / Light Mode Native</div>
+        <div class="arch-box">Dynamic Asset Loading</div>
+        <div class="arch-box">Mobile-First Layout</div>
+        <div class="arch-box">Swipe Gestures</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ Enterprise REST API (OAuth2 / Token) + WebSocket</div>
+    <div class="arch-layer l-app">
+      <div class="arch-layer-title">⚙️ L2 — Application Server — AI-NATIVE</div>
+      <div class="arch-boxes">
+        <div class="arch-box">Odoo Core (Python 3.10+)</div>
+        <div class="arch-box">Enterprise REST API</div>
+        <div class="arch-box">AI Server Actions (NLP)</div>
+        <div class="arch-box">AI Computed Fields</div>
+        <div class="arch-box">WebSocket Handler</div>
+        <div class="arch-box">ESG Module</div>
+        <div class="arch-box">Predictive Analytics</div>
+        <div class="arch-box">IDR Engine</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ Enhanced ORM (+30–40%) + New Query Planner</div>
+    <div class="arch-layer l-service">
+      <div class="arch-layer-title">🔧 L3 — ORM & AI Layer — NEW</div>
+      <div class="arch-boxes">
+        <div class="arch-box">New Query Planner</div>
+        <div class="arch-box">Batch Prefetching</div>
+        <div class="arch-box">Binary Field Caching</div>
+        <div class="arch-box">stock.move valuation</div>
+        <div class="arch-box">AI Model Registry</div>
+        <div class="arch-box">Low-code/No-code Extensions</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ PostgreSQL 14–16 (parallel queries enhanced)</div>
+    <div class="arch-layer l-data">
+      <div class="arch-layer-title">🗄️ L4 — Data Storage — ENHANCED</div>
+      <div class="arch-boxes">
+        <div class="arch-box">PostgreSQL 14–16</div>
+        <div class="arch-box">Enhanced Parallel Queries</div>
+        <div class="arch-box">Improved Indexing</div>
+        <div class="arch-box">Smarter Caching Layer</div>
+        <div class="arch-box">FileStore + CDN optim.</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ Cloud-Native Infrastructure</div>
+    <div class="arch-layer l-infra">
+      <div class="arch-layer-title">🌐 L5 — Infrastructure — CLOUD-NATIVE</div>
+      <div class="arch-boxes">
+        <div class="arch-box">Odoo.sh (GitOps)</div>
+        <div class="arch-box">DevOps / CI-CD</div>
+        <div class="arch-box">Docker / K8s</div>
+        <div class="arch-box">API-First Architecture</div>
+        <div class="arch-box">Auto-scaling Workers</div>
+        <div class="arch-box">Component-based Arch.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- ========== SECTION 4: OWL FRONTEND FRAMEWORK ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(245,158,11,.15);color:#f59e0b;">4</div>
+    <div>
+      <h2>OWL Frontend Framework: Evolusi</h2>
+      <p>Perbandingan mendalam OWL 1.x (Odoo 17) vs OWL 2 + Vue.js (Odoo 19)</p>
+    </div>
+  </div>
+
+  <div class="side-by-side">
+    <div class="side-panel v17">
+      <h3>⚙️ Odoo 17 — OWL 1.x</h3>
+      <ul>
+        <li>Component-based, inspired by React/Vue</li>
+        <li>Manual state management: <code style="color:#f59e0b">this.render()</code> harus dipanggil</li>
+        <li>Lifecycle: setup(), onWillStart(), onMounted(), onWillUpdateProps(), onPatched(), onWillUnmount()</li>
+        <li>Reactive arrays harus di-replace seluruhnya untuk trigger re-render</li>
+        <li>Hooks dasar: useState, useRef, useEnv</li>
+        <li>QWeb template dengan <code style="color:#f59e0b">t-esc</code> (escaping)</li>
+        <li>Asset bundling via Webpack (multiple bundles)</li>
+        <li>JS load: semua assets di-load sekaligus saat startup</li>
+        <li>No built-in lazy loading</li>
+      </ul>
+    </div>
+    <div class="side-panel v19">
+      <h3>🚀 Odoo 19 — OWL 2 + Vue.js</h3>
+      <ul>
+        <li>Fully reactive: DOM otomatis update saat state berubah</li>
+        <li>NO manual this.render() — reactive arrays auto-trigger</li>
+        <li>New hooks: <strong>useAssets</strong> (lazy load), <strong>useAutofocus</strong>, <strong>useBus</strong> (auto cleanup), <strong>usePosition</strong>, <strong>useSpellCheck</strong></li>
+        <li>async/await, ES6 destructuring, spread operators native</li>
+        <li>Vue.js integration — component reusability tinggi</li>
+        <li>QWeb template dengan <code style="color:#10b981">t-out</code> (new standard)</li>
+        <li>Dynamic asset loading — load hanya saat dibutuhkan</li>
+        <li>Frontend bundles lebih kecil → halaman lebih cepat</li>
+        <li>OWL Migration di website/e-commerce → rendering speed ↑</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <div class="alert-icon">💡</div>
+    <div><strong>Code Migration Example:</strong> Di Odoo 17, kamu harus tulis <code>this.state.items = [...this.state.items, newItem]; this.render();</code> — di Odoo 19 cukup <code>this.state.items.push(newItem);</code> dan DOM update otomatis.</div>
+  </div>
+
+  <div class="side-by-side">
+    <div class="side-panel v17">
+      <h3>⚙️ Odoo 17 — Component Code Pattern</h3>
+      <div class="code-block">
+<span class="cmt">// Odoo 17 OWL 1.x Component</span>
+<span class="kw">import</span> { Component, useState } <span class="kw">from</span> <span class="str">"@odoo/owl"</span>;
+
+<span class="kw">export class</span> <span class="cls">MyWidget</span> <span class="kw">extends</span> <span class="cls">Component</span> {
+  <span class="fn">setup</span>() {
+    <span class="kw">this</span>.state = <span class="fn">useState</span>({ items: [], loading: <span class="kw">false</span> });
+  }
+
+  <span class="kw">async</span> <span class="fn">loadData</span>() {
+    <span class="kw">this</span>.state.loading = <span class="kw">true</span>;
+    <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">fetchData</span>();
+    <span class="cmt">// ⚠️ Must replace entire array</span>
+    <span class="kw">this</span>.state.items = [...data];
+    <span class="kw">this</span>.state.loading = <span class="kw">false</span>;
+    <span class="cmt">// ⚠️ Manual render call required</span>
+    <span class="fn">this</span>.<span class="fn">render</span>();
+  }
+}
+      </div>
+    </div>
+    <div class="side-panel v19">
+      <h3>🚀 Odoo 19 — Component Code Pattern</h3>
+      <div class="code-block">
+<span class="cmt">// Odoo 19 OWL 2 Component</span>
+<span class="kw">import</span> { Component, useState, useAssets } <span class="kw">from</span> <span class="str">"@odoo/owl"</span>;
+
+<span class="kw">export class</span> <span class="cls">MyWidget</span> <span class="kw">extends</span> <span class="cls">Component</span> {
+  <span class="fn">setup</span>() {
+    <span class="kw">this</span>.state = <span class="fn">useState</span>({ items: [], loading: <span class="kw">false</span> });
+    <span class="cmt">// ✅ Lazy-load assets</span>
+    <span class="fn">useAssets</span>({ jsLibs: [<span class="str">"/my/chart.js"</span>] });
+  }
+
+  <span class="kw">async</span> <span class="fn">loadData</span>() {
+    <span class="kw">this</span>.state.loading = <span class="kw">true</span>;
+    <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">fetchData</span>();
+    <span class="cmt">// ✅ Direct push — auto re-render!</span>
+    <span class="kw">this</span>.state.items.<span class="fn">push</span>(...data);
+    <span class="kw">this</span>.state.loading = <span class="kw">false</span>;
+    <span class="cmt">// ✅ No render() call needed</span>
+  }
+}
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- ========== SECTION 5: ORM & PERFORMANCE ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(16,185,129,.15);color:#10b981;">5</div>
+    <div>
+      <h2>ORM & Performance</h2>
+      <p>Perubahan ORM, database performance, dan optimisasi query</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="color:#a78bfa;">⚙️ ORM Odoo 17</h3>
+      <p style="margin-bottom:12px;">ORM matang dan stabil. Standard CRUD dengan psycopg2.</p>
+      <ul style="padding-left:18px;font-size:13px;color:var(--text2);">
+        <li style="margin-bottom:6px;">search() dengan <strong>inselect</strong> (subquery IN SELECT)</li>
+        <li style="margin-bottom:6px;">Standard B-tree indexing</li>
+        <li style="margin-bottom:6px;">Computed fields: re-compute on-demand</li>
+        <li style="margin-bottom:6px;">Binary fields: load lazily tapi cache terbatas</li>
+        <li style="margin-bottom:6px;">Prefetch: partial batch prefetching</li>
+        <li style="margin-bottom:6px;">stock.valuation.layer untuk inventory value</li>
+        <li style="margin-bottom:6px;">PostgreSQL 12+ support</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:#6ee7b7;">🚀 ORM Odoo 19 (+30-40% faster)</h3>
+      <p style="margin-bottom:12px;">New query planner + batch prefetch + binary caching.</p>
+      <ul style="padding-left:18px;font-size:13px;color:var(--text2);">
+        <li style="margin-bottom:6px;"><strong>SQL IN clause</strong> menggantikan inselect → query lebih efisien</li>
+        <li style="margin-bottom:6px;">New query planner: smart join optimization</li>
+        <li style="margin-bottom:6px;">Batch prefetching — kurangi N+1 queries</li>
+        <li style="margin-bottom:6px;">Improved binary field caching</li>
+        <li style="margin-bottom:6px;">Enhanced computed field caching</li>
+        <li style="margin-bottom:6px;">stock.valuation.layer → <strong>dihapus</strong>, pindah ke stock.move</li>
+        <li style="margin-bottom:6px;">PostgreSQL 14–16: parallel query ↑↑</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:8px;">
+    <h3 style="margin-bottom:20px;">📊 Benchmark Performa (Estimasi)</h3>
+    <div class="perf-legend">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="perf-legend-dot" style="background:#a78bfa;"></div>
+        <span style="font-size:12px;color:var(--text2);">Odoo 17</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="perf-legend-dot" style="background:#10b981;"></div>
+        <span style="font-size:12px;color:var(--text2);">Odoo 19</span>
+      </div>
+    </div>
+    <div class="perf-item">
+      <div class="perf-label"><span>ORM Query Speed</span><span style="color:#6ee7b7;">Odoo 19 ~35% lebih cepat</span></div>
+      <div class="perf-track"><div class="perf-bar17" style="width:65%"></div></div>
+      <div class="perf-track" style="margin-top:4px;"><div class="perf-bar19" style="width:90%"></div></div>
+    </div>
+    <div class="perf-item">
+      <div class="perf-label"><span>DB Performance (PostgreSQL)</span><span style="color:#6ee7b7;">Odoo 19 ~20% lebih cepat</span></div>
+      <div class="perf-track"><div class="perf-bar17" style="width:70%"></div></div>
+      <div class="perf-track" style="margin-top:4px;"><div class="perf-bar19" style="width:87%"></div></div>
+    </div>
+    <div class="perf-item">
+      <div class="perf-label"><span>Frontend Load Time</span><span style="color:#6ee7b7;">Odoo 19 signifikan lebih cepat</span></div>
+      <div class="perf-track"><div class="perf-bar17" style="width:60%"></div></div>
+      <div class="perf-track" style="margin-top:4px;"><div class="perf-bar19" style="width:88%"></div></div>
+    </div>
+    <div class="perf-item">
+      <div class="perf-label"><span>API Response Time (REST)</span><span style="color:#6ee7b7;">Odoo 19 lebih efisien</span></div>
+      <div class="perf-track"><div class="perf-bar17" style="width:68%"></div></div>
+      <div class="perf-track" style="margin-top:4px;"><div class="perf-bar19" style="width:85%"></div></div>
+    </div>
+    <div class="perf-item">
+      <div class="perf-label"><span>Memory Usage</span><span style="color:#6ee7b7;">Odoo 19 lebih hemat</span></div>
+      <div class="perf-track"><div class="perf-bar17" style="width:55%"></div></div>
+      <div class="perf-track" style="margin-top:4px;"><div class="perf-bar19" style="width:75%"></div></div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- ========== SECTION 6: AI INTEGRATION ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(239,68,68,.15);color:#ef4444;">6</div>
+    <div>
+      <h2>AI &amp; Machine Learning Integration</h2>
+      <p>Transformasi dari AI dasar ke platform AI-native yang komprehensif</p>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card" style="border-color:rgba(124,58,237,.3);">
+      <h3 style="color:#a78bfa;">⚙️ Odoo 17 — AI Terbatas</h3>
+      <ul style="margin-top:10px;padding-left:18px;font-size:13px;color:var(--text2);">
+        <li style="margin-bottom:4px;">OCR scan dokumen dasar</li>
+        <li style="margin-bottom:4px;">Basic email routing suggestions</li>
+        <li style="margin-bottom:4px;">Simple lead scoring (rule-based)</li>
+        <li style="margin-bottom:4px;">Automated bank reconciliation</li>
+        <li style="margin-bottom:4px;">Basic chatbot (scripted flows)</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:rgba(16,185,129,.3);">
+      <h3 style="color:#6ee7b7;">🚀 Odoo 19 — Deep AI Native</h3>
+      <ul style="margin-top:10px;padding-left:18px;font-size:13px;color:var(--text2);">
+        <li style="margin-bottom:4px;"><span class="tag tag-new">NEW</span> IDR — Intelligent Document Recognition</li>
+        <li style="margin-bottom:4px;"><span class="tag tag-new">NEW</span> AI Server Actions (NLP prompts)</li>
+        <li style="margin-bottom:4px;"><span class="tag tag-new">NEW</span> AI Computed Fields (dynamic generation)</li>
+        <li style="margin-bottom:4px;"><span class="tag tag-new">NEW</span> Predictive Analytics Dashboard</li>
+        <li style="margin-bottom:4px;"><span class="tag tag-new">NEW</span> Smart Workflow Automation</li>
+        <li style="margin-bottom:4px;"><span class="tag tag-new">NEW</span> AI Demand Forecasting + Anomaly Detection</li>
+        <li style="margin-bottom:4px;"><span class="tag tag-new">NEW</span> ESG Carbon Footprint Module</li>
+        <li style="margin-bottom:4px;"><span class="tag tag-new">NEW</span> AI Smart Reply (CRM/Helpdesk)</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:rgba(245,158,11,.3);">
+      <h3 style="color:#f59e0b;">🧠 AI Architecture Shift</h3>
+      <ul style="margin-top:10px;padding-left:18px;font-size:13px;color:var(--text2);">
+        <li style="margin-bottom:4px;"><strong>Odoo 17:</strong> AI sebagai add-on/plugin</li>
+        <li style="margin-bottom:4px;"><strong>Odoo 19:</strong> AI embedded di core ORM</li>
+        <li style="margin-bottom:4px;">Natural language untuk server actions</li>
+        <li style="margin-bottom:4px;">AI fields seperti computed fields biasa</li>
+        <li style="margin-bottom:4px;">AI Model Registry di backend</li>
+        <li style="margin-bottom:4px;">Compliance AI assistants built-in</li>
+        <li style="margin-bottom:4px;">Live chat AI (non-scripted)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-tip">
+    <div class="alert-icon">🤖</div>
+    <div><strong>AI Server Actions (Odoo 19):</strong> User bisa tulis natural language seperti <em>"Assign ticket ke sales team jika nilai &gt; 10M dan priority high"</em> — sistem konversi otomatis ke automated action, tanpa kode.</div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- ========== SECTION 7: API ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(79,142,247,.15);color:#4f8ef7;">7</div>
+    <div>
+      <h2>API Architecture: JSON-RPC → REST</h2>
+      <p>Dari JSON-RPC monolitik ke Enterprise REST API dengan OAuth2 dan WebSocket</p>
+    </div>
+  </div>
+
+  <div class="side-by-side">
+    <div class="side-panel v17">
+      <h3>⚙️ Odoo 17 — JSON-RPC</h3>
+      <ul>
+        <li>Primary: JSON-RPC 2.0</li>
+        <li>Satu endpoint: /web/dataset/call_kw</li>
+        <li>Auth: session-based (cookies)</li>
+        <li>API Key untuk external calls</li>
+        <li>XML-RPC tersedia (legacy)</li>
+        <li>Tidak ada native OAuth2</li>
+        <li>Real-time: long-polling</li>
+        <li>Response: JSON-wrapped format</li>
+      </ul>
+    </div>
+    <div class="side-panel v19">
+      <h3>🚀 Odoo 19 — Enterprise REST</h3>
+      <ul>
+        <li>Native RESTful per resource</li>
+        <li>Endpoint bersih: /api/v1/model.name</li>
+        <li>OAuth2 + Token authentication</li>
+        <li>HTTP verbs: GET/POST/PUT/DELETE</li>
+        <li>WebSocket real-time events</li>
+        <li>API versioning (/v1/, /v2/)</li>
+        <li>OpenAPI / Swagger docs</li>
+        <li>Rate limiting + Webhook native</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="side-by-side">
+    <div class="side-panel v17">
+      <h3>⚙️ API Call — Odoo 17</h3>
+      <div class="code-block">
+<span class="cmt"># JSON-RPC call Odoo 17</span>
+payload = {
+  <span class="str">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="str">"method"</span>: <span class="str">"call"</span>,
+  <span class="str">"params"</span>: {
+    <span class="str">"model"</span>: <span class="str">"res.partner"</span>,
+    <span class="str">"method"</span>: <span class="str">"search_read"</span>,
+    <span class="str">"args"</span>: [[(<span class="str">"is_company"</span>,<span class="str">"="</span>,<span class="kw">True</span>)]],
+    <span class="str">"kwargs"</span>: {<span class="str">"fields"</span>: [<span class="str">"name"</span>,<span class="str">"email"</span>]}
+  }
+}
+r = requests.<span class="fn">post</span>(
+  <span class="str">f"{url}/web/dataset/call_kw"</span>,
+  json=payload, cookies=session)
+      </div>
+    </div>
+    <div class="side-panel v19">
+      <h3>🚀 API Call — Odoo 19</h3>
+      <div class="code-block">
+<span class="cmt"># REST API Odoo 19 — lebih bersih!</span>
+headers = {
+  <span class="str">"Authorization"</span>: <span class="str">f"Bearer {token}"</span>,
+  <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>
+}
+<span class="cmt"># Standard REST endpoint</span>
+r = requests.<span class="fn">get</span>(
+  <span class="str">f"{url}/api/v1/res.partner"</span>,
+  params={<span class="str">"filter"</span>: <span class="str">'[("is_company","=",true)]'</span>,
+          <span class="str">"fields"</span>: <span class="str">"name,email"</span>},
+  headers=headers)
+partners = r.<span class="fn">json</span>()
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- ========== SECTION 8: MIGRATION ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(16,185,129,.15);color:#10b981;">8</div>
+    <div>
+      <h2>Panduan Migrasi: Odoo 17 → Odoo 19</h2>
+      <p>Apa yang harus diperhatikan saat upgrade versi</p>
+    </div>
+  </div>
+
+  <div class="mig-matrix">
+    <div class="mig-cell mig-easy">
+      <h4>✅ Auto-migrate</h4>
+      <p>Modul standar, konfigurasi, data master — migrasi otomatis oleh Odoo upgrade tool.</p>
+    </div>
+    <div class="mig-cell mig-med">
+      <h4>⚠️ Perlu Review</h4>
+      <p>Custom XML views, JS overrides, t-esc templates, API endpoint changes.</p>
+    </div>
+    <div class="mig-cell mig-hard">
+      <h4>🔴 Breaking Changes</h4>
+      <p>stock.valuation.layer dihapus, xmlrpc_port renamed, OWL 1.x manual render, JSON-RPC integrations.</p>
+    </div>
+    <div class="mig-cell mig-easy">
+      <h4>✅ Python OK</h4>
+      <p>Code Python 3.10+ sudah compatible langsung ke Odoo 19. Optimal di 3.12.</p>
+    </div>
+    <div class="mig-cell mig-med">
+      <h4>⚠️ PostgreSQL Upgrade</h4>
+      <p>Perlu upgrade dari pg12 → pg14/16. Data migration aman dengan pg_upgrade.</p>
+    </div>
+    <div class="mig-cell mig-hard">
+      <h4>🔴 OWL JS Components</h4>
+      <p>Custom OWL 1.x components perlu diport: this.render() → reactive state pattern OWL 2.</p>
+    </div>
+    <div class="mig-cell mig-easy">
+      <h4>✅ Business Logic</h4>
+      <p>Model methods Python (@api.model, @api.depends) mayoritas tetap compatible.</p>
+    </div>
+    <div class="mig-cell mig-med">
+      <h4>⚠️ QWeb Templates</h4>
+      <p>t-esc masih berjalan tapi deprecated. Sebaiknya migrate ke t-out secara bertahap.</p>
+    </div>
+    <div class="mig-cell mig-hard">
+      <h4>🔴 External API Clients</h4>
+      <p>Sistem eksternal berbasis JSON-RPC harus diupdate ke REST API + OAuth2 flow baru.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:8px;">
+    <h3 style="margin-bottom:20px;">📋 Roadmap Migrasi (Estimasi Timeline)</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#4f8ef7;"></div>
+        <h4>Phase 1 — Assessment (1–2 minggu)</h4>
+        <ul>
+          <li>Audit semua custom JS — cari this.render() calls</li>
+          <li>List semua external integrations berbasis JSON-RPC</li>
+          <li>Cek apakah ada stock.valuation.layer di custom code</li>
+          <li>Periksa xmlrpc_port dalam semua config files</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#7c3aed;"></div>
+        <h4>Phase 2 — Dev Environment (2–4 minggu)</h4>
+        <ul>
+          <li>Setup Odoo 19 dev environment (Python 3.10+, PostgreSQL 14+)</li>
+          <li>Run odoo-upgrade tool untuk auto-migrate database</li>
+          <li>Identifikasi dan fix breaking errors dari custom modules</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#10b981;"></div>
+        <h4>Phase 3 — Code Migration (4–8 minggu)</h4>
+        <ul>
+          <li>Port OWL 1.x → OWL 2 reactive state pattern</li>
+          <li>Ganti t-esc → t-out di custom QWeb templates</li>
+          <li>Update external integrations ke REST API + OAuth2</li>
+          <li>Migrate inventory valuation ke stock.move</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#f59e0b;"></div>
+        <h4>Phase 4 — Testing &amp; Go Live (2–4 minggu)</h4>
+        <ul>
+          <li>Full regression testing semua workflows</li>
+          <li>Performance benchmark dengan data production</li>
+          <li>User training: dark mode, sidebar nav, AI features baru</li>
+          <li>Cutover: backup → downtime → switch → monitor</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- ========== SECTION 9: DECISION GUIDE ========== -->
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(99,102,241,.15);color:#818cf8;">9</div>
+    <div>
+      <h2>Kapan Harus Upgrade?</h2>
+      <p>Framework keputusan: bertahan di v17 LTS vs upgrade ke v19</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-color:rgba(124,58,237,.3);">
+      <h3 style="color:#a78bfa;">🏠 Tetap di Odoo 17 LTS jika...</h3>
+      <ul style="padding-left:18px;font-size:13px;color:var(--text2);margin-top:10px;">
+        <li style="margin-bottom:6px;">Sistem stabil, tim puas dengan fitur yang ada</li>
+        <li style="margin-bottom:6px;">Banyak kustomisasi kompleks, butuh effort besar untuk port</li>
+        <li style="margin-bottom:6px;">Budget terbatas untuk upgrade tahun ini</li>
+        <li style="margin-bottom:6px;">Tidak butuh fitur AI yang advanced</li>
+        <li style="margin-bottom:6px;">Banyak integrasi eksternal berbasis JSON-RPC</li>
+        <li style="margin-bottom:6px;">Team belum familiar dengan OWL 2 / Vue.js</li>
+        <li style="margin-bottom:6px;">Mau nunggu Odoo 19 lebih mature (6 bulan post-release)</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:rgba(16,185,129,.3);">
+      <h3 style="color:#6ee7b7;">🚀 Upgrade ke Odoo 19 jika...</h3>
+      <ul style="padding-left:18px;font-size:13px;color:var(--text2);margin-top:10px;">
+        <li style="margin-bottom:6px;">Ingin leverage AI automation untuk efisiensi operasional</li>
+        <li style="margin-bottom:6px;">Perlu performa lebih baik untuk data besar / user banyak</li>
+        <li style="margin-bottom:6px;">Butuh WebSocket real-time (dashboard, notifikasi live)</li>
+        <li style="margin-bottom:6px;">Tim developer ingin modern tooling (OWL 2, REST API)</li>
+        <li style="margin-bottom:6px;">Butuh mobile experience yang jauh lebih baik</li>
+        <li style="margin-bottom:6px;">Greenfield project / implementasi baru</li>
+        <li style="margin-bottom:6px;">Perlu ESG reporting / compliance tools CSRD</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert" style="background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.25);">
+    <div class="alert-icon">📌</div>
+    <div style="color:#7eb3ff;"><strong>Rekomendasi Akhir:</strong> Untuk bisnis yang stabil di Odoo 17, tunggu minimal <strong>6 bulan</strong> setelah Odoo 19 rilis resmi (September 2025) sebelum migrasi production — untuk memastikan ekosistem module dan community patches sudah matang. Odoo 17 LTS masih <strong>fully supported</strong> hingga akhir 2026.</div>
+  </div>
+
+</div><!-- end container -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>Odoo 17 vs Odoo 19 — Technical Architecture Walkthrough</strong><br>
+  Disusun berdasarkan informasi resmi Odoo, community resources, dan roadmap publik per Maret 2026.<br>
+  <span style="margin-top:8px;display:block;">Odoo 19 dijadwalkan rilis September 2025 di Odoo Experience, Brussels. Detail teknis dapat berubah dari roadmap ini.</span>
+  <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    <span class="tag tag-purple">Odoo 17 LTS</span>
+    <span class="tag tag-green">Odoo 19</span>
+    <span class="tag tag-blue">OWL 2</span>
+    <span class="tag tag-yellow">PostgreSQL 16</span>
+    <span class="tag tag-green">REST API</span>
+    <span class="tag tag-blue">WebSocket</span>
+    <span class="tag tag-purple">AI Native</span>
+  </div>
+</div>
+
+</body>
+</html>
