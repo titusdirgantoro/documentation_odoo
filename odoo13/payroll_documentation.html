@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dokumentasi Payroll Modules - Odoo 13 SAAS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f172a;--surface:#1e293b;--surface2:#334155;--border:#475569;--text:#e2e8f0;--text2:#94a3b8;--accent:#3b82f6;--accent2:#8b5cf6;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--cyan:#06b6d4;--pink:#ec4899;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
+.hero{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 30%,#3b82f6 100%);padding:80px 0 60px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23fff' fill-opacity='.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.hero h1{font-size:2.6rem;font-weight:800;position:relative;z-index:1;}
+.hero .sub{font-size:1.1rem;color:rgba(255,255,255,.8);margin-top:8px;position:relative;z-index:1;}
+.hero .meta{margin-top:18px;display:flex;gap:16px;flex-wrap:wrap;position:relative;z-index:1;}
+.hero .meta span{background:rgba(255,255,255,.12);padding:5px 14px;border-radius:20px;font-size:.82rem;}
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin:-30px auto 40px;position:relative;z-index:2;}
+.toc h2{font-size:1rem;color:var(--accent);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;}
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:6px;}
+.toc a{color:var(--text2);text-decoration:none;padding:5px 10px;border-radius:6px;display:block;font-size:.88rem;transition:.2s;}
+.toc a:hover{background:var(--surface2);color:var(--text);}
+section{margin-bottom:44px;}
+section>h2{font-size:1.5rem;font-weight:700;padding-bottom:10px;border-bottom:2px solid var(--accent);margin-bottom:20px;}
+h3{font-size:1.1rem;color:var(--cyan);margin:16px 0 8px;}
+h4{font-size:.95rem;color:var(--amber);margin:12px 0 6px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:18px;transition:.3s;}
+.card:hover{border-color:var(--accent);box-shadow:0 0 20px rgba(59,130,246,.08);}
+.card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.card-t{font-size:1.15rem;font-weight:700;}
+.b{padding:3px 11px;border-radius:18px;font-size:.73rem;font-weight:600;display:inline-block;}
+.b-bl{background:rgba(59,130,246,.15);color:#60a5fa;}
+.b-gr{background:rgba(16,185,129,.15);color:#34d399;}
+.b-am{background:rgba(245,158,11,.15);color:#fbbf24;}
+.b-rd{background:rgba(239,68,68,.15);color:#f87171;}
+.b-pu{background:rgba(139,92,246,.15);color:#a78bfa;}
+.b-cy{background:rgba(6,182,212,.15);color:#22d3ee;}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.88rem;}
+th{background:var(--surface2);color:var(--accent);text-align:left;padding:9px 12px;font-weight:600;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:rgba(59,130,246,.03);}
+code{background:var(--surface2);padding:1px 6px;border-radius:4px;font-size:.83rem;color:var(--cyan);}
+ul{padding-left:22px;margin:6px 0;}
+li{margin-bottom:3px;color:var(--text2);}
+li strong{color:var(--text);}
+.dep{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin:18px 0;overflow-x:auto;}
+.fl{display:flex;flex-direction:column;gap:0;margin:18px 0;}
+.fs{display:flex;align-items:flex-start;gap:14px;position:relative;padding-bottom:22px;}
+.fs::before{content:'';position:absolute;left:16px;top:34px;bottom:0;width:2px;background:var(--border);}
+.fs:last-child::before{display:none;}
+.fn{min-width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0;}
+.fc{flex:1;}
+.fc h4{margin:0 0 3px;color:var(--text);font-size:.95rem;}
+.fc p{color:var(--text2);font-size:.87rem;margin:0;}
+.co{border-radius:10px;padding:14px 18px;margin:14px 0;font-size:.88rem;}
+.co-w{background:rgba(245,158,11,.08);border-left:4px solid var(--amber);color:#fde68a;}
+.co-d{background:rgba(239,68,68,.08);border-left:4px solid var(--red);color:#fca5a5;}
+.co-i{background:rgba(59,130,246,.08);border-left:4px solid var(--accent);color:#93c5fd;}
+@media(max-width:768px){.hero h1{font-size:1.7rem;}.tg{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+<div class="container">
+<h1>&#128203; Dokumentasi Payroll Modules</h1>
+<p class="sub">Odoo 13 Custom Payroll Ecosystem &mdash; Database: dev13terind_260320 &mdash; /opt/odoo13/saas</p>
+<div class="meta">
+<span>&#128197; 20 Maret 2026</span>
+<span>&#127959; Odoo 13 Community</span>
+<span>&#128230; 14 Modul Terkait</span>
+<span>&#128196; db: dev13terind_260320</span>
+</div>
+</div>
+</header>
+
+<!-- TOC -->
+<div class="container">
+<nav class="toc">
+<h2>&#128209; Daftar Isi</h2>
+<div class="tg">
+<a href="#overview">1. Ringkasan Arsitektur</a>
+<a href="#depmap">2. Peta Dependensi</a>
+<a href="#m1">3. hr_payroll_community</a>
+<a href="#m2">4. fp_employee</a>
+<a href="#m3">5. fp_hr_payroll</a>
+<a href="#m4">6. if_attendance</a>
+<a href="#m5">7. if_overtime</a>
+<a href="#m6">8. if_hr_payroll_attendance</a>
+<a href="#m7">9. if_hr_payroll_journal</a>
+<a href="#m8">10. ohrms_loan</a>
+<a href="#m9">11. if_loan</a>
+<a href="#m10">12. if_employee_exit</a>
+<a href="#dist">13. Modul Distribusi</a>
+<a href="#e2e">14. Alur End-to-End</a>
+<a href="#legacy">15. Modul Lama</a>
+<a href="#warn">16. Catatan &amp; Coupling</a>
+<a href="#ref">17. Referensi File</a>
+</div>
+</nav>
+
+<!-- 1. OVERVIEW -->
+<section id="overview">
+<h2>&#127959; 1. Ringkasan Arsitektur</h2>
+<div class="card">
+<p>Ekosistem payroll Odoo 13 custom ini dibangun dengan arsitektur <strong>API-driven</strong>: Odoo <em>bukan</em> menghitung payroll secara lokal, melainkan mengirim master data (employee, contract, company, government regulation) ke <strong>backend payroll API eksternal (Node.js)</strong>, lalu memetakan response kembali ke objek <code>hr.payslip</code> Odoo.</p>
+<br>
+<p>Seluruh implementasi aktif bertumpu pada jalur <strong>fp_*</strong> (fp_employee &rarr; fp_hr_payroll), bukan pada modul lama if_hr_payroll atau if_payroll.</p>
+</div>
+<div class="card">
+<h3>Lapisan Arsitektur</h3>
+<table>
+<thead><tr><th>Layer</th><th>Modul</th><th>Fungsi</th></tr></thead>
+<tbody>
+<tr><td><strong>Foundation</strong></td><td><code>hr_payroll_community</code></td><td>Model dasar Odoo: hr.payslip, salary rule, worked days</td></tr>
+<tr><td><strong>Master Data</strong></td><td><code>fp_employee</code></td><td>Employee, contract, BPJS/NPWP, salary component, cutoff</td></tr>
+<tr><td><strong>Engine</strong></td><td><code>fp_hr_payroll</code></td><td>Core payroll: API sync, compute, THR, pesangon, TER, bupot</td></tr>
+<tr><td><strong>Attendance</strong></td><td><code>if_attendance</code> + <code>if_overtime</code></td><td>Check-in/out, approval flow, overtime request &amp; rate</td></tr>
+<tr><td><strong>Bridge Att&#8594;Pay</strong></td><td><code>if_hr_payroll_attendance</code></td><td>Working days, overtime amount, absence deduction, lock</td></tr>
+<tr><td><strong>Bridge Pay&#8594;Acc</strong></td><td><code>if_hr_payroll_journal</code></td><td>Journal entry, account mapping, direct/indirect cost</td></tr>
+<tr><td><strong>Loan</strong></td><td><code>ohrms_loan</code> + <code>if_loan</code></td><td>Loan management, installment as payslip deduction</td></tr>
+<tr><td><strong>Exit</strong></td><td><code>if_employee_exit</code></td><td>Resign payroll, loan settlement on finalize</td></tr>
+<tr><td><strong>Distribution</strong></td><td><code>if_mobile_payroll</code>, <code>if_mobile_integration</code>, <code>if_whatsapp_integration_payroll</code></td><td>PDF payslip, mobile push, WhatsApp broadcast</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- 2. DEPENDENCY MAP -->
+<section id="depmap">
+<h2>&#128279; 2. Peta Dependensi</h2>
+<div class="card">
+<h3>Rantai Utama</h3>
+<div class="dep">
+<svg viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+<defs><marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#64748b"/></marker></defs>
+<rect x="20" y="20" width="200" height="42" rx="8" fill="#312e81" stroke="#6366f1" stroke-width="2"/>
+<text x="120" y="46" text-anchor="middle" fill="#e0e7ff" font-size="12" font-weight="600">hr_payroll_community</text>
+<rect x="260" y="20" width="150" height="42" rx="8" fill="#312e81" stroke="#6366f1" stroke-width="2"/>
+<text x="335" y="46" text-anchor="middle" fill="#e0e7ff" font-size="12" font-weight="600">fp_employee</text>
+<rect x="160" y="100" width="180" height="42" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2.5"/>
+<text x="250" y="126" text-anchor="middle" fill="#bfdbfe" font-size="13" font-weight="700">fp_hr_payroll</text>
+<rect x="540" y="20" width="150" height="42" rx="8" fill="#134e4a" stroke="#14b8a6" stroke-width="2"/>
+<text x="615" y="46" text-anchor="middle" fill="#99f6e4" font-size="12" font-weight="600">if_attendance</text>
+<rect x="730" y="20" width="150" height="42" rx="8" fill="#134e4a" stroke="#14b8a6" stroke-width="2"/>
+<text x="805" y="46" text-anchor="middle" fill="#99f6e4" font-size="12" font-weight="600">if_overtime</text>
+<rect x="660" y="100" width="180" height="42" rx="8" fill="#134e4a" stroke="#14b8a6" stroke-width="2"/>
+<text x="750" y="126" text-anchor="middle" fill="#99f6e4" font-size="12" font-weight="600">if_mobile_attendance</text>
+<rect x="320" y="196" width="260" height="42" rx="8" fill="#4a1d6a" stroke="#a855f7" stroke-width="2"/>
+<text x="450" y="222" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="600">if_hr_payroll_attendance</text>
+<rect x="60" y="196" width="220" height="42" rx="8" fill="#4a1d6a" stroke="#a855f7" stroke-width="2"/>
+<text x="170" y="222" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="600">if_hr_payroll_journal</text>
+<rect x="20" y="296" width="150" height="42" rx="8" fill="#713f12" stroke="#f59e0b" stroke-width="2"/>
+<text x="95" y="322" text-anchor="middle" fill="#fef3c7" font-size="12" font-weight="600">ohrms_loan</text>
+<rect x="210" y="296" width="130" height="42" rx="8" fill="#713f12" stroke="#f59e0b" stroke-width="2"/>
+<text x="275" y="322" text-anchor="middle" fill="#fef3c7" font-size="12" font-weight="600">if_loan</text>
+<rect x="150" y="386" width="180" height="42" rx="8" fill="#7f1d1d" stroke="#ef4444" stroke-width="2"/>
+<text x="240" y="412" text-anchor="middle" fill="#fecaca" font-size="12" font-weight="600">if_employee_exit</text>
+<rect x="60" y="466" width="170" height="42" rx="8" fill="#164e63" stroke="#06b6d4" stroke-width="2"/>
+<text x="145" y="492" text-anchor="middle" fill="#cffafe" font-size="12" font-weight="600">if_mobile_payroll</text>
+<rect x="270" y="466" width="200" height="42" rx="8" fill="#164e63" stroke="#06b6d4" stroke-width="2"/>
+<text x="370" y="492" text-anchor="middle" fill="#cffafe" font-size="11" font-weight="600">if_mobile_integration</text>
+<rect x="510" y="466" width="280" height="42" rx="8" fill="#164e63" stroke="#06b6d4" stroke-width="2"/>
+<text x="650" y="492" text-anchor="middle" fill="#cffafe" font-size="11" font-weight="600">if_whatsapp_integration_payroll</text>
+<!-- Arrows -->
+<line x1="120" y1="62" x2="200" y2="100" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="335" y1="62" x2="280" y2="100" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="250" y1="142" x2="400" y2="196" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="615" y1="62" x2="490" y2="196" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="615" y1="62" x2="730" y2="20" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="615" y1="62" x2="720" y2="100" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="250" y1="142" x2="200" y2="196" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="95" y1="338" x2="240" y2="296" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="170" y1="238" x2="220" y2="386" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="275" y1="338" x2="240" y2="386" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="250" y1="142" x2="145" y2="466" stroke="#64748b" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#ah)"/>
+<line x1="145" y1="508" x2="370" y2="466" stroke="#64748b" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#ah)"/>
+</svg>
+</div>
+<div class="co co-i"><strong>Keterangan warna:</strong> &#128309; Biru = Foundation/Engine &bull; &#128994; Hijau = Attendance &bull; &#128992; Ungu = Bridge &bull; &#128993; Kuning = Loan &bull; &#128308; Merah = Exit &bull; Cyan = Distribution</div>
+</div>
+</section>
+
+<!-- 3. hr_payroll_community -->
+<section id="m1">
+<h2>3. hr_payroll_community <span class="b b-bl">Foundation</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">Odoo13 Payroll</span><span class="b b-cy">v1.0.0</span></div>
+<p>Fondasi payroll Odoo Community. Menyediakan model dasar <code>hr.payslip</code>, <code>hr.payslip.run</code>, worked days, input lines, <code>hr.salary.rule</code>, salary structure, dan method <code>compute_sheet</code>.</p>
+<h4>Dependensi</h4>
+<p><code>hr_contract, hr_holidays, hr_contract_types</code></p>
+<h4>Model Odoo</h4>
+<p><code>hr.payslip</code>, <code>hr.payslip.run</code>, <code>hr.payslip.worked_days</code>, <code>hr.payslip.input</code>, <code>hr.salary.rule</code>, <code>hr.salary.rule.category</code>, <code>hr.payroll.structure</code></p>
+</div>
+</section>
+
+<!-- 4. fp_employee -->
+<section id="m2">
+<h2>4. fp_employee <span class="b b-gr">Master Data</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">FP &ndash; Employee</span><span class="b b-cy">v1.2.15</span></div>
+<p>Master data payroll. Menambah employment status, payroll method, BPJS/NPWP/marital tax, costing type (direct vs indirect), salary component master, contract allowance/deduction, overtime base, serta <strong>cutoff payroll vs cutoff attendance</strong>.</p>
+<h4>Dependensi</h4>
+<p><code>hr_contract, hr_attendance, hr_skills, hr_resignation, hr_presence</code></p>
+<h4>File Kunci</h4>
+<ul>
+<li><strong>hr_contract.py</strong> &mdash; Allowance, deduction table, payroll method, BPJS base</li>
+<li><strong>hr_employee.py</strong> &mdash; NPWP, marital tax, employment status, bank info</li>
+<li><strong>res_company.py</strong> &mdash; Cutoff dates, salary components, prorate settings</li>
+</ul>
+<h4>Model Odoo</h4>
+<p><code>hr.employee</code> (ext), <code>hr.contract</code> (ext), <code>res.company</code> (ext), <code>hr.salary.component</code>, <code>hr.contract.allowance</code>, <code>hr.contract.deduction</code>, <code>hr.grade</code></p>
+</div>
+</section>
+
+<!-- 5. fp_hr_payroll -->
+<section id="m3">
+<h2>5. fp_hr_payroll <span class="b b-bl">Core Engine</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">FP HR Payroll</span><span class="b b-cy">v1.6.6</span></div>
+<p>Engine payroll custom utama. <strong>Arsitektur API-driven:</strong> Odoo mengirim master data ke API payroll eksternal (Node.js) lalu memetakan response kembali ke payslip. Menangani THR, pesangon, offcycle others, TER (Tarif Efektif Rata-rata), BPJS, import payslip, accumulated payroll, bupot bulanan/tahunan, BPJS-TK report, ebanking (BCA/Mandiri/BRI/CIMB), backpay component, dan reset/finalize ke backend.</p>
+<h4>Dependensi</h4>
+<p><code>fp_employee, hr_payroll_community, account</code></p>
+<h4>File Kunci</h4>
+<ul>
+<li><strong>hr_payslip.py</strong> (97 KB) &mdash; Core payslip: generate, compute, sync API, finalize, reports</li>
+<li><strong>hr_contract.py</strong> (22 KB) &mdash; Contract sync to API, irregular/regular allowance</li>
+<li><strong>api_config.py</strong> (24 KB) &mdash; Endpoint configuration, API call helpers</li>
+<li><strong>hr_employee.py</strong> (31 KB) &mdash; Employee sync to API, pesangon data</li>
+<li><strong>government_regulation.py</strong> (31 KB) &mdash; TER, BPJS rates, PPh21 brackets</li>
+<li><strong>res_company.py</strong> (14 KB) &mdash; Company sync, payroll journal config</li>
+<li><strong>hr_accumulated_payroll.py</strong> (10 KB) &mdash; Import accumulated data</li>
+</ul>
+<h4>Model Odoo</h4>
+<p><code>hr.payslip</code> (ext), <code>hr.payslip.run</code> (ext), <code>hr.contract</code> (ext), <code>hr.payslip.allowance</code>, <code>hr.payslip.deduction</code>, <code>api.config</code>, <code>government.regulation</code>, <code>hr.payslip.period</code></p>
+<h4>Fitur Utama</h4>
+<table>
+<thead><tr><th>Fitur</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td>API Payroll Sync</td><td>Sinkronisasi employee, company, gov.regulation, contract ke backend Node.js</td></tr>
+<tr><td>THR</td><td>Tunjangan Hari Raya: eligibility, prorate, by religion</td></tr>
+<tr><td>Pesangon</td><td>Off-cycle pesangon dengan period selection</td></tr>
+<tr><td>TER</td><td>Tarif Efektif Rata-rata untuk PPh21</td></tr>
+<tr><td>Bupot</td><td>Bukti potong bulanan (BP21/BPMP) dan tahunan (BPA1)</td></tr>
+<tr><td>BPJS Report</td><td>BPJS Kesehatan &amp; TK: F1-A, F1-B, F2, perubahan upah</td></tr>
+<tr><td>E-Banking</td><td>CSV export untuk BCA, Mandiri, BRI, CIMB</td></tr>
+<tr><td>Concurrent Batch</td><td>Batch hanya bisa run jika tipe sama sudah finalized</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- 6. if_attendance -->
+<section id="m4">
+<h2>6. if_attendance <span class="b b-gr">Attendance</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">IF &ndash; Attendance</span><span class="b b-cy">v1.3.5</span></div>
+<p>Fondasi attendance custom. Menambah <strong>approval flow</strong> attendance (draft &#8594; check &#8594; approve), status late/no checkout/no schedule, <strong>absent report</strong>, overtime auto-create dari attendance approved, dan formula dasar overtime.</p>
+<h4>Dependensi</h4>
+<p><code>hr_attendance, fp_employee, if_timeoff</code></p>
+<h4>File Kunci</h4>
+<ul>
+<li><strong>hr_attendance.py</strong> &mdash; Approval flow, status computation, absent report sync</li>
+<li><strong>hr_overtime.py</strong> &mdash; Overtime auto-create from approved attendance</li>
+</ul>
+<h4>Model Odoo</h4>
+<p><code>hr.attendance</code> (ext), <code>hr.overtime</code>, <code>hr.absent.report</code></p>
+</div>
+</section>
+
+<!-- 7. if_overtime -->
+<section id="m5">
+<h2>7. if_overtime <span class="b b-gr">Attendance</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">IF &ndash; Overtime</span><span class="b b-cy">v1.0.2</span></div>
+<p>Memperkaya overtime dengan <strong>overtime request</strong>, type overtime (workday/holiday), <strong>overtime rate bertingkat</strong>, dan cap schedule_overtime. Nominal overtime yang masuk payroll bisa berasal dari layer ini.</p>
+<h4>Dependensi</h4>
+<p><code>if_attendance</code></p>
+<h4>File Kunci</h4>
+<ul>
+<li><strong>hr_overtime.py</strong> &mdash; Overtime request, type, rate calculation, cap</li>
+</ul>
+<h4>Model Odoo</h4>
+<p><code>hr.overtime</code> (ext), <code>hr.overtime.request</code>, <code>hr.overtime.rate</code></p>
+</div>
+</section>
+
+<!-- 8. if_hr_payroll_attendance -->
+<section id="m6">
+<h2>8. if_hr_payroll_attendance <span class="b b-pu">Bridge</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">IF &ndash; FP HR Payroll Attendance</span><span class="b b-cy">v1.5.5</span></div>
+<p>Bridge attendance &#8594; payroll. Modul <strong>kritis</strong> yang menghubungkan data attendance/overtime/leave menjadi komponen payroll.</p>
+<h4>Dependensi</h4>
+<p><code>fp_hr_payroll, if_attendance, fp_employee</code></p>
+<h4>File Kunci</h4>
+<ul>
+<li><strong>hr_payslip.py</strong> (18 KB) &mdash; actual_working_days, computed_wage daily worker, overtime inject, backpay</li>
+<li><strong>hr_contract.py</strong> (30 KB) &mdash; Contract sync with attendance data, daily wage</li>
+<li><strong>hr_attendance.py</strong> (6 KB) &mdash; Lock attendance when payslip locked/finalized</li>
+<li><strong>hr_overtime.py</strong> (4 KB) &mdash; Lock overtime, inject irregular allowance</li>
+<li><strong>hr_leave.py</strong> (3 KB) &mdash; Lock leave, monkey patch hr.leave, absence deduction</li>
+</ul>
+<h4>Fungsi Utama</h4>
+<table>
+<thead><tr><th>Fungsi</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td>actual_working_days</td><td>Menghitung hari kerja aktual dari attendance approved</td></tr>
+<tr><td>Daily Worker Wage</td><td><code>computed_wage = actual_working_days &times; daily_wage</code></td></tr>
+<tr><td>Overtime Injection</td><td>Menyuntikkan overtime approved ke irregular allowance payroll</td></tr>
+<tr><td>Absence Deduction</td><td>Membuat absence/unpaid leave menjadi deduction component</td></tr>
+<tr><td>Lock Mechanism</td><td>Mengunci edit attendance/overtime/leave/employee/contract saat payslip locked/finalized</td></tr>
+<tr><td>Backpay Logic</td><td>Backpay untuk kontrak terlambat running atau perubahan komponen</td></tr>
+<tr><td>Pending Approval Check</td><td>Memaksa check pending approval sebelum run payroll</td></tr>
+<tr><td>Monkey Patch</td><td>Patch pada <code>hr.leave</code> untuk menjaga <code>hr.absent.report</code> sinkron</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- 9. if_hr_payroll_journal -->
+<section id="m7">
+<h2>9. if_hr_payroll_journal <span class="b b-pu">Bridge</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">IF &ndash; HR Payroll Journal</span><span class="b b-cy">v1.2.8</span></div>
+<p>Bridge payroll &#8594; accounting. Master mapping komponen payroll ke akun debit/kredit, auto-generate journal entry saat batch ditutup.</p>
+<h4>Dependensi</h4>
+<p><code>fp_hr_payroll, hr_payroll_community, account</code></p>
+<h4>File Kunci</h4>
+<ul>
+<li><strong>hr_payslip.py</strong> (40 KB) &mdash; Journal generation, component mapping, summary lines</li>
+<li><strong>payroll_journal.py</strong> (4 KB) &mdash; Master payroll journal config per company</li>
+<li><strong>res_company.py</strong> (10 KB) &mdash; Account mapping: direct/indirect cost accounts</li>
+<li><strong>account_move.py</strong> (3 KB) &mdash; Account move creation &amp; posting</li>
+</ul>
+<h4>Komponen Journal</h4>
+<p>Auto-generate journal untuk: Basic Salary, BPJS Employer/Employee, PPh21, THR, Pesangon, Others, Allowance, Irregular Allowance, Deduction. Posting dipisah berdasarkan <code>employee.costing_type</code> (direct_cost vs indirect_cost). Summary line per account dibuat otomatis.</p>
+<h4>Model Odoo</h4>
+<p><code>hr.payslip</code> (ext), <code>hr.payslip.run</code> (ext), <code>payroll.journal</code>, <code>payroll.journal.component</code>, <code>account.move</code> (ext)</p>
+</div>
+</section>
+
+<!-- 10. ohrms_loan -->
+<section id="m8">
+<h2>10. ohrms_loan <span class="b b-am">Loan</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">Open HRMS Loan Management</span><span class="b b-cy">v1.0.1</span></div>
+<p>Basis loan management dari OpenHRMS. Menyediakan model loan request, installment lines, dan salary rule input <code>LO</code> default untuk deduction via payslip.</p>
+<h4>Dependensi</h4>
+<p><code>base, hr_payroll_community, hr, account</code></p>
+<h4>Model Odoo</h4>
+<p><code>hr.loan</code>, <code>hr.loan.line</code></p>
+</div>
+</section>
+
+<!-- 11. if_loan -->
+<section id="m9">
+<h2>11. if_loan <span class="b b-am">Loan</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">IF &ndash; Loan</span><span class="b b-cy">v1.0.2</span></div>
+<p>Integrasi loan ke payroll custom. <strong>Tidak lagi mengandalkan salary rule input</strong>, tetapi langsung menambah cicilan jatuh tempo sebagai <code>hr.payslip.deduction</code>, mengurangi THP, menandai installment paid, dan rollback bila payslip dihapus.</p>
+<h4>Dependensi</h4>
+<p><code>base, fp_hr_payroll, ohrms_loan, ohrms_loan_accounting, fp_employee, if_hr_payroll_journal</code></p>
+<h4>File Kunci</h4>
+<ul>
+<li><strong>hr_payslip.py</strong> &mdash; Inject loan installment as deduction, rollback on delete</li>
+<li><strong>hr_loan.py</strong> &mdash; Loan integration with payroll period</li>
+<li><strong>hr_deduction.py</strong> &mdash; Deduction model for loan installment</li>
+</ul>
+</div>
+</section>
+
+<!-- 12. if_employee_exit -->
+<section id="m10">
+<h2>12. if_employee_exit <span class="b b-rd">Exit</span></h2>
+<div class="card">
+<div class="card-h"><span class="card-t">IF &ndash; Employee Exit</span><span class="b b-cy">v1.0.1</span></div>
+<p>Layer payroll untuk resign/exit. Menarik komponen non-taxable resignation ke payslip regular, menautkan <code>resignation_id</code>, dan saat finalisasi memaksa <strong>pelunasan sisa loan</strong> karyawan resign.</p>
+<h4>Dependensi</h4>
+<p><code>if_hr_payroll_journal, if_loan, hr_maintenance</code></p>
+<h4>File Kunci</h4>
+<ul>
+<li><strong>hr_payslip.py</strong> &mdash; Resign payslip components, loan settlement on finalize</li>
+</ul>
+</div>
+</section>
+
+<!-- 13. DISTRIBUTION -->
+<section id="dist">
+<h2>&#128225; 13. Modul Distribusi Payslip</h2>
+<div class="card">
+<h3>if_mobile_payroll <span class="b b-cy">v1.0.0</span></h3>
+<p>Depends: <code>fp_hr_payroll</code> &mdash; Membuat PDF attachment payslip dan menyiapkan data untuk mobile backend.</p>
+</div>
+<div class="card">
+<h3>if_mobile_integration <span class="b b-cy">v1.0.11</span></h3>
+<p>Depends: <code>hr_reward_warning, if_mobile_employee, if_mobile_employee_exit, if_mobile_timeoff, if_mobile_medical, if_mobile_payroll, if_mobile_attendance</code></p>
+<p>Hub integrasi mobile. Mengirim payslip, attendance, employee data, dan timeoff ke HRIS mobile app.</p>
+</div>
+<div class="card">
+<h3>if_whatsapp_integration_payroll <span class="b b-cy">v1.0.0</span></h3>
+<p>Depends: <code>hr_payroll_community, if_whatsapp_integration</code> &mdash; Broadcast PDF payslip ke WhatsApp karyawan.</p>
+</div>
+<div class="card">
+<h3>if_mobile_attendance <span class="b b-cy">v1.0.0</span></h3>
+<p>Depends: <code>if_attendance</code> &mdash; Check-in/out via mobile app dengan foto dan geolocation.</p>
+</div>
+</section>
+
+<!-- 14. E2E FLOW -->
+<section id="e2e">
+<h2>&#128260; 14. Alur Payroll End-to-End</h2>
+<div class="card">
+<div class="fl">
+<div class="fs"><div class="fn">1</div><div class="fc"><h4>Setup Master Data</h4><p><code>fp_employee</code> membentuk master employee, contract, salary component, BPJS, NPWP, cutoff. <code>fp_hr_payroll</code> menyinkronkan ke API payroll (Node.js).</p></div></div>
+<div class="fs"><div class="fn">2</div><div class="fc"><h4>Attendance &amp; Overtime Processing</h4><p><code>if_attendance</code> mencatat check-in/out dengan approval flow. <code>if_overtime</code> menambah overtime request &amp; rate bertingkat. Attendance approved otomatis membuat record overtime.</p></div></div>
+<div class="fs"><div class="fn">3</div><div class="fc"><h4>Pre-Payroll Validation</h4><p><code>if_hr_payroll_attendance</code> memastikan tidak ada attendance/overtime/leave yang belum approved. Data dikonversi menjadi actual_working_days, overtime amount, dan absence deduction.</p></div></div>
+<div class="fs"><div class="fn">4</div><div class="fc"><h4>Run Payroll (API Call)</h4><p><code>fp_hr_payroll</code> mengirim payload ke backend API. Response dipetakan ke <code>hr.payslip</code>: basic salary, allowances, deductions, BPJS, PPh21, THR, pesangon.</p></div></div>
+<div class="fs"><div class="fn">5</div><div class="fc"><h4>Loan Injection</h4><p><code>if_loan</code> menambah cicilan pinjaman jatuh tempo sebagai deduction, mengurangi THP. Rollback otomatis jika payslip dihapus.</p></div></div>
+<div class="fs"><div class="fn">6</div><div class="fc"><h4>Backpay Processing</h4><p><code>if_hr_payroll_attendance</code> memproses backpay untuk kontrak terlambat atau perubahan komponen gaji.</p></div></div>
+<div class="fs"><div class="fn">7</div><div class="fc"><h4>Batch Close &amp; Journal</h4><p><code>if_hr_payroll_journal</code> membentuk <code>account.move</code> berdasarkan mapping komponen &#8594; akun. Posting dipisah berdasarkan costing_type (direct vs indirect).</p></div></div>
+<div class="fs"><div class="fn">8</div><div class="fc"><h4>Finalize &amp; Lock</h4><p>Payslip di-finalize ke backend. Attendance/overtime/leave/contract dikunci. <code>if_employee_exit</code> memaksa pelunasan loan karyawan resign.</p></div></div>
+<div class="fs"><div class="fn">9</div><div class="fc"><h4>Distribution</h4><p>PDF payslip dibuat, dikirim ke mobile app dan/atau broadcast via WhatsApp.</p></div></div>
+</div>
+</div>
+</section>
+
+<!-- 15. LEGACY -->
+<section id="legacy">
+<h2>&#128451; 15. Modul Lama / Alternatif</h2>
+<div class="card">
+<table>
+<thead><tr><th>Modul</th><th>Status</th><th>Keterangan</th></tr></thead>
+<tbody>
+<tr><td><code>if_hr_payroll</code></td><td><span class="b b-rd">Legacy</span></td><td>Ada di repo tetapi <strong>tidak dipakai</strong> oleh modul aktif. Semua bertumpu ke <code>fp_hr_payroll</code>.</td></tr>
+<tr><td><code>if_payroll</code></td><td><span class="b b-rd">Legacy</span></td><td>Modul alternatif lama. Bukan dependensi modul manapun di rantai aktif.</td></tr>
+<tr><td><code>om_hr_payroll</code></td><td><span class="b b-am">Unused</span></td><td>OpenHRMS Payroll. Di-supersede oleh <code>hr_payroll_community</code>.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- 16. WARNINGS -->
+<section id="warn">
+<h2>&#9888;&#65039; 16. Catatan Penting &amp; Hidden Coupling</h2>
+<div class="co co-d"><strong>&#128680; Ketergantungan API Eksternal</strong><br>Arsitektur sangat bergantung ke payroll API (Node.js). Perubahan requirement harus dicek di: Odoo module, kontrak payload, cutoff logic, DAN endpoint backend.</div>
+<div class="co co-w"><strong>&#9888;&#65039; Hidden Coupling &mdash; Lock Lintas Model</strong><br><code>if_hr_payroll_attendance</code> memakai lock payroll lintas model dan <strong>monkey patch</strong> pada <code>hr.leave</code>. Perubahan kecil di attendance/leave bisa berdampak langsung ke payroll.</div>
+<div class="co co-w"><strong>&#9888;&#65039; Loan Settlement on Exit</strong><br><code>if_employee_exit</code> memaksa pelunasan sisa loan saat finalisasi payslip resign. Pastikan saldo loan sudah benar sebelum finalize.</div>
+<div class="co co-i"><strong>&#128161; Concurrent Batch</strong><br><code>fp_hr_payroll</code> mencegah double-processing: batch hanya bisa di-run jika batch tipe sama sudah finalized.</div>
+<div class="co co-i"><strong>&#128161; Backpay</strong><br>Diproses oleh <code>if_hr_payroll_attendance</code> untuk kontrak terlambat, perubahan basic salary, dan perubahan komponen. Memperhitungkan missed days dan cutoff.</div>
+</section>
+
+<!-- 17. FILE REF -->
+<section id="ref">
+<h2>&#128194; 17. Referensi File per Modul</h2>
+<div class="card">
+<table>
+<thead><tr><th>Modul</th><th>Path</th><th>File Kunci</th><th>Size</th></tr></thead>
+<tbody>
+<tr><td><code>hr_payroll_community</code></td><td>/opt/odoo13/saas/hr_payroll_community/</td><td>models/hr_payslip.py</td><td>&ndash;</td></tr>
+<tr><td><code>fp_employee</code></td><td>/opt/odoo13/saas/fp_employee/</td><td>hr_contract.py, hr_employee.py, res_company.py</td><td>&ndash;</td></tr>
+<tr><td><code>fp_hr_payroll</code></td><td>/opt/odoo13/saas/fp_hr_payroll/</td><td>hr_payslip.py, api_config.py, government_regulation.py</td><td>97 / 24 / 31 KB</td></tr>
+<tr><td><code>if_attendance</code></td><td>/opt/odoo13/saas/if_attendance/</td><td>hr_attendance.py, hr_overtime.py</td><td>&ndash;</td></tr>
+<tr><td><code>if_overtime</code></td><td>/opt/odoo13/saas/if_overtime/</td><td>hr_overtime.py</td><td>&ndash;</td></tr>
+<tr><td><code>if_hr_payroll_attendance</code></td><td>/opt/odoo13/saas/if_hr_payroll_attendance/</td><td>hr_payslip.py, hr_contract.py, hr_leave.py</td><td>18 / 30 / 3 KB</td></tr>
+<tr><td><code>if_hr_payroll_journal</code></td><td>/opt/odoo13/saas/if_hr_payroll_journal/</td><td>hr_payslip.py, payroll_journal.py, res_company.py</td><td>40 / 4 / 10 KB</td></tr>
+<tr><td><code>ohrms_loan</code></td><td>/opt/odoo13/saas/ohrms_loan/</td><td>hr_loan.py, hr_payroll.py</td><td>&ndash;</td></tr>
+<tr><td><code>if_loan</code></td><td>/opt/odoo13/saas/if_loan/</td><td>hr_payslip.py, hr_loan.py, hr_deduction.py</td><td>&ndash;</td></tr>
+<tr><td><code>if_employee_exit</code></td><td>/opt/odoo13/saas/if_employee_exit/</td><td>hr_payslip.py</td><td>&ndash;</td></tr>
+<tr><td><code>if_mobile_payroll</code></td><td>/opt/odoo13/saas/if_mobile_payroll/</td><td>hr_payslip.py</td><td>&ndash;</td></tr>
+<tr><td><code>if_mobile_integration</code></td><td>/opt/odoo13/saas/if_mobile_integration/</td><td>hr_payslip.py</td><td>&ndash;</td></tr>
+<tr><td><code>if_whatsapp_integration_payroll</code></td><td>/opt/odoo13/saas/if_whatsapp_integration_payroll/</td><td>hr_payslip.py</td><td>&ndash;</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+</div>
+
+<footer style="background:var(--surface);border-top:1px solid var(--border);padding:28px 0;margin-top:50px;text-align:center;">
+<div class="container">
+<p style="color:var(--text2);font-size:.85rem;">Dokumentasi Payroll Modules &mdash; Odoo 13 SAAS &mdash; Database: dev13terind_260320</p>
+<p style="color:var(--text2);font-size:.78rem;margin-top:4px;">Source: /opt/odoo13/saas &bull; Generated: 20 Maret 2026</p>
+</div>
+</footer>
+</body>
+</html>
