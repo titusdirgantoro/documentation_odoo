@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
+    <!-- SECURITY GATEKEEPER -->
+    <script>
+        if (localStorage.getItem('TitusVaultToken') !== 'AUTH_VALID') {
+            document.documentElement.style.display = 'none';
+            window.location.href = '../index.html';
+        }
+    </script>
+    <!-- END GATEKEEPER -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Walkthrough: Integrasi WhatsApp - AI - Odoo Database</title>
