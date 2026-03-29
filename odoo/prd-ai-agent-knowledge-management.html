@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD - AI Agent Knowledge Management Odoo 17</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0e1a;color:#e2e8f0;line-height:1.7}
+:root{--primary:#6366f1;--accent:#06b6d4;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--surface:#111827;--surface2:#1e2433;--border:#2d3748}
+.hero{background:linear-gradient(135deg,#0a0e1a 0%,#1a1040 50%,#0d1a2a 100%);padding:80px 40px;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.15) 0%, transparent 60%),radial-gradient(ellipse at 70% 50%, rgba(6,182,212,0.1) 0%, transparent 60%)}
+.hero-badge{display:inline-block;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);color:#a5b4fc;padding:6px 16px;border-radius:20px;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
+.hero h1{font-size:clamp(28px,4vw,48px);font-weight:800;background:linear-gradient(135deg,#e2e8f0,#a5b4fc,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px;line-height:1.2}
+.hero-sub{font-size:18px;color:#94a3b8;max-width:700px;margin:0 auto 32px}
+.meta-row{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+.meta-item{background:rgba(30,36,51,0.8);border:1px solid var(--border);padding:8px 20px;border-radius:8px;font-size:13px;color:#94a3b8}
+.meta-item span{color:#e2e8f0;font-weight:600}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+.section{margin-bottom:60px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.section-num{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.section-header h2{font-size:24px;font-weight:700;color:#f1f5f9}
+.section-header .tag{margin-left:auto;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1px}
+.tag-critical{background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3)}
+.tag-important{background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)}
+.tag-ok{background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:16px}
+.card h3{font-size:16px;font-weight:700;color:#f1f5f9;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card p,ul li{color:#94a3b8;font-size:14px}
+ul{list-style:none;padding:0}
+ul li{padding:6px 0;border-bottom:1px solid rgba(45,55,72,0.5);display:flex;align-items:flex-start;gap:8px}
+ul li:last-child{border-bottom:none}
+ul li::before{content:'▸';color:var(--primary);flex-shrink:0;margin-top:2px}
+.highlight-box{background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(6,182,212,0.05));border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:24px;margin-bottom:16px}
+.highlight-box p{color:#c7d2fe;font-size:14px}
+.alert{border-radius:10px;padding:16px 20px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start}
+.alert-icon{font-size:20px;flex-shrink:0}
+.alert-content strong{display:block;margin-bottom:4px;font-size:14px}
+.alert-content p{font-size:13px}
+.alert-red{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25)}
+.alert-red strong{color:#fca5a5}
+.alert-red p{color:#f87171}
+.alert-yellow{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25)}
+.alert-yellow strong{color:#fcd34d}
+.alert-yellow p{color:#fbbf24}
+.alert-green{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25)}
+.alert-green strong{color:#6ee7b7}
+.alert-green p{color:#34d399}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:rgba(99,102,241,0.15);color:#a5b4fc;font-weight:600;padding:12px 16px;text-align:left;border-bottom:2px solid rgba(99,102,241,0.3)}
+td{padding:12px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top}
+tr:hover td{background:rgba(30,36,51,0.5)}
+td strong{color:#e2e8f0}
+.total-row td{background:rgba(99,102,241,0.1);color:#a5b4fc;font-weight:700}
+.arch-diagram{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;text-align:center;margin-bottom:16px}
+.arch-layer{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;margin:8px 0}
+.arch-layer-title{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:8px}
+.arch-nodes{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.arch-node{background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(6,182,212,0.1));border:1px solid rgba(99,102,241,0.3);border-radius:8px;padding:10px 16px;font-size:13px;color:#c7d2fe;font-weight:600}
+.arch-arrow{color:#6366f1;font-size:20px;margin:4px 0}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:16px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+.kpi-value{font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.kpi-label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.phase-timeline{display:flex;gap:0;margin-bottom:16px;overflow-x:auto}
+.phase{flex:1;min-width:180px;padding:20px;background:var(--surface);border:1px solid var(--border);position:relative}
+.phase:first-child{border-radius:12px 0 0 12px}
+.phase:last-child{border-radius:0 12px 12px 0}
+.phase-num{width:28px;height:28px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-bottom:12px}
+.phase h4{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:8px}
+.phase p{font-size:12px;color:#64748b}
+.phase-duration{font-size:11px;color:var(--accent);font-weight:600;margin-top:8px}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-recommended{background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3)}
+.badge-rejected{background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3)}
+.risk-row td:first-child{font-weight:600;color:#f1f5f9}
+.risk-high{color:#ef4444}
+.risk-medium{color:#f59e0b}
+.risk-low{color:#10b981}
+footer{background:var(--surface);border-top:1px solid var(--border);padding:40px;text-align:center;color:#64748b;font-size:13px}
+footer strong{color:#94a3b8}
+@media(max-width:640px){.hero{padding:40px 20px}.meta-row{gap:12px}.phase-timeline{flex-direction:column}.phase:first-child,.phase:last-child{border-radius:0}.phase:first-child{border-radius:12px 12px 0 0}.phase:last-child{border-radius:0 0 12px 12px}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">Product Requirements Document</div>
+  <h1>AI Agent Knowledge Management<br>Berbasis Telegram Bot untuk Odoo 17</h1>
+  <p class="hero-sub">Sistem asisten virtual berbasis RAG yang memungkinkan tim Business Analyst mengakses pengetahuan teknis Odoo 17 secara cepat, akurat, dan aman dari kebocoran data.</p>
+  <div class="meta-row">
+    <div class="meta-item">Versi: <span>1.1.0</span></div>
+    <div class="meta-item">Tanggal: <span>Maret 2026</span></div>
+    <div class="meta-item">Status: <span>Draft untuk Manajemen</span></div>
+    <div class="meta-item">Prioritas: <span>High</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SECTION 1: EXECUTIVE SUMMARY -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2>Rangkuman Eksekutif</h2>
+    </div>
+    <div class="highlight-box">
+      <p>Proyek ini membangun <strong>asisten virtual berbasis Telegram</strong> yang ditenagai AI dengan teknologi <em>Retrieval-Augmented Generation (RAG)</em>. Sistem ini dilatih menggunakan dokumentasi Odoo 17, struktur kode base, dan custom module internal — semuanya berjalan <strong>100% di server internal perusahaan</strong> demi menjaga keamanan aset intelektual. Tujuan utama: memberdayakan tim <strong>Business Analyst (BA)</strong> agar dapat mengekstrak informasi teknis, memvalidasi fitur, dan menyusun PRD tanpa harus membaca ribuan baris kode secara manual.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>🎯 Masalah yang Dipecahkan</h3>
+        <ul>
+          <li>BA kesulitan memahami kode Odoo tanpa bantuan developer</li>
+          <li>Bottleneck pengetahuan teknis menghambat pembuatan PRD</li>
+          <li>Tidak ada sistem terpusat untuk query dokumentasi Odoo</li>
+          <li>Risiko kebocoran kode custom ke platform cloud pihak ketiga</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>💡 Solusi yang Diusulkan</h3>
+        <ul>
+          <li>Dify.ai self-hosted sebagai AI orchestration platform</li>
+          <li>Vector database lokal untuk semua knowledge base kode</li>
+          <li>Telegram Bot sebagai antarmuka percakapan per-user</li>
+          <li>Hybrid RAG: dense + BM25 search untuk akurasi kode</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: BUSINESS REQUIREMENTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2>Kebutuhan Bisnis</h2>
+      <span class="tag tag-important">IMPORTANT</span>
+    </div>
+    <div class="card">
+      <h3>📋 Functional Requirements</h3>
+      <ul>
+        <li>FR-01: Sistem mampu menjawab pertanyaan teknis berbasis dokumentasi Odoo 17 (PDF/HTML) dengan akurasi ≥ 85%</li>
+        <li>FR-02: Sistem mampu melakukan retrieval atas kode Python/XML dari custom module internal dengan recall ≥ 80%</li>
+        <li>FR-03: Setiap user Telegram memiliki session memory percakapan independen (minimal 20 pesan terakhir)</li>
+        <li>FR-04: Bot merespons dalam bahasa Indonesia dan Inggris sesuai input user</li>
+        <li>FR-05: Sistem mendukung upload dokumen baru ke knowledge base tanpa downtime total</li>
+        <li>FR-06: Tersedia fitur feedback (👍/👎) untuk setiap jawaban bot guna evaluasi kualitas</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🔒 Non-Functional Requirements</h3>
+      <ul>
+        <li>NFR-01 (Keamanan): Source code custom module TIDAK BOLEH meninggalkan infrastruktur internal (zero cloud upload untuk raw code)</li>
+        <li>NFR-02 (Ketersediaan): Uptime minimal 95% pada jam kerja (08:00–18:00 WIB, Senin–Jumat)</li>
+        <li>NFR-03 (Performa): Response time end-to-end ≤ 10 detik untuk 95% query</li>
+        <li>NFR-04 (Skalabilitas): Mampu menangani minimal 10 concurrent users tanpa degradasi signifikan</li>
+        <li>NFR-05 (Audit): Semua query dan jawaban tercatat dalam log untuk audit 90 hari ke belakang</li>
+        <li>NFR-06 (Legal): Kontrak DPA (Data Processing Agreement) ditandatangani dengan LLM provider (Anthropic/OpenAI) sebelum go-live</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 3: SOLUTION EVALUATION -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2>Evaluasi Opsi Solusi</h2>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Kriteria</th><th>Dify.ai Self-Hosted</th><th>n8n Self-Hosted</th><th>Coze / ChatGPT GPTs</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Knowledge Base Kode</strong></td><td style="color:#6ee7b7">✅ Native support, code-aware</td><td style="color:#fbbf24">⚠️ Butuh setup manual, tidak optimal</td><td style="color:#f87171">❌ Terbatas, tidak ideal untuk kode</td></tr>
+          <tr><td><strong>Keamanan Data</strong></td><td style="color:#6ee7b7">✅ 100% lokal, zero cloud leak</td><td style="color:#6ee7b7">✅ Self-hosted, aman</td><td style="color:#f87171">❌ Data tinggal di server pihak ketiga</td></tr>
+          <tr><td><strong>RAG Capability</strong></td><td style="color:#6ee7b7">✅ Built-in, bisa dikonfigurasi</td><td style="color:#fbbf24">⚠️ Butuh plugin tambahan</td><td style="color:#6ee7b7">✅ Ada, tapi terbatas aksesnya</td></tr>
+          <tr><td><strong>Telegram Integration</strong></td><td style="color:#6ee7b7">✅ Native connector</td><td style="color:#6ee7b7">✅ Sangat kuat untuk ini</td><td style="color:#f87171">❌ Tidak ada native</td></tr>
+          <tr><td><strong>Session Memory / User</strong></td><td style="color:#6ee7b7">✅ Per-user built-in</td><td style="color:#fbbf24">⚠️ Butuh konfigurasi</td><td style="color:#6ee7b7">✅ Ada (tapi cloud)</td></tr>
+          <tr><td><strong>Maintenance Overhead</strong></td><td style="color:#fbbf24">⚠️ Sedang (butuh ops runbook)</td><td style="color:#6ee7b7">✅ Rendah</td><td style="color:#6ee7b7">✅ Minimal (managed)</td></tr>
+          <tr><td><strong>Keputusan</strong></td><td><span class="status-badge badge-recommended">🏆 DIPILIH</span></td><td><span class="status-badge badge-rejected">Ditolak (fase ini)</span></td><td><span class="status-badge badge-rejected">Ditolak Mutlak</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 4: TECHNICAL ARCHITECTURE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2>Arsitektur Teknis</h2>
+      <span class="tag tag-critical">CRITICAL</span>
+    </div>
+
+    <div class="arch-diagram">
+      <div class="arch-layer">
+        <div class="arch-layer-title">🧑 User Layer</div>
+        <div class="arch-nodes">
+          <div class="arch-node">📱 Telegram Client (BA Team)</div>
+        </div>
+      </div>
+      <div class="arch-arrow">⬇ HTTPS / Bot API ⬇</div>
+      <div class="arch-layer">
+        <div class="arch-layer-title">🤖 Orchestration Layer</div>
+        <div class="arch-nodes">
+          <div class="arch-node">Dify.ai (Docker)</div>
+          <div class="arch-node">Session Memory (Redis)</div>
+          <div class="arch-node">Telegram Bot Connector</div>
+        </div>
+      </div>
+      <div class="arch-arrow">⬇ RAG Query ⬇</div>
+      <div class="arch-layer">
+        <div class="arch-layer-title">🗄 Knowledge & Embedding Layer</div>
+        <div class="arch-nodes">
+          <div class="arch-node">Vector DB (Qdrant/Weaviate)</div>
+          <div class="arch-node">BM25 Keyword Index</div>
+          <div class="arch-node">PostgreSQL (Metadata)</div>
+        </div>
+      </div>
+      <div class="arch-arrow">⬇ Embedding API (outbound only) ⬇</div>
+      <div class="arch-layer">
+        <div class="arch-layer-title">🧠 LLM Layer (External API)</div>
+        <div class="arch-nodes">
+          <div class="arch-node">Anthropic Claude 3.5 Sonnet</div>
+          <div class="arch-node">OpenAI GPT-4o-mini (fallback)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-red">
+      <div class="alert-icon">🔴</div>
+      <div class="alert-content">
+        <strong>Gap Kritis #1: Chunking Strategy untuk Kode Python</strong>
+        <p>Chunking naif (512 karakter) akan menghancurkan konteks semantik fungsi Odoo. Wajib menggunakan <strong>AST-aware chunking</strong> berbasis Python <code>ast</code> module atau <code>tree-sitter</code>: pisahkan per-fungsi/per-class. Terapkan <strong>Hybrid Search</strong>: Dense Vector (semantic) + BM25 (untuk nomenclature seperti <code>mrp_production</code>, <code>stock_picking</code>). Indexing diorganisir per-module untuk retrieval terstruktur.</p>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>🔧 Komponen Infrastruktur</h3>
+        <ul>
+          <li>OS: Ubuntu 24.04 LTS</li>
+          <li>Container: Docker Compose (isolated)</li>
+          <li>Dify.ai: nginx + api + worker</li>
+          <li>Vector DB: Qdrant (lebih ringan dari Weaviate)</li>
+          <li>Cache: Redis (session + query cache)</li>
+          <li>Database: PostgreSQL 15</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>📥 Tiered Ingestion Strategy</h3>
+        <ul>
+          <li><strong>Tier 1 – Stable Base:</strong> Odoo 17 base code (~50K+ files), satu kali ingestion, stabil</li>
+          <li><strong>Tier 2 – Living:</strong> Custom modules, re-ingestion saat ada commit baru ke repo</li>
+          <li><strong>Tier 3 – Docs:</strong> PDF/HTML dokumentasi Odoo, update per rilis versi</li>
+          <li>Proses re-ingestion dijadwalkan via cron job otomatis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: RISK ASSESSMENT -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2>Analisis Risiko & Mitigasi</h2>
+      <span class="tag tag-important">IMPORTANT</span>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>ID</th><th>Risiko</th><th>Dampak</th><th>Probabilitas</th><th>Mitigasi</th></tr></thead>
+        <tbody class="risk-row">
+          <tr>
+            <td>R-01</td>
+            <td><strong>Hallucination kode</strong> akibat chunking tidak tepat</td>
+            <td class="risk-high">Tinggi</td>
+            <td class="risk-high">Tinggi (tanpa mitigasi)</td>
+            <td>AST-aware chunking + Hybrid search + citation reference di setiap jawaban</td>
+          </tr>
+          <tr>
+            <td>R-02</td>
+            <td><strong>Data leakage</strong> ke LLM provider</td>
+            <td class="risk-high">Tinggi</td>
+            <td class="risk-medium">Sedang</td>
+            <td>Hanya prompt + retrieved chunk (bukan raw file) yang dikirim ke API. DPA wajib ditandatangani.</td>
+          </tr>
+          <tr>
+            <td>R-03</td>
+            <td><strong>RAM tidak cukup</strong> (8GB) untuk concurrent users</td>
+            <td class="risk-medium">Sedang</td>
+            <td class="risk-high">Tinggi</td>
+            <td>Upgrade ke <strong>16GB RAM minimum</strong>. Lihat breakdown RAM di Seksi 6.</td>
+          </tr>
+          <tr>
+            <td>R-04</td>
+            <td><strong>Biaya token membengkak</strong> melebihi estimasi</td>
+            <td class="risk-medium">Sedang</td>
+            <td class="risk-low">Rendah</td>
+            <td>Hard limit billing di Anthropic/OpenAI dashboard. Alert notifikasi di 80% limit.</td>
+          </tr>
+          <tr>
+            <td>R-05</td>
+            <td><strong>Tidak ada PIC maintenance</strong> server self-hosted</td>
+            <td class="risk-medium">Sedang</td>
+            <td class="risk-medium">Sedang</td>
+            <td>Tetapkan 1 DevOps/SysAdmin sebagai PIC. Buat ops runbook tertulis sebelum go-live.</td>
+          </tr>
+          <tr>
+            <td>R-06</td>
+            <td><strong>Adopsi rendah</strong> dari tim BA</td>
+            <td class="risk-medium">Sedang</td>
+            <td class="risk-low">Rendah</td>
+            <td>Workshop onboarding 2 jam + 1 minggu hypercare dengan dedicated support</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 6: COST BREAKDOWN -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2>Estimasi Biaya (Revised)</h2>
+      <span class="tag tag-ok">UPDATED</span>
+    </div>
+
+    <div class="alert alert-yellow">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <strong>Koreksi Estimasi dari Proposal Awal</strong>
+        <p>Biaya ingestion awal direvisi dari $2-5 menjadi $5-50 berdasarkan volume aktual Odoo 17 base (~50K+ file, estimasi 5-20 juta token). RAM server direvisi dari 8GB ke 16GB berdasarkan analisis memory footprint komponen.</p>
+      </div>
+    </div>
+
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Kategori</th><th>Deskripsi</th><th>Estimasi Biaya</th><th>Tipe</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Lisensi Platform</strong></td><td>Dify.ai Community Edition + Telegram Bot API</td><td style="color:#6ee7b7"><strong>$0</strong> (Gratis)</td><td>—</td></tr>
+          <tr><td><strong>Infrastruktur VPS</strong></td><td>Ubuntu 24.04 LTS, 4 vCPU, <strong>16GB RAM</strong>, 100GB SSD NVMe (Hetzner CX42 / DO 16GB)</td><td><strong>$30 – $45</strong> /bulan</td><td>OPEX Rutin</td></tr>
+          <tr><td><strong>Ingestion Awal (Revisi)</strong></td><td>Embedding Odoo 17 base + custom modules ke vector DB (~5-20M tokens)</td><td><strong>$5 – $50</strong> (one-time)</td><td>CAPEX Setup</td></tr>
+          <tr><td><strong>Operasional Token LLM</strong></td><td>5-10 BA aktif, intensitas moderat harian (Claude 3.5 Sonnet / GPT-4o-mini)</td><td><strong>$15 – $30</strong> /bulan</td><td>OPEX Pay-as-you-go</td></tr>
+          <tr><td><strong>Ops & Maintenance</strong></td><td>Waktu engineering DevOps untuk maintenance, backup, update (estimasi 4 jam/bulan)</td><td><strong>Internal Cost</strong></td><td>Internal</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="total-row"><td colspan="2"><strong>TOTAL OPEX BERJALAN (Per Bulan)</strong></td><td><strong>$45 – $75 / bulan</strong><br><small>(Rp. 720.000 – Rp. 1.200.000/bulan)</small></td><td><strong>OPEX</strong></td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="card-grid" style="margin-top:16px">
+      <div class="card">
+        <h3>🖥 RAM Breakdown (16GB)</h3>
+        <ul>
+          <li>Dify (nginx + api + worker): ~3 GB</li>
+          <li>Vector DB (Qdrant): ~2 GB</li>
+          <li>PostgreSQL 15: ~1.5 GB</li>
+          <li>Redis: ~0.5 GB</li>
+          <li>OS + overhead: ~1 GB</li>
+          <li>Headroom concurrent requests: ~7 GB ✅</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>💡 Strategi Optimasi Biaya</h3>
+        <ul>
+          <li>Hard limit billing: set di $40/bulan untuk LLM</li>
+          <li>Alert di 80% limit → notifikasi ke admin</li>
+          <li>Cache query populer di Redis (reduce repeat API calls)</li>
+          <li>Gunakan GPT-4o-mini untuk query sederhana, Claude hanya untuk analisis kompleks</li>
+          <li>Tiered ingestion: hindari re-embed base Odoo setiap ada update minor</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: KPI / SUCCESS METRICS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2>Kriteria Keberhasilan (KPI)</h2>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value">&ge;85%</div>
+        <div class="kpi-label">Answer Accuracy</div>
+        <div style="font-size:12px;color:#64748b;margin-top:8px">Jawaban tidak hallucinate, berbasis referensi kode/docs aktual</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">&ge;80%</div>
+        <div class="kpi-label">Retrieval Recall</div>
+        <div style="font-size:12px;color:#64748b;margin-top:8px">File/fungsi relevan berhasil ditemukan dari vector DB</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">&le;10s</div>
+        <div class="kpi-label">Response Time</div>
+        <div style="font-size:12px;color:#64748b;margin-top:8px">End-to-end untuk 95% query (Telegram → jawaban)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">&ge;70%</div>
+        <div class="kpi-label">BA Adoption Rate</div>
+        <div style="font-size:12px;color:#64748b;margin-top:8px">Persentase BA aktif menggunakan bot dalam 30 hari pertama</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📊 Metode Evaluasi</h3>
+      <ul>
+        <li><strong>Minggu 1-2 (Beta):</strong> 20 query sampel dari BA dievaluasi manual oleh developer senior. Akurasi dihitung dari jawaban grounded vs hallucination.</li>
+        <li><strong>Minggu 3-4 (Pilot):</strong> Feedback thumbs up/down dikumpulkan otomatis. Target: ≥ 80% thumbs up untuk query teknis.</li>
+        <li><strong>Bulan 2:</strong> Survey NPS kepada tim BA. Target: NPS ≥ 30.</li>
+        <li><strong>Ongoing:</strong> Dashboard monitoring response time, token usage, dan error rate dipantau mingguan.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 8: IMPLEMENTATION ROADMAP -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <h2>Roadmap Implementasi</h2>
+    </div>
+    <div class="phase-timeline">
+      <div class="phase">
+        <div class="phase-num">1</div>
+        <h4>Infrastruktur & Setup</h4>
+        <p>Provisioning VPS, install Docker Compose, deploy Dify.ai stack, konfigurasi vector DB (Qdrant), setup Telegram Bot.</p>
+        <div class="phase-duration">⏱ Minggu 1–2</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">2</div>
+        <h4>Knowledge Base Ingestion</h4>
+        <p>Implementasi AST-aware chunker, ingestion Odoo 17 base (Tier 1), ingestion custom modules (Tier 2), ingestion dokumentasi PDF (Tier 3). Setup hybrid search.</p>
+        <div class="phase-duration">⏱ Minggu 3–4</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">3</div>
+        <h4>RAG Tuning & Testing</h4>
+        <p>Konfigurasi retrieval pipeline, uji akurasi 20 query sampel, tuning chunk size & overlap, evaluasi recall metric. Sign DPA dengan LLM provider.</p>
+        <div class="phase-duration">⏱ Minggu 5–6</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">4</div>
+        <h4>Beta Launch & Hypercare</h4>
+        <p>Onboarding workshop BA (2 jam), launch terbatas 3-5 user beta, monitoring ketat, perbaikan cepat berdasarkan feedback.</p>
+        <div class="phase-duration">⏱ Minggu 7–8</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">5</div>
+        <h4>Full Production</h4>
+        <p>Rollout ke semua BA, setup monitoring dashboard, dokumentasi ops runbook, SLA support defined, backup automation aktif.</p>
+        <div class="phase-duration">⏱ Minggu 9–10</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 9: OPERATIONAL REQUIREMENTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <h2>Kebutuhan Operasional</h2>
+      <span class="tag tag-important">ADDED</span>
+    </div>
+    <div class="alert alert-red">
+      <div class="alert-icon">🔴</div>
+      <div class="alert-content">
+        <strong>Gap Kritis #2: Ops Runbook — Wajib Ada Sebelum Go-Live</strong>
+        <p>Dify Community Edition tidak memiliki auto-update, high availability, atau built-in monitoring. Ops runbook harus mencakup: siapa PIC maintenance, prosedur backup vector DB, prosedur re-ingestion saat ada update kode, dan prosedur rollback jika ada kegagalan.</p>
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>👥 Struktur Tim Operasional</h3>
+        <ul>
+          <li><strong>PIC DevOps (1 orang):</strong> Bertanggung jawab atas health server, backup, update Dify, dan re-ingestion terjadwal</li>
+          <li><strong>PIC AI/QA (1 orang):</strong> Memantau akurasi jawaban bot, mengelola feedback loop, koordinasi evaluasi bulanan</li>
+          <li><strong>Escalation:</strong> Bila akurasi turun di bawah 75%, eskalasi ke developer senior untuk audit knowledge base</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🔄 Backup & Recovery Strategy</h3>
+        <ul>
+          <li><strong>Vector DB Backup:</strong> Snapshot Qdrant harian, disimpan di storage terpisah (retention 30 hari)</li>
+          <li><strong>PostgreSQL Backup:</strong> pg_dump otomatis setiap malam (retention 14 hari)</li>
+          <li><strong>Dify Config Backup:</strong> Export workflow/agent config ke Git repository internal</li>
+          <li><strong>RTO Target:</strong> ≤ 4 jam (recovery dari backup)</li>
+          <li><strong>RPO Target:</strong> ≤ 24 jam (maksimum data yang dapat hilang)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📅 Jadwal Maintenance Rutin</h3>
+      <ul>
+        <li><strong>Harian (Otomatis):</strong> Backup data, health check endpoint, monitoring resource usage</li>
+        <li><strong>Mingguan (Manual, &lt;1 jam):</strong> Review log anomali, cek token usage vs budget, update jika ada patch kritis</li>
+        <li><strong>Per Sprint/Deploy Custom Module:</strong> Trigger re-ingestion Tier 2 (custom modules) — setelah QA sign-off</li>
+        <li><strong>Bulanan (2-4 jam):</strong> Evaluasi KPI, review feedback loop, pertimbangkan tuning retrieval strategy</li>
+        <li><strong>Per Rilis Odoo:</strong> Re-ingestion Tier 1 (base code) jika ada update versi signifikan</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 10: LEGAL & COMPLIANCE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2>Legal & Compliance</h2>
+      <span class="tag tag-critical">CRITICAL</span>
+    </div>
+    <div class="alert alert-red">
+      <div class="alert-icon">🔴</div>
+      <div class="alert-content">
+        <strong>Gap Kritis #3: Klarifikasi Data ke LLM Provider</strong>
+        <p>Meskipun raw source code tidak pernah diunggah, <strong>potongan kode (chunks) relevan dikirim ke API LLM</strong> sebagai konteks untuk setiap query. Ini perlu diklarifikasi dengan legal team: apakah Anthropic/OpenAI dianggap "acceptable third party"? Kedua provider memiliki DPA enterprise — pastikan tidak ada data training opt-in yang aktif.</p>
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>✅ Checklist Legal Sebelum Go-Live</h3>
+        <ul>
+          <li>Tanda tangan DPA dengan Anthropic (Claude API) atau OpenAI</li>
+          <li>Konfirmasi "Zero Data Retention" / opsi opt-out dari training data</li>
+          <li>Review dengan legal team: apakah chunks kode masuk kategori "data rahasia" per perjanjian kerja karyawan</li>
+          <li>Dokumentasi data flow (dari server internal → API → response) untuk audit trail</li>
+          <li>Pertimbangkan alternatif fully on-premise: Ollama + Llama 3/CodeLlama jika legal tidak menyetujui API eksternal</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🛡 Alternatif Fully On-Premise (Opsional)</h3>
+        <ul>
+          <li><strong>Ollama + CodeLlama 34B:</strong> LLM berjalan 100% lokal, nol data keluar jaringan</li>
+          <li><strong>Trade-off:</strong> Kualitas jawaban lebih rendah dari Claude 3.5 Sonnet, butuh GPU/CPU beefy (min. 32GB RAM untuk 34B)</li>
+          <li><strong>Biaya hardware:</strong> Signifikan lebih tinggi (server dengan GPU atau bare-metal)</li>
+          <li><strong>Rekomendasi:</strong> Mulai dengan Claude API + DPA. Evaluasi on-premise di akhir fase 1 jika ada keberatan legal.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 11: APPROVAL -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2>Persetujuan & Tanda Tangan</h2>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Peran</th><th>Nama</th><th>Departemen</th><th>Tanda Tangan</th><th>Tanggal</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Pemohon / Author</strong></td><td>_______________</td><td>Business Analyst</td><td>_______________</td><td>_______________</td></tr>
+          <tr><td><strong>Technical Reviewer</strong></td><td>_______________</td><td>IT / Engineering</td><td>_______________</td><td>_______________</td></tr>
+          <tr><td><strong>Legal Reviewer</strong></td><td>_______________</td><td>Legal / Compliance</td><td>_______________</td><td>_______________</td></tr>
+          <tr><td><strong>IT Operations</strong></td><td>_______________</td><td>DevOps / SysAdmin</td><td>_______________</td><td>_______________</td></tr>
+          <tr><td><strong>Budget Approver</strong></td><td>_______________</td><td>Finance / Management</td><td>_______________</td><td>_______________</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box" style="margin-top:16px;text-align:center">
+      <p style="font-size:16px;color:#a5b4fc;font-weight:600">Total Investasi: <span style="font-size:22px;color:#67e8f9">$45–$75 / bulan</span> + Setup $5–$50 (one-time)</p>
+      <p style="margin-top:8px;font-size:14px;color:#94a3b8">Setara Rp. 720.000 – Rp. 1.200.000 per bulan untuk 5–10 Business Analyst</p>
+      <p style="margin-top:8px;font-size:13px;color:#64748b">Dokumen ini bersifat confidential — INTERNAL USE ONLY</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>PRD: AI Agent Knowledge Management Odoo 17</strong><br>
+  Versi 1.1.0 — Disiapkan: Maret 2026 — Status: Draft untuk Review Manajemen<br>
+  <span style="margin-top:8px;display:block">Dokumen ini menggabungkan proposal teknis awal dan hasil analisis gap dari technical review.</span>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script>
+        if (localStorage.getItem('ImpactVaultToken') !== 'IMPACT_VALID') {
+            document.documentElement.style.display = 'none';
+            window.location.href = '../index.html';
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRD - FP HR Payroll Ecosystem (Dark Premium - Extended)</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0f172a;        /* slate-900 */
+            --bg-card: #1e293b;        /* slate-800 */
+            --bg-highlight: #334155;   /* slate-700 */
+            --text-main: #cbd5e1;      /* slate-300 */
+            --text-muted: #94a3b8;     /* slate-400 */
+            --text-heading: #f8fafc;   /* slate-50 */
+            --accent-primary: #3b82f6; /* blue-500 */
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --accent-secondary: #8b5cf6; /* violet-500 */
+            --border-color: #334155;   /* slate-700 */
+            --code-bg: #020617;        /* slate-950 */
+            --code-text: #f472b6;      /* pink-400 */
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); line-height: 1.7; margin: 0; padding: 0; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 50px 20px; }
+        header { text-align: center; margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid var(--border-color); }
+        h1 { color: var(--text-heading); font-size: 3rem; font-weight: 700; margin-bottom: 15px; letter-spacing: -0.5px; text-shadow: 0 0 30px var(--accent-glow); }
+        .subtitle { color: var(--text-muted); font-size: 1.25rem; font-weight: 400; }
+        h2 { color: var(--text-heading); font-size: 1.8rem; border-bottom: 2px solid var(--accent-primary); padding-bottom: 12px; margin-top: 60px; margin-bottom: 25px; font-weight: 600; position: relative; }
+        h2::after { content: ''; position: absolute; left: 0; bottom: -2px; height: 2px; width: 50px; background-color: #60a5fa; box-shadow: 0 0 10px #60a5fa; }
+        h3 { color: var(--accent-primary); font-size: 1.35rem; margin-top: 40px; margin-bottom: 15px; font-weight: 600; }
+        p { font-size: 1.05rem; margin-bottom: 16px; }
+        ul, ol { padding-left: 24px; margin-bottom: 24px; }
+        li { margin-bottom: 10px; font-size: 1.05rem; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 45px; margin-bottom: 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); }
+        code { background: var(--code-bg); padding: 4px 8px; border-radius: 6px; font-family: 'Courier New', Courier, monospace; color: var(--code-text); font-size: 0.9em; border: 1px solid var(--bg-highlight); }
+        .diagram-container { background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 16px; padding: 40px; margin: 50px 0; overflow-x: auto; position: relative; }
+        .diagram-title { text-align: center; color: var(--text-heading); font-weight: 600; margin-bottom: 30px; font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .mermaid { display: flex; justify-content: center; }
+        .badge { background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; border: 1px solid rgba(59, 130, 246, 0.3); margin-right: 8px; display: inline-block; font-weight: 500; }
+        .modules-highlight { background: rgba(2, 6, 23, 0.4); border: 1px dashed var(--bg-highlight); padding: 25px; border-radius: 12px; margin-bottom: 35px; }
+        .table-uat { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 30px; font-size: 0.95rem; }
+        .table-uat th { background-color: var(--bg-highlight); color: var(--text-heading); padding: 14px 15px; text-align: left; border: 1px solid var(--border-color); font-weight: 600; }
+        .table-uat td { padding: 12px 15px; border: 1px solid var(--border-color); background-color: rgba(30, 41, 59, 0.4); color: var(--text-main); vertical-align: top; }
+        .status-header { text-align: center !important; }
+        footer { text-align: center; margin-top: 80px; border-top: 1px solid var(--border-color); padding: 40px 0; color: var(--text-muted); }
+
+        /* Step Explanations */
+        .step-explanations { margin-top: 40px; }
+        .step-phase-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-heading);
+            padding: 10px 16px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            margin-top: 30px;
+        }
+        .step-phase-header.phase1 { background: rgba(59, 130, 246, 0.15); border-left: 4px solid #3b82f6; }
+        .step-phase-header.phase2 { background: rgba(16, 185, 129, 0.15); border-left: 4px solid #10b981; }
+        .step-phase-header.phase3 { background: rgba(245, 158, 11, 0.15); border-left: 4px solid #f59e0b; }
+        .step-phase-header.phase4 { background: rgba(139, 92, 246, 0.15); border-left: 4px solid #8b5cf6; }
+        .phase-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .phase-badge.phase1 { background: #3b82f6; }
+        .phase-badge.phase2 { background: #10b981; }
+        .phase-badge.phase3 { background: #f59e0b; }
+        .phase-badge.phase4 { background: #8b5cf6; }
+        .step-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 0.9rem; }
+        .step-table th {
+            background-color: var(--bg-highlight);
+            color: var(--text-heading);
+            padding: 12px 14px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .step-table td { padding: 12px 14px; border: 1px solid var(--border-color); background-color: rgba(30, 41, 59, 0.4); color: var(--text-main); vertical-align: top; }
+        .step-table tr:hover td { background-color: rgba(51, 65, 85, 0.4); }
+        .step-table td:first-child { text-align: center; font-weight: 700; color: var(--accent-primary); white-space: nowrap; width: 50px; }
+        .step-table td:nth-child(2) { color: var(--text-muted); font-size: 0.85rem; white-space: nowrap; width: 130px; }
+        .step-table td:nth-child(3) { font-family: 'Courier New', monospace; font-size: 0.82rem; color: #fbbf24; white-space: nowrap; min-width: 180px; }
+
+        /* ===== SIDEBAR ===== */
+        :root {
+            --sidebar-width: 260px;
+        }
+
+        body { padding-left: var(--sidebar-width); }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            z-index: 100;
+            padding: 30px 0 40px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--bg-highlight) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--bg-highlight); border-radius: 2px; }
+
+        .sidebar-brand {
+            padding: 0 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .sidebar-brand-title {
+            color: var(--text-heading);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-primary);
+            margin-bottom: 4px;
+        }
+        .sidebar-brand-sub {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+        }
+
+        .sidebar-section-label {
+            padding: 8px 20px 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .sidebar-nav { list-style: none; padding: 0; margin: 0; }
+
+        .sidebar-nav li a {
+            display: block;
+            padding: 7px 20px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
+            line-height: 1.4;
+        }
+        .sidebar-nav li a:hover {
+            color: var(--text-heading);
+            background: rgba(59, 130, 246, 0.08);
+            border-left-color: var(--accent-primary);
+        }
+        .sidebar-nav li a.active {
+            color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.12);
+            border-left-color: var(--accent-primary);
+            font-weight: 600;
+        }
+        .sidebar-nav li.sub a {
+            padding-left: 32px;
+            font-size: 0.78rem;
+        }
+        .sidebar-nav li.section-parent > a {
+            color: var(--text-heading);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 6px;
+        }
+        .sidebar-nav .phase-dot {
+            display: inline-block;
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+        .dot-blue   { background: #3b82f6; }
+        .dot-green  { background: #10b981; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-violet { background: #8b5cf6; }
+        .dot-slate  { background: #64748b; }
+
+        .sidebar-nav li.sub .phase-dot { width: 6px; height: 6px; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 30px 50px 10px;
+        }
+
+        /* Scroll offset for anchor links so heading isn't hidden under sidebar */
+       :target { scroll-margin-top: 20px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { primaryColor: '#1e293b', primaryTextColor: '#f8fafc', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#0f172a', tertiaryColor: '#334155', fontFamily: 'Inter' } });
+        });
+    </script>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <div class="sidebar-brand-title">PRD Documentation</div>
+        <div class="sidebar-brand-sub">FP HR Payroll Ecosystem</div>
+    </div>
+
+    <div class="sidebar-section-label">Overview</div>
+    <ul class="sidebar-nav">
+        <li><a href="#ecosystem">Ekosistem Modul</a></li>
+        <li><a href="#overview">Ringkasan Dokumen</a></li>
+    </ul>
+
+    <div class="sidebar-section-label">Dokumen Inti</div>
+    <ul class="sidebar-nav">
+        <li><a href="#section-01">01 — Ringkasan Dokumen</a></li>
+        <li><a href="#section-02">02 — Latar Belakang</a></li>
+        <li><a href="#section-03">03 — Tujuan Produk</a></li>
+        <li class="sub"><a href="#sec-3-1">3.1 Tujuan Bisnis</a></li>
+        <li class="sub"><a href="#sec-3-2">3.2 Tujuan Operasional</a></li>
+        <li class="sub"><a href="#sec-3-3">3.3 Non-Goal</a></li>
+        <li><a href="#section-04">04 — Scope</a></li>
+        <li class="sub"><a href="#sec-4-1">4.1 In Scope</a></li>
+        <li class="sub"><a href="#sec-4-2">4.2 Out of Scope</a></li>
+        <li><a href="#section-05">05 — Modul, Dependency & User Persona</a></li>
+        <li class="sub"><a href="#sec-5-1">5.1 Modul Inti</a></li>
+        <li class="sub"><a href="#sec-5-2">5.2 Modul Terkait Langsung</a></li>
+        <li class="sub"><a href="#sec-5-3">5.3 Dependency Fungsional</a></li>
+        <li class="sub"><a href="#sec-5-4">5.4 User Persona / Aktor</a></li>
+        <li><a href="#section-06">06 — Problem Statement</a></li>
+        <li><a href="#section-07">07 — Solusi Produk</a></li>
+        <li><a href="#section-08">08 — Arsitektur Produk</a></li>
+        <li class="sub"><a href="#sec-8-1">8.1 Konsep Arsitektur</a></li>
+        <li class="sub"><a href="#sec-8-2">8.2 Komponen Utama</a></li>
+        <li><a href="#section-09">09 — Data Domain & Extension Modules</a></li>
+        <li class="sub"><a href="#sec-9-1">9.1 Requirement Fungsional</a></li>
+        <li class="sub"><a href="#sec-9-2">9.2 Attendance Extension Requirements</a></li>
+        <li class="sub"><a href="#sec-9-3">9.3 Payroll Journal Requirements</a></li>
+        <li class="sub"><a href="#sec-9-4">9.4 Loan Requirements</a></li>
+        <li class="sub"><a href="#sec-9-5">9.5 Mobile Payroll Requirements</a></li>
+        <li class="sub"><a href="#sec-9-6">9.6 Master Company</a></li>
+        <li class="sub"><a href="#sec-9-7">9.7 Government Regulation</a></li>
+        <li class="sub"><a href="#sec-9-8">9.8 Employee</a></li>
+        <li class="sub"><a href="#sec-9-9">9.9 Contract</a></li>
+        <li class="sub"><a href="#sec-9-10">9.10 Payslip Period & Accumulated Payroll</a></li>
+        <li class="sub"><a href="#sec-9-11">9.11 Payslip & Payslip Batch</a></li>
+        <li><a href="#section-10">10 — Business Rules</a></li>
+        <li><a href="#section-11">11 — UX, Security, Scheduler & Integrasi</a></li>
+        <li class="sub"><a href="#sec-11-1">11.1 UX / Antarmuka</a></li>
+        <li class="sub"><a href="#sec-11-2">11.2 Security Requirements</a></li>
+        <li class="sub"><a href="#sec-11-3">11.3 Scheduler / Automation</a></li>
+        <li class="sub"><a href="#sec-11-4">11.4 Integrasi Eksternal</a></li>
+        <li><a href="#section-12">12 — Risiko Produk & Acceptance Criteria</a></li>
+        <li class="sub"><a href="#sec-12-1">12.1 Kebutuhan Data Kritis</a></li>
+        <li class="sub"><a href="#sec-12-2">12.2 Acceptance Criteria</a></li>
+        <li class="sub"><a href="#sec-12-3">12.3 Open Questions / Gap Implementasi</a></li>
+        <li class="sub"><a href="#sec-12-4">12.4 Rekomendasi Implementasi Operasional</a></li>
+        <li><a href="#section-13">13 — Daftar File Referensi Utama</a></li>
+    </ul>
+
+    <div class="sidebar-section-label">Section 14 — Alur Payroll & UAT</div>
+    <ul class="sidebar-nav">
+        <li class="section-parent"><a href="#section-14"><span class="phase-dot dot-blue"></span>14 Alur Payroll Detail & UAT</a></li>
+        <li class="sub"><a href="#sec-14-1"><span class="phase-dot dot-blue"></span>14.1 Sinkronisasi Master Data</a></li>
+        <li class="sub"><a href="#sec-14-2"><span class="phase-dot dot-blue"></span>14.2 Persiapan Kehadiran</a></li>
+        <li class="sub"><a href="#sec-14-3"><span class="phase-dot dot-blue"></span>14.3 Pembuatan Batch & Kalkulasi API</a></li>
+        <li class="sub"><a href="#sec-14-4"><span class="phase-dot dot-yellow"></span>14.4 Review & Adjustment</a></li>
+        <li class="sub"><a href="#sec-14-5"><span class="phase-dot dot-green"></span>14.5 Finalisasi Batch & Accounting</a></li>
+        <li class="sub"><a href="#sec-14-6"><span class="phase-dot dot-slate"></span>14.6 Mekanisme Kunci Attendance</a></li>
+        <li class="sub"><a href="#sec-14-7"><span class="phase-dot dot-slate"></span>14.7 Validasi Sebelum Finalisasi</a></li>
+        <li class="sub"><a href="#sec-14-8"><span class="phase-dot dot-violet"></span>14.8 User Interface — Approve All</a></li>
+        <li class="sub"><a href="#sec-14-9"><span class="phase-dot dot-slate"></span>14.9 Cutoff Date Logic</a></li>
+        <li class="sub"><a href="#sec-14-10"><span class="phase-dot dot-slate"></span>14.10 Attendance State Machine</a></li>
+        <li class="sub"><a href="#sec-14-11"><span class="phase-dot dot-slate"></span>14.11 State Rollback on Unlink</a></li>
+        <li class="sub"><a href="#sec-14-12"><span class="phase-dot dot-blue"></span>14.12 Penjelasan Detail Step</a></li>
+        <li class="sub"><a href="#sec-14-13"><span class="phase-dot dot-yellow"></span>14.13 Skenario UAT</a></li>
+    </ul>
+
+    <div class="sidebar-section-label">Referensi Lanjutan</div>
+    <ul class="sidebar-nav">
+        <li><a href="#section-15">15 — Wizard, API Endpoints & Model Data</a></li>
+        <li class="sub"><a href="#sec-15-1">15.1 Referensi Endpoint API NodeJS Backend</a></li>
+        <li class="sub"><a href="#sec-15-2">15.2 Arsitektur Komunikasi</a></li>
+        <li class="sub"><a href="#sec-15-3">15.3 Endpoint Payroll Utama</a></li>
+        <li class="sub"><a href="#sec-15-4">15.4 Validasi Period Backend</a></li>
+        <li class="sub"><a href="#sec-15-5">15.5 Referensi Model Data (Sub-Models)</a></li>
+        <li class="sub"><a href="#sec-15-6">15.6 hr.payslip.allowance / deduction / benefit</a></li>
+        <li class="sub"><a href="#sec-15-7">15.7 hr.updatable.payslip.*</a></li>
+        <li class="sub"><a href="#sec-15-8">15.8 hr.accumulated.payroll</a></li>
+        <li class="sub"><a href="#sec-15-9">15.9 hr.api.log</a></li>
+        <li class="sub"><a href="#sec-15-10">15.10 Government Regulation Sub-Models</a></li>
+        <li class="sub"><a href="#sec-15-11">15.11 hr.payslip.period</a></li>
+        <li class="sub"><a href="#sec-15-12">15.12 HrPayslipEmployees</a></li>
+        <li class="sub"><a href="#sec-15-13">15.13 HrPayslipRunWizard</a></li>
+        <li class="sub"><a href="#sec-15-14">15.14 HrAccumulatedPayrollWizard</a></li>
+        <li class="sub"><a href="#sec-15-15">15.15 EbankingWizardReport</a></li>
+        <li class="sub"><a href="#sec-15-16">15.16 BpjsWizardReport</a></li>
+        <li class="sub"><a href="#sec-15-17">15.17 BpjsTkWizardReport</a></li>
+        <li class="sub"><a href="#sec-15-18">15.18 BupotBulananWizard</a></li>
+        <li class="sub"><a href="#sec-15-19">15.19 BupotTahunanWizard</a></li>
+        <li class="sub"><a href="#sec-15-20">15.20 WizardPayrollReport</a></li>
+        <li class="sub"><a href="#sec-15-21">15.21 Wizard Laporan Pajak</a></li>
+        <li class="sub"><a href="#sec-15-22">15.22 HistoryChangeWizard</a></li>
+        <li class="sub"><a href="#sec-15-23">15.23 MaritalTaxStatusUpdateWizard</a></li>
+        <li class="sub"><a href="#sec-15-24">15.24 HrPayslipImportWizard</a></li>
+        <li class="sub"><a href="#sec-15-25">15.25 RunOffCycle</a></li>
+        <li class="sub"><a href="#sec-15-26">15.26 ConfirmationDeleteBatch</a></li>
+        <li><a href="#section-16">16 — Payroll Journal & Attendance Lock</a></li>
+        <li class="sub"><a href="#sec-16-1">16.1 Metode Penghitungan Biaya Karyawan</a></li>
+        <li class="sub"><a href="#sec-16-2">16.2 Struktur Journal Entry per Payslip</a></li>
+        <li class="sub"><a href="#sec-16-3">16.3 THR Journal Entry</a></li>
+        <li class="sub"><a href="#sec-16-4">16.4 Pesangon Journal Entry</a></li>
+        <li><a href="#section-17">17 — Correction, Loan Injection & Mobile Payslip</a></li>
+        <li class="sub"><a href="#sec-17-1">17.1 Kondisi Pemicu Correction</a></li>
+        <li class="sub"><a href="#sec-17-2">17.2 Langkah Teknis Correction</a></li>
+        <li class="sub"><a href="#sec-17-3">17.3 Mekanisme Context Bypass</a></li>
+        <li class="sub"><a href="#sec-17-4">17.4 Logika Injeksi Angsuran Pinjaman</a></li>
+        <li class="sub"><a href="#sec-17-5">17.5 Model Pinjaman</a></li>
+        <li class="sub"><a href="#sec-17-6">17.6 Injeksi Otomatis ke Payslip</a></li>
+        <li class="sub"><a href="#sec-17-7">17.7 Konteks Pengabaian Lock</a></li>
+        <li class="sub"><a href="#sec-17-8">17.8 Alur Mobile Payslip PDF</a></li>
+        <li class="sub"><a href="#sec-17-9">17.9 Mekanisme Generate</a></li>
+        <li class="sub"><a href="#sec-17-10">17.10 Token-Based Security</a></li>
+        <li class="sub"><a href="#sec-17-11">17.11 Data Payslip di Mobile</a></li>
+        <li><a href="#section-18">18 — Laporan Detail & UAT Extended</a></li>
+        <li class="sub"><a href="#sec-18-1">18.1 Skenario UAT Extended</a></li>
+        <li class="sub"><a href="#sec-18-2">18.2 Laporan Gaji Umum</a></li>
+        <li class="sub"><a href="#sec-18-3">18.3 Laporan Pajak 1721-A Bulanan</a></li>
+        <li class="sub"><a href="#sec-18-4">18.4 Laporan BPJS Kesehatan</a></li>
+        <li class="sub"><a href="#sec-18-5">18.5 Laporan BPJS TK</a></li>
+        <li class="sub"><a href="#sec-18-6">18.6 Laporan Perubahan Upah BPJS TK</a></li>
+        <li><a href="#section-19">19 — Matriks Keamanan dan Access Control</a></li>
+        <li class="sub"><a href="#sec-19-1">19.1 Tabel Aktor dan Hak Akses</a></li>
+        <li class="sub"><a href="#sec-19-2">19.2 Record Rules</a></li>
+        <li class="sub"><a href="#sec-19-3">19.3 Field-Level Security</a></li>
+        <li class="sub"><a href="#sec-19-4">19.4 Context Bypass Usage Policy</a></li>
+        <li><a href="#section-20">20 — Scheduler Otomatis & Glosarium</a></li>
+        <li class="sub"><a href="#sec-20-1">20.1 Scheduler: Generate Payslip Period</a></li>
+        <li class="sub"><a href="#sec-20-2">20.2 Scheduler: Sync Government Regulations</a></li>
+        <li class="sub"><a href="#sec-20-3">20.3 Scheduled Marital Tax Status Updates</a></li>
+        <li class="sub"><a href="#sec-20-4">20.4 Reset Calculated Irregular Allowance</a></li>
+        <li class="sub"><a href="#terminology">20.5 Glosarium Istilah</a></li>
+        <li><a href="#section-21">21 — Informasi Versi Dokumen</a></li>
+        <li><a href="#section-22">22 — Matriks Penanganan Error</a></li>
+        <li class="sub"><a href="#sec-22-1">22.1 Validation Errors</a></li>
+        <li class="sub"><a href="#sec-22-2">22.2 API Errors</a></li>
+        <li class="sub"><a href="#sec-22-3">22.3 Data Integrity Errors</a></li>
+        <li class="sub"><a href="#sec-22-4">22.4 Security/Access Errors</a></li>
+    </ul>
+
+    <div class="sidebar-section-label">Appendix</div>
+    <ul class="sidebar-nav">
+        <li><a href="#section-23">23 — Deployment Notes</a></li>
+        <li><a href="#section-24">24 — Glossary Reference</a></li>
+    </ul>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content">
+
+    <header>
+        <h1>Product Requirements Document</h1>
+        <p class="subtitle"><strong>FP HR Payroll Ecosystem</strong> (Odoo 13 Custom Implementation)</p>
+    </header>
+
+    <div class="card">
+        <div class="modules-highlight" id="ecosystem">
+            <strong>Ecosystem Modules Overview</strong>
+            <br><br>
+            <span class="badge">Modul Utama: <code>fp_hr_payroll</code></span>
+            <span class="badge">Terkait: <code>if_hr_payroll_attendance</code></span>
+            <span class="badge">Terkait: <code>if_hr_payroll_journal</code></span>
+            <span class="badge">Terkait: <code>if_loan</code></span>
+            <span class="badge">Terkait: <code>if_mobile_payroll</code></span>
+        </div>
+
+        <!-- ORIGINAL CONTENT STARTS HERE -->
+        <span id="overview"></span>
+        <h2 id="section-01">1. Ringkasan Dokumen</h2>
+        <p>Dokumen ini mendefinisikan Product Requirements Document (PRD) untuk ekosistem payroll custom Odoo 13 yang berpusat pada modul <code>fp_hr_payroll</code>. PRD ini disusun berdasarkan implementasi aktual pada codebase, bukan asumsi fungsional generik. Fokusnya adalah menjelaskan kebutuhan bisnis, ruang lingkup, aktor, data model utama, alur end-to-end, integrasi antar modul, aturan bisnis, risiko, dan kriteria penerimaan.</p>
+        <p>Tujuan utamanya adalah menyediakan payroll engine berbasis Odoo yang:</p>
+        <ul>
+            <li>Mengelola master payroll dan regulasi pemerintah.</li>
+            <li>Menyinkronkan data master dan transaksi ke backend payroll eksternal.</li>
+            <li>Menerima hasil kalkulasi payroll dari backend tersebut.</li>
+            <li>Menyajikan, memfinalisasi, melaporkan, dan menjurnal hasil payroll di Odoo.</li>
+            <li>Mendukung payroll regular dan off-cycle.</li>
+            <li>Mendukung attendance-driven payroll, loan deduction, payroll journal, dan mobile payslip.</li>
+        </ul>
+
+        <h2 id="section-02">2. Latar Belakang</h2>
+        <p>Payroll pada implementasi ini tidak dihitung penuh oleh Odoo. Odoo bertindak sebagai:</p>
+        <ul>
+            <li>Sumber master data karyawan, kontrak, company, cutoff, dan konfigurasi.</li>
+            <li>Antarmuka operasional HR dan payroll.</li>
+            <li>Penyimpan hasil kalkulasi payroll.</li>
+            <li>Generator laporan dan dokumen.</li>
+            <li>Orchestrator finalisasi dan jurnal.</li>
+        </ul>
+        <p>Kalkulasi inti payroll, pajak, BPJS, TER, THR, pesangon, dan sebagian report tahunan bergantung pada backend eksternal yang diakses melalui model <code>hr.payroll.api.config</code>.</p>
+        <p>Dengan demikian, kebutuhan bisnis yang diakomodasi modul ini adalah:</p>
+        <ul>
+            <li>Payroll Indonesia dengan aturan BPJS, PPh21, PTKP, TER, THR, dan pesangon.</li>
+            <li>Multi-company.</li>
+            <li>Payroll regular dan off-cycle.</li>
+            <li>Dukungan attendance-based payroll untuk daily worker dan overtime.</li>
+            <li>Kebutuhan banking export, tax report, BPJS report, dan jurnal akuntansi.</li>
+            <li>Kemampuan koreksi atas payroll yang telah finalized dalam kondisi tertentu.</li>
+        </ul>
+
+        <h2 id="section-03">3. Tujuan Produk</h2>
+        <h3 id="sec-3-1">3.1 Tujuan Bisnis</h3>
+        <ul>
+            <li>Memastikan proses payroll bulanan dan off-cycle berjalan konsisten lintas entitas perusahaan.</li>
+            <li>Mengurangi perhitungan manual payroll dan risiko salah hitung.</li>
+            <li>Menjaga auditability atas konfigurasi payroll dan perubahan regulasi.</li>
+            <li>Menyediakan output payroll yang siap pakai untuk HR, Finance, Accounting, dan kebutuhan pelaporan pajak/BPJS.</li>
+            <li>Menghubungkan payroll ke proses akuntansi dan mobile distribution.</li>
+        </ul>
+        <h3 id="sec-3-2">3.2 Tujuan Operasional</h3>
+        <ul>
+            <li>Menyediakan satu sumber kendali payroll di Odoo.</li>
+            <li>Menjaga sinkronisasi data master ke backend payroll.</li>
+            <li>Menghasilkan payslip draft otomatis untuk batch regular.</li>
+            <li>Mendukung finalisasi terkontrol dengan validasi period backend.</li>
+            <li>Mendukung recalculation saat master/payroll component berubah.</li>
+            <li>Menyediakan report statutory dan operational.</li>
+        </ul>
+        <h3 id="sec-3-3">3.3 Non-Goal</h3>
+        <ul>
+            <li>Tidak menggantikan backend kalkulasi eksternal.</li>
+            <li>Tidak mendefinisikan formula payroll murni di Odoo salary rule standar.</li>
+            <li>Tidak menutup semua use case HR; fokus di payroll-related flow.</li>
+        </ul>
+
+        <h2 id="section-04">4. Scope</h2>
+        <h3 id="sec-4-1">4.1 In Scope</h3>
+        <ul>
+            <li>Konfigurasi API payroll backend.</li>
+            <li>Sinkronisasi master company, government regulation, employee, contract.</li>
+            <li>Payroll period management / Payroll initialization / accumulated payroll.</li>
+            <li>Regular payroll batch, THR batch, Pesangon batch, Other off-cycle batch.</li>
+            <li>Recalculation salary component, Correction flow.</li>
+            <li>Tax report 1721, BPJS / BPJSTK reporting, E-banking export, Payroll batch reporting.</li>
+            <li>Attendance-based payroll extension, Payroll journal accounting extension, Loan deduction extension, Mobile payslip attachment extension.</li>
+        </ul>
+        <h3 id="sec-4-2">4.2 Out of Scope</h3>
+        <ul>
+            <li>Desain backend payroll API.</li>
+            <li>Infrastruktur hosting API eksternal.</li>
+            <li>Formula salary rule Odoo native sebagai engine utama.</li>
+            <li>ESS portal penuh untuk payroll selain file mobile attachment.</li>
+        </ul>
+
+        <h2 id="section-05">5. Modul, Dependency & User Persona</h2>
+        <h3 id="sec-5-1">5.1 Modul Inti</h3>
+        <p><code>[fp_hr_payroll](/opt/odoo13/saas/fp_hr_payroll)</code> (Depends: fp_employee, hr_payroll_community, account)</p>
+        <h3 id="sec-5-2">5.2 Modul Terkait Langsung</h3>
+        <ul>
+            <li><code>[if_hr_payroll_attendance](/opt/odoo13/saas/if_hr_payroll_attendance)</code></li>
+            <li><code>[if_hr_payroll_journal](/opt/odoo13/saas/if_hr_payroll_journal)</code></li>
+            <li><code>[if_loan](/opt/odoo13/saas/if_loan)</code></li>
+            <li><code>[if_mobile_payroll](/opt/odoo13/saas/if_mobile_payroll)</code></li>
+        </ul>
+        <h3 id="sec-5-3">5.3 Dependency Fungsional</h3>
+        <ul>
+            <li><code>fp_employee</code> menyediakan struktur employee/contract tambahan.</li>
+            <li><code>hr_payroll_community</code> menyediakan model payroll dasar Odoo community.</li>
+            <li><code>account</code> diperlukan untuk journal posting dan payment method.</li>
+            <li><code>if_attendance</code> menjadi fondasi attendance/overtime/leave.</li>
+            <li><code>ohrms_loan</code> dan <code>ohrms_loan_accounting</code> dipakai oleh <code>if_loan</code>.</li>
+        </ul>
+        <h3 id="sec-5-4">5.4 User Persona / Aktor</h3>
+        <ul>
+            <li><strong>5.4.1 Payroll Officer:</strong> Menjalankan batch payroll, memeriksa payslip draft, mengupdate salary components tertentu, menghasilkan report dan export bank, submit batch.</li>
+            <li><strong>5.4.2 Payroll Manager:</strong> Mengelola konfigurasi payroll, memfinalisasi batch, mengelola government regulation, menjalankan correction bila diizinkan, menilai consistency payroll output.</li>
+            <li><strong>5.4.3 HR Officer / HR Manager:</strong> Mengelola employee master, mengelola contract, memastikan field payroll/tax employee valid, mengelola THR/pesangon input tertentu.</li>
+            <li><strong>5.4.4 Attendance Admin / Supervisor:</strong> Menyetujui attendance, overtime, leave. Memastikan data attendance complete sebelum payroll run.</li>
+            <li><strong>5.4.5 Accounting / Finance:</strong> Menggunakan payroll journal, menggunakan export bank, menggunakan report total payroll, liabilities, PPh21, BPJS.</li>
+            <li><strong>5.4.6 Employee / Mobile Consumer:</strong> Menerima payslip attachment untuk konsumsi mobile.</li>
+            <li><strong>5.4.7 System Administrator:</strong> Mengisi API host, melakukan sync master, troubleshooting mismatch period / sync issue, upgrade module.</li>
+        </ul>
+
+        <h2 id="section-06">6. Problem Statement</h2>
+        <p>Organisasi membutuhkan payroll Indonesia yang:</p>
+        <ul>
+            <li>Menggabungkan data HR, kontrak, dan attendance.</li>
+            <li>Menghitung komponen salary, pajak, dan BPJS secara benar.</li>
+            <li>Mendukung skenario regular dan off-cycle.</li>
+            <li>Menghasilkan dokumen statutory dan operasional.</li>
+            <li>Terhubung ke accounting.</li>
+            <li>Dapat diaudit dan disesuaikan per company.</li>
+        </ul>
+        <p>Tantangan utama: Banyak aturan lokal payroll dan tax. Payroll sangat sensitif terhadap cutoff, resign, join date, backpay, dan daily worker. Perubahan employee/contract harus tercermin ke draft payroll tanpa merusak data finalized. Harus ada integrasi yang aman ke backend payroll eksternal. Finance membutuhkan jurnal dan export bank yang konsisten dengan hasil payroll.</p>
+
+        <h2 id="section-07">7. Solusi Produk</h2>
+        <p>Produk ini menggunakan Odoo sebagai control center dan backend payroll eksternal sebagai compute engine. Solusinya terdiri dari 6 pilar:</p>
+        <ol>
+            <li><strong>Master sync:</strong> Company, regulation, employee, contract dikirim ke backend.</li>
+            <li><strong>Batch orchestration:</strong> Odoo membuat batch, mengambil hasil dari backend, lalu membuat payslip lokal.</li>
+            <li><strong>User adjustment:</strong> User dapat mengubah komponen tertentu di payslip draft dan meminta recalculation.</li>
+            <li><strong>Finalization:</strong> Batch difinalisasi di Odoo lalu dipost ke backend.</li>
+            <li><strong>Reporting and export:</strong> Odoo menyiapkan payroll report, tax report, BPJS report, dan bank export.</li>
+            <li><strong>Extensions:</strong> Attendance, journal, loan, mobile berjalan sebagai layer di atas payroll inti.</li>
+        </ol>
+
+        <h2 id="section-08">8. Arsitektur Produk (Diperbarui)</h2>
+        <h3 id="sec-8-1">8.1 Konsep Arsitektur</h3>
+        <ul>
+            <li>Odoo menyimpan master dan transaksi.</li>
+            <li>Odoo memanggil REST API payroll backend.</li>
+            <li>Backend mengembalikan hasil per contract/employee.</li>
+            <li>Odoo memetakan hasil ke <code>hr.payslip</code>.</li>
+            <li>Finalization dilakukan dua arah: status di Odoo dan posting final ke backend.</li>
+            <li>Modul extension membaca hasil <code>hr.payslip</code> untuk proses lanjut.</li>
+        </ul>
+
+        <!-- Perbaikan Mermaid Architecture Diagram MENGGUNAKAN NEW COMPREHENSIVE ONE -->
+        <div class="diagram-container">
+            <div class="diagram-title">System Architecture: Comprehensive Data Exchange</div>
+            <div class="mermaid">
+            graph TD
+                classDef odoo_core fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#f8fafc;
+                classDef odoo_ext fill:#0f172a,stroke:#10b981,stroke-width:1px,color:#cbd5e1;
+                classDef ext_api fill:#334155,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc;
+
+                subgraph Odoo["Odoo Ecosystem (Master Control Center)"]
+                    direction TB
+                    subgraph Core["Core Master Data"]
+                        C[Company and Reg Config]:::odoo_core
+                        E[Employee Master]:::odoo_core
+                        K[Contract Master]:::odoo_core
+                    end
+                    subgraph Engine["Payroll Processing Engine"]
+                        Batch[Payroll Batch]:::odoo_core
+                        Payslip[hr.payslip Draft to Close]:::odoo_core
+                    end
+                    subgraph Ext["Extension Layers"]
+                        Att[if_hr_payroll_attendance]:::odoo_ext
+                        Loan[if_loan]:::odoo_ext
+                        Journ[if_hr_payroll_journal]:::odoo_ext
+                        Mob[if_mobile_payroll]:::odoo_ext
+                    end
+                end
+
+                subgraph Backend["External Backend System (Compute Engine)"]
+                    API[Payroll REST API Endpoint Hub]:::ext_api
+                    CEngine[Calculus Core: BPJS PPh21 TER Tunjangan]:::ext_api
+                    DB[(Payroll Permanent DB)]:::ext_api
+                end
+
+                C -->|depends on| E
+                E -->|depends on| K
+                K -.->|1 Fetch Contracts| Batch
+                Att -.->|2 Evaluate Locks| Batch
+                Batch ==>|"3 POST calculate"| API
+                API ==>|"4 JSON Response"| Batch
+                Batch ==>|"5 Generate Payslip"| Payslip
+                Loan -.->|6 Inject Installment| Payslip
+                Payslip ==>|"7 POST finalize"| API
+                Payslip ==>|"8 Account Move"| Journ
+                Payslip ==>|"9 PDF and Token"| Mob
+
+                C -.->|POST configs| API
+                E -.->|POST employees| API
+                K -.->|POST contracts| API
+
+                API <-->|"compute"| CEngine
+                CEngine <-->|"persist"| DB
+            </div>
+        </div>
+
+        <h3 id="sec-8-2">8.2 Komponen Utama</h3>
+        <ul>
+            <li>API configuration: <code>[api_config.py](/opt/odoo13/saas/fp_hr_payroll/models/api_config.py)</code></li>
+            <li>Company extension: <code>[res_company.py](/opt/odoo13/saas/fp_hr_payroll/models/res_company.py)</code></li>
+            <li>Government regulation: <code>[government_regulation.py](/opt/odoo13/saas/fp_hr_payroll/models/government_regulation.py)</code></li>
+            <li>Employee extension: <code>[hr_employee.py](/opt/odoo13/saas/fp_hr_payroll/models/hr_employee.py)</code></li>
+            <li>Contract extension: <code>[hr_contract.py](/opt/odoo13/saas/fp_hr_payroll/models/hr_contract.py)</code></li>
+            <li>Payroll period: <code>[hr_payslip_period.py](/opt/odoo13/saas/fp_hr_payroll/models/hr_payslip_period.py)</code></li>
+            <li>Payslip & batch: <code>[hr_payslip.py](/opt/odoo13/saas/fp_hr_payroll/models/hr_payslip.py)</code></li>
+            <li>Finalize wizard: <code>[payslip_wizard.py](/opt/odoo13/saas/fp_hr_payroll/wizard/payslip_wizard.py)</code></li>
+        </ul>
+
+        <h2 id="section-09">9. Data Domain & Extension Modules</h2>
+        <h3 id="sec-9-1">9.1 Requirement Fungsional</h3>
+        <ul>
+            <li><strong>9.1.1 API Configuration:</strong> Menyimpan 1 host aktif, action sync all, disable_sync.</li>
+            <li><strong>9.1.2 Company Sync:</strong> Memicu recalculation jika config berubah.</li>
+            <li><strong>9.1.3 Government Regulation:</strong> Scheduler, history change.</li>
+            <li><strong>9.1.4 Employee &amp; Contract Master:</strong> Memicu update draft payroll jika relevan. Mencegah delete jika payslip ada.</li>
+            <li><strong>9.1.5 Payroll Run:</strong> Regular &amp; Off-Cycle (THR, Pesangon, Others). Memastikan period cocok, hitung hasil.</li>
+            <li><strong>9.1.6 Payslip Adjustment:</strong> Tambah/ubah irregular allowance, overwrite BPJS, recalculation trigger.</li>
+            <li><strong>9.1.7 Recalculation:</strong> Menghitung ulang jika ada perubahan field.</li>
+            <li><strong>9.1.8 Finalization:</strong> Wizard partial lock, close batch, post final ke backend.</li>
+            <li><strong>9.1.9 Correction Flow:</strong> Rollback state attendance ke approve, batch ke correction.</li>
+            <li><strong>9.1.10 Reporting &amp; Attachment:</strong> Slip PDF, 1721 CSV, E-banking.</li>
+        </ul>
+
+        <h3 id="sec-9-2">9.2 Attendance Extension Requirements</h3>
+        <p>Modul: <code>if_hr_payroll_attendance</code>. <br>Tujuan: Menjadikan payroll sensitif terhadap actual working days, overtime, unpaid leave. Menghitung deduction dari absence, lock_payroll flag untuk menolak run jika ada data belum approve.</p>
+        <h3 id="sec-9-3">9.3 Payroll Journal Requirements</h3>
+        <p>Modul: <code>if_hr_payroll_journal</code>. <br>Tujuan: Menghasilkan account move / jurnal akuntansi dari batch saat ditutup, memetakan BPJS/PPh21 ke debit/kredit.</p>
+        <h3 id="sec-9-4">9.4 Loan Requirements</h3>
+        <p>Modul: <code>if_loan</code>. <br>Tujuan: Meng-inject cicilan bulan berjalan ke deduction draft payslip. Menandai installment paid, rollback ke unpaid jika payslip dihapus.</p>
+        <h3 id="sec-9-5">9.5 Mobile Payroll Requirements</h3>
+        <p>Modul: <code>if_mobile_payroll</code>. <br>Menghasilkan attachment PDF payslip yang dilindungi token.</p>
+
+        <h3 id="sec-9-6">9.6 Master Company</h3>
+        <p>Tambahan field penting: THR eligibility days, THR round days, THR components, Tax signer name / NPWP, NPP / ID TKU / bupot identity, Cutoff payroll/attendance, Flag overwrite BPJS, Payroll deduction absence components. Behavior: Perubahan field memicu sync company. Create company membuat THR default.</p>
+        <h3 id="sec-9-7">9.7 Government Regulation</h3>
+        <p>Model utama: <code>hr.government.regulation</code>, dll. Dibuat per company, disinkronkan ke backend. Mendukung history effective-dated change.</p>
+        <h3 id="sec-9-8">9.8 Employee</h3>
+        <p>Field tambahan: salary payment journal, payment method, pesangon, BPJS tick date, tax report year. Create/write memicu sync jika field wajib terpenuhi.</p>
+        <h3 id="sec-9-9">9.9 Contract</h3>
+        <p>Field penting: <code>active_backpay, effective_date_backpay, backpay_component_ids, contract_number</code>. Contract adalah unit sinkronisasi utama. Payload berisi basic salary, UMR, cutoff type, dll.</p>
+        <h3 id="sec-9-10">9.10 Payslip Period & Accumulated Payroll</h3>
+        <p>Period dibuat otomatis per tahun. Accumulated Payroll berfungsi untuk inisialisasi / beginning balance.</p>
+        <h3 id="sec-9-11">9.11 Payslip & Payslip Batch</h3>
+        <p>Payslip menyimpan hasil akhir: THP, PPh21, BPJS, actual_working_days. Batch memuat payslip period, state draft/close, lock_payroll flag.</p>
+
+        <h2 id="section-10">10. Business Rules</h2>
+        <ul>
+            <li><strong>10.1 Field Wajib Employee:</strong> NPWP, marital status, employment status, payroll method.</li>
+            <li><strong>10.2 Contract Validity:</strong> Hanya status 'open' yang diproses.</li>
+            <li><strong>10.3 Batch Exclusivity &amp; Finalization Rule:</strong> Tak boleh overlap batch reguler. Harus sinkron period backend sebelum <code>action_post_finalized_data()</code>.</li>
+            <li><strong>10.4 Correction &amp; Attendance Rule:</strong> Attendance period locked tidak boleh diedit.</li>
+            <li><strong>10.5 BPJS, THR, Pesangon:</strong> Overwrite jika dizinkan company, batch terpisah.</li>
+        </ul>
+
+        <h2 id="section-11">11. UX, Security, Scheduler & Integrasi Eksternal</h2>
+        <h3 id="sec-11-1">11.1 UX / Antarmuka</h3>
+        <p>Menyederhanakan menu native, rombak payslip form, menggunakan Wizard-centric Flow (untuk finalize, report, bupot, bpjs, dll).</p>
+
+        <h3 id="sec-11-2">11.2 Security Requirements</h3>
+        <p>Membedakan grup hak akses. API config hanya untuk base.group_no_one, dll.</p>
+
+        <h3 id="sec-11-3">11.3 Scheduler / Automation</h3>
+        <p>Generate period per tahun, cron history change, fungsi install awal data.</p>
+
+        <h3 id="sec-11-4">11.4 Integrasi Eksternal</h3>
+        <p>Payroll API Backend (endpoints /configs, /employees, /contracts, /calculate, /finalize). Koneksi iLovePDF untuk 1721 Excel to PDF. Export banking (BCA, BRI, Mandiri, CIMB).</p>
+
+        <h2 id="section-12">12. Risiko Produk, Data Kritis & Acceptance Criteria</h2>
+        <p><strong>Risiko Teknis:</strong> Ketergantungan API host, SQL manual. <br><strong>Risiko Operasional:</strong> Recalculation terpicu diam-diam jika master diubah, attendance lock macet jika SPV telat approve, error cicilan loan jika draft payslip dihapus sembarangan. <br><strong>Risiko Compliance:</strong> Data report NPWP bocor jika sinkron tidak solid.</p>
+
+        <h3 id="sec-12-1">12.1 Kebutuhan Data Kritis</h3>
+        <p>API host, config payroll, regulasi govt per company, approval attendance, loan master komplit sebelum run.</p>
+
+        <h3 id="sec-12-2">12.2 Acceptance Criteria</h3>
+        <ul>
+            <li>Setup berhasil tanpa error.</li>
+            <li>Regular dan Off-cycle batch dapat membuat draft.</li>
+            <li>Recalculation berhasil menyesuaikan angka jika komponen irregular diubah.</li>
+            <li>Attendance & Loan berefek langsung ke THP draft.</li>
+            <li>Finalize menutup batch dan menciptakan Journal Account Move.</li>
+        </ul>
+
+        <h3 id="sec-12-3">12.3 Open Questions / Gap Implementasi</h3>
+        <p>Default API bernilai "/", butuh initial manual setup. Beberapa placeholder fungsi masih ada. Integration heavy testing.</p>
+
+        <h3 id="sec-12-4">12.4 Rekomendasi Implementasi Operasional</h3>
+        <p>Urutan SOP: sync company -> govt -> employee -> contract. Wajibkan cut-off approval absensi secara disiplin sebelum batch draft dibuat. Testing UAT di siklus Desember.</p>
+
+        <h2 id="section-13">13. Daftar File Referensi Utama</h2>
+        <ul>
+            <li><code>fp_hr_payroll/models/api_config.py</code></li>
+            <li><code>fp_hr_payroll/models/hr_payslip.py</code></li>
+            <li><code>fp_hr_payroll/wizard/payslip_wizard.py</code></li>
+            <li><code>if_hr_payroll_attendance/models/hr_payslip.py</code></li>
+            <li><code>if_hr_payroll_journal/models/hr_payslip.py</code></li>
+            <li><code>if_loan/models/hr_payslip.py</code></li>
+        </ul>
+
+<!-- NEW CONTENT APPENDED DIRECTLY BENEATH ORIGINAL CONTENT -->
+
+        <h2 id="section-14">14. Alur Payroll Detail & Skenario UAT</h2>
+        <p>Bagian ini merinci langkah prosedural secara detail dari hulu ke hilir untuk siklus gaji bulanan (Regular Payroll).</p>
+        <h3 id="sec-14-1">14.1 Sinkronisasi Master Data</h3>
+        <ul>
+            <li><strong>Setup API:</strong> SysAdmin mengonfigurasi host Odoo pada <code>hr.payroll.api.config</code>. Sistem melakukan test connection.</li>
+            <li><strong>Sync Company:</strong> Data risk JKK, Prorate Type, dan batas Cutoff dikirim. Terjadi otomatis saat ada perubahan <code>write()</code> pada Model Company terkait.</li>
+            <li><strong>Sync Employee & Contract:</strong> Profil karyawan (NPWP, Status Nikah) dan isi Contract (Basic Salary, Allowance/Deduction tetap) dipastikan harus berstatus <code>Open/Active</code>.</li>
+        </ul>
+        <h3 id="sec-14-2">14.2 Persiapan Kehadiran (Pre-Payroll)</h3>
+        <ul>
+            <li>Supervisor memastikan modul Attendance telah meng-_approve_ semua data cuti, jam lembur, dan absensi.</li>
+            <li>Modul ekstensi <code>if_hr_payroll_attendance</code> akan membaca cut-off kehadiran dan memastikan **tidak ada** lock constraint yang dilanggar.</li>
+        </ul>
+        <h3 id="sec-14-3">14.3 Pembuatan Batch & Kalkulasi API</h3>
+        <ul>
+            <li>HR membuka <strong>Payslip Batches</strong> dan membuat record baru berdasarkan periode.</li>
+            <li>Odoo memaketkan data (Period ID, Array Contract ID) dan mengirim request <code>POST /calculate</code> ke Backend API Eksternal.</li>
+            <li>API mengembalikan JSON berisi penjabaran BPJS, PPh21, gross, dan THP. Menjadi draft <code>hr.payslip</code>.</li>
+        </ul>
+        <h3 id="sec-14-4">14.4 Review, Adjustment & Recalculation</h3>
+        <ul>
+            <li>HR menambahkan <strong>Irregular Component</strong> di form Odoo. Modul Ekstensi <strong>Loan (if_loan)</strong> otomatis membaca hutang aktif cicilan bulan berjalan dan "meng-inject".</li>
+            <li>HR menekan tombol <strong>Recalculate</strong>. Odoo menembak ulang API. API merespons balik nilai pajak yang direvisi.</li>
+        </ul>
+        <h3 id="sec-14-5">14.5 Finalisasi Batch & Accounting</h3>
+        <ul>
+            <li>HR memilih <strong>Finalize/Close Batches</strong> via Wizard. Odoo mengirim <code>action_post_finalized_data()</code> ke API.</li>
+            <li>Modul Ekstensi <strong>Journal (if_hr_payroll_journal)</strong> menangkap state Close ini dan merilis <code>account.move</code>.</li>
+        </ul>
+
+        <div class="diagram-container">
+            <div class="diagram-title">Detailed Sequence Diagram: Sync to Finalize Automation Flow</div>
+            <div class="mermaid">
+            sequenceDiagram
+                autonumber
+                actor Admin as HR/Admin
+                actor Mgn as Payroll Manager
+                participant OdooCore as Odoo (Master & Batch)
+                participant Attd as Attendance Module
+                participant Loan as Loan Module
+                participant API as Backend Calculus API
+                participant Mobile as Mobile Module
+                participant Journal as Journal Module
+
+                rect rgba(59, 130, 246, 0.15)
+                    Note over Admin, API: Phase 1: Sinkronisasi Presisi Master Data
+                    Admin->>OdooCore: [1.1] Create/Edit Employee & Contract
+                    OdooCore->>OdooCore: [1.2] Validasi field wajib: NPWP, marital_status, employment_status, payroll_method
+                    OdooCore->>API: [1.3] POST /employees atau /contracts
+                    API-->>OdooCore: [1.4] 200 OK Acknowledge
+                end
+
+                rect rgba(16, 185, 129, 0.15)
+                    Note over Mgn, API: Phase 2: Run Payroll Batch (Regular)
+                    Mgn->>OdooCore: [2.1] Klik "Run Payroll Regular"
+                    OdooCore->>OdooCore: [2.2] check_payroll_batch — pastikan tidak ada batch reguler open
+                    OdooCore->>Attd: [2.3] _check_batch_all_data_need_approval — cek attendance, overtime, cuti belum approve
+                    Attd-->>OdooCore: [2.4] Popup hr.approve_all jika ada data pending
+                    OdooCore->>API: [2.5] GET /companies/{id}/period — validasi period Odoo = period backend
+                    API-->>OdooCore: [2.6] currentPeriodMonth & currentPeriodYear
+                    OdooCore->>OdooCore: [2.7] checking_december_batch — wajib finalize semua batch prior jika bulan 12
+                    OdooCore->>OdooCore: [2.8] _default_monthly_period — ambil atau generate period
+                    OdooCore->>OdooCore: [2.9] CREATE hr.payslip.run (state=Draft)
+                    OdooCore->>API: [2.10] action_sync_contracts() — POST semua contract active ke backend
+                    API-->>OdooCore: [2.11] 200 OK
+                    OdooCore->>OdooCore: [2.12] create_payslip_data()
+                    OdooCore->>API: [2.13] GET /companies/{id}/contracts?period=YYYY-MM — kirim period & standard_working_days
+                    API-->>OdooCore: [2.14] JSON Response paginated (THP, PPh21, BPJS, allowances, deductions)
+                    OdooCore->>OdooCore: [2.15] mapping_response_data() — map JSON ke hr.payslip.line (Draft)
+                    OdooCore->>Loan: [2.16] Trigger inject cicilan bulan berjalan
+                    Loan-->>OdooCore: [2.17] Inject "Loan Installment" ke deduction_ids payslip
+                    OdooCore->>Attd: [2.18] Hitung actual_working_days dari hr_attendance (cutoff date)
+                    Attd-->>OdooCore: [2.19] actual_working_days & absent_days
+                    OdooCore->>OdooCore: [2.20] Jika ada attendance belum approve → is_need_recompute_working_days=True
+                end
+
+                rect rgba(245, 158, 11, 0.15)
+                    Note over Mgn, API: Phase 3: Irregular Adjustment & Recalculate
+                    Mgn->>OdooCore: [3.1] Tambah/upah irregular allowance atau deduction pada payslip
+                    Mgn->>OdooCore: [3.2] Klik "Recalculate" pada payslip atau batch
+                    OdooCore->>OdooCore: [3.3] wipe_salary_calculation() — clear allowance_ids, benefit_ids, deduction_ids
+                    OdooCore->>API: [3.4] sync_salary_computation() — POST irregular components
+                    API-->>OdooCore: [3.5] Updated JSON (THP, tax ter-recalculate)
+                    OdooCore->>OdooCore: [3.6] Update nilai payslip spesifik dari JSON
+                end
+
+                rect rgba(139, 92, 246, 0.15)
+                    Note over Mgn, Journal: Phase 4: Finalize Wizard
+                    Mgn->>OdooCore: [4.1] Klik "Close / Finalize Wizard"
+                    OdooCore->>Attd: [4.2] _check_lock_payroll — pastikan attendance period locked & all approved
+                    Attd-->>OdooCore: [4.3] Validation Passed
+                    OdooCore->>OdooCore: [4.4] action_payslip_finalized() — payslip state=Done (Permanent/Contract)
+                    OdooCore->>OdooCore: [4.5] action_payslip_finalized() — payslip state=Done (Daily Worker)
+                    OdooCore->>OdooCore: [4.6] action_partial_finalized(is_regular_payslip=True) — set is_finalized=True
+                    OdooCore->>OdooCore: [4.7] action_partial_finalized(is_regular_payslip=False) — set is_daily_worker_finalized=True
+                    OdooCore->>OdooCore: [4.8] close_payslip_run() — batch state=Close, finalized_date=now
+                    OdooCore->>API: [4.9] POST /companies/{id}/contracts/finalize — atau /thr/finalize, /pesangon/finalize, /others/finalize
+                    API-->>OdooCore: [4.10] Validation Confirmed — Synced & Locked
+                    OdooCore->>Journal: [4.11] Trigger if_hr_payroll_journal (state=Close hook)
+                    Journal-->>OdooCore: [4.12] Generate Account Move (jurnal BPJS, PPh21, THP)
+                    OdooCore->>Mobile: [4.13] Generate PDF payslip + token
+                    OdooCore->>OdooCore: [4.14] recalculate_concurrent_batch() — recalculate semua batch open lain
+                end
+            </div>
+        </div>
+
+        <!-- ==================== STEP EXPLANATIONS ==================== -->
+        <div class="step-explanations">
+            <h3 id="sec-14-6">14.6 Mekanisme Kunci Attendance (Attendance Lock)</h3>
+            <p>Sebelum payroll batch dapat diproses, sistem menerapkan mekanisme kunci attendance untuk memastikan semua data kehadiran sudah final dan tidak dapat diubah. Mekanisme ini bekerja pada level <code>hr.payslip.run</code> dan mencegah payroll dijalankan jika masih ada data attendance, overtime, atau leave yang berstatus <code>draft</code>, <code>check</code>, atau <code>confirm</code>.</p>
+            <p>Jika data tersebut ditemukan, sistem membuka form wizard <code>hr.approve.all</code> (via modul <code>if_hr_payroll_attendance</code>) yang memungkinkan supervisor atau admin untuk menyetujui semua data sekaligus sebelum payroll dilanjutkan.</p>
+
+            <h3 id="sec-14-7">14.7 Validasi Sebelum Finalisasi Batch</h3>
+            <p>Sebelum payslip batch dapat difinalisasi, sistem menjalankan <code>_check_batch_all_data_need_approval()</code> pada <code>hr.payslip.run</code>. Fungsi ini mengecek 3 jenis data per periode attendance:</p>
+            <ul>
+            <li><strong>Attendance:</strong> Memastikan semua attendance dengan <code>check_in + 7 hours</code> berada dalam rentang periode attendance TIDAK memiliki state <code>draft</code> atau <code>check</code>. Jika ada, fungsi mengembalikan <code>True</code>.</li>
+            <li><strong>Overtime:</strong> Memastikan semua overtime dengan <code>check_in + 7 hours</code> dalam rentang TIDAK memiliki state <code>draft</code> atau <code>check</code>.</li>
+            <li><strong>Leave:</strong> Memastikan semua leave dengan <code>request_date_from</code> dalam rentang TIDAK memiliki state <code>draft</code>, <code>confirm</code>, atau <code>validate1</code>.</li>
+            </ul>
+
+            <h3 id="sec-14-8">14.8 User Interface — Approve All</h3>
+            <p>Jika <code>need_approve_data=True</code>, sistem membuka form wizard <code>hr.approve.all</code> (via <code>if_hr_payroll_attendance</code>) yang memungkinkan user menyetujui semua data sekaligus. Context <code>bypass_approve</code> dapat diset untuk melewati validasi ini (digunakan pada off-cycle payroll).</p>
+
+            <h3 id="sec-14-9">14.9 Cutoff Date Logic</h3>
+            <p>Attendance dan payroll menggunakan <strong>cutoff date</strong> yang ditentukan oleh <code>company.get_company_cutoff_date(year, month, attendance=True/False)</code>. Untuk attendance=True, cutoff typically adalah tanggal akhir bulan. Date_from dihitung sebagai <code>cutoff_date + relativedelta(months=-1, days=+1)</code> (hari pertama bulan sebelumnya).</p>
+            <p>Contoh: cutoff=2026-02-28, from_date=2026-01-29 (untuk periode Januari).</p>
+
+            <h3 id="sec-14-10">14.10 Attendance State Machine</h3>
+            <ul>
+            <li><code>draft</code> → attendance baru dibuat oleh machine/superuser</li>
+            <li><code>check</code> → attendance di-review oleh SPV</li>
+            <li><code>approve</code> → attendance siap untuk payroll (finalized)</li>
+            <li><code>payroll</code> → attendance sudah terkait payslip</li>
+            </ul>
+            <p>Attendances dengan state <code>approve</code> atau <code>payroll</code> tidak dapat diedit ulang kecuali melalui mekanisme payroll correction.</p>
+
+            <h3 id="sec-14-11">14.11 State Rollback on Payslip Unlink</h3>
+            <p>Ketika payslip di-unlink (dihapus), sistem otomatis me-rollback attendance state dari <code>payroll</code>/<code>approve</code> ke <code>approve</code>/<code>approve</code> dengan menset <code>is_waiting_to_pay=True</code> dan <code>payslip_run_id=False</code>. Ini memastikan attendance dapat diapprove ulang tanpa perlu diedit manual.</p>
+
+            <h3 id="sec-14-12">14.12 Penjelasan Detail Setiap Step</h3>
+
+            <!-- Phase 1 -->
+            <div class="step-phase-header phase1">
+                <span class="phase-badge phase1">Phase 1</span>
+                Sinkronisasi Presisi Master Data
+            </div>
+            <table class="step-table">
+                <thead>
+                    <tr><th>Step</th><th>Aktor</th><th>Aksi / Method</th><th>Detail Penjelasan</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1.1</strong></td>
+                        <td>HR/Admin</td>
+                        <td>Create / Edit Employee &amp; Contract</td>
+                        <td>HR membuat record karyawan baru atau mengedit kontrak yang sudah ada di Odoo. Ini mencakup informasi dasar seperti nama, NPWP, status pernikahan, dan metode pembayaran gaji. Setiap perubahan yang dilakukan akan memicu proses sync ke backend Calculus API.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1.2</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>Validasi Field Wajib:<br>NPWP, marital_status,<br>employment_status, payroll_method</td>
+                        <td>Sebelum data dikirim ke API, Odoo melakukan validasi terhadap empat field wajib: <strong>NPWP</strong> (nomor wajib pajak), <strong>marital_status</strong> (status pernikahan — untuk menentukan PTKP pajak), <strong>employment_status</strong> (status kepegawaian — tetap/kontrak/daily worker), dan <strong>payroll_method</strong> (metode penggajian). Jika ada field yang kosong atau tidak valid, sistem akan menampilkan error validasi dan tidak akan melanjutkan proses sync.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1.3</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>POST /employees atau POST /contracts</td>
+                        <td>Setelah validasi berhasil, Odoo mengirim payload JSON ke endpoint REST API backend Calculus. Endpoint yang digunakan adalah <code>POST /companies/{id}/employees</code> untuk data karyawan atau <code>POST /companies/{id}/contracts</code> untuk data kontrak. Payload berisi seluruh informasi karyawan/kontrak yang diperlukan oleh sistem payroll backend untuk kalkulasi pajak dan benefit.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1.4</strong></td>
+                        <td>Backend Calculus API</td>
+                        <td>200 OK Acknowledge</td>
+                        <td>Backend Calculus menerima payload, menyimpannya, dan merespons dengan status <strong>200 OK</strong>. Respons ini bisa berisi ID referensi dari backend. Odoo mencatat respons ini sebagai tanda bahwa data master telah tersinkronisasi dengan benar. Koneksi ini bersifat asynchronous — Odoo tidak perlu menunggu konfirmasi manual.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Phase 2 -->
+            <div class="step-phase-header phase2">
+                <span class="phase-badge phase2">Phase 2</span>
+                Run Payroll Batch (Regular)
+            </div>
+            <table class="step-table">
+                <thead>
+                    <tr><th>Step</th><th>Aktor</th><th>Aksi / Method</th><th>Detail Penjelasan</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>2.1</strong></td>
+                        <td>Payroll Manager</td>
+                        <td>Klik "Run Payroll Regular"</td>
+                        <td>Payroll Manager mengakses menu Payroll Batch di Odoo dan mengklik tombol <strong>"Run Payroll Regular"</strong>. Tombol ini触发 <code>action_run_payroll(is_thr=False, is_pesangon=False, is_others=False)</code>. Ini adalah titik awal dari seluruh alur proses penggajian bulanan reguler (non-THR, non-pesangon).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.2</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>check_payroll_batch()</td>
+                        <td>Setelah tombol diklik, sistem pertama-tama memanggil <code>check_payroll_batch()</code> untuk mengecek apakah sudah ada batch reguler yang sedang dalam status <strong>Draft</strong> atau <strong>Submit</strong> untuk periode yang sama. Jika ditemukan batch duplikat, sistem akan menolak pembuatan batch baru dan menampilkan error: <em>"You cannot create new batch while a payroll run is still open for this period."</em> Ini mencegah duplikasi batch penggajian.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.3</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>_check_batch_all_data_need_approval()</td>
+                        <td>Metode ini berasal dari modul <code>if_hr_payroll_attendance</code>. Ia menjalankan tiga SQL query secara berurutan untuk mengecek apakah masih ada data attendance, overtime, atau leave yang berstatus <strong>Draft</strong> atau <strong>Check</strong> (belum di-approve): (1) <code>hr_attendance</code> — cek attendance belum diapprove, (2) <code>hr_overtime</code> — cek lembur belum diapprove, (3) <code>hr_leave</code> — cek cuti yang belum divalidasi. Jika ada data pending, proses run payroll akan dihentikan sementara.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.4</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>Tampilkan Popup hr.approve_all</td>
+                        <td>Jika step 2.3 menemukan adanya data pending (attendance, overtime, atau leave yang belum approve), sistem akan menampilkan popup <strong>hr.approve_all</strong>. Popup ini memberi tahu Payroll Manager bahwa masih ada data yang perlu diapprove sebelum payroll bisa dijalankan. Manager harus menyelesaikan approval data tersebut terlebih dahulu, baru kemudian mengulang proses Run Payroll.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.5</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>GET /companies/{id}/period</td>
+                        <td>Setelah semua data attendance di-approve, sistem mengambil periode terakhir yang aktif dari backend Calculus API melalui endpoint <code>GET /companies/{id}/period</code>. Ini dilakukan untuk memastikan bahwa periode payroll di Odoo sesuai/sinkron dengan periode yang sedang aktif di sistem backend. Endpoint ini mengembalikan <code>currentPeriodMonth</code> dan <code>currentPeriodYear</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.6</strong></td>
+                        <td>Backend Calculus API</td>
+                        <td>Response: currentPeriodMonth &amp; currentPeriodYear</td>
+                        <td>Backend merespons dengan JSON yang berisi data periode berjalan, misalnya: <code>{"currentPeriodMonth": 3, "currentPeriodYear": 2026}</code>. Odoo membandingkan nilai ini dengan periode payroll yang sedang diproses di Odoo. Jika tidak cocok, proses dihentikan dengan error: <em>"Last Period on backend doesn't match!"</em> Kecuali untuk batch THR, Pesangon, atau Others yang bypass validasi ini.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.7</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>checking_december_batch()</td>
+                        <td>Jika periode berjalan adalah bulan <strong>Desember</strong> (bulan 12), sistem menjalankan <code>checking_december_batch()</code>. Logika ini mewajibkan Payroll Manager untuk menyelesaikan (finalize) seluruh batch payroll dari bulan-bulan sebelumnya terlebih dahulu sebelum bisa menjalankan batch bulan Desember. Tujuannya adalah memastikan tidak ada tunggakan penggajian sebelum perusahaan masuk periode tahunan baru (year-end closing).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.8</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>_default_monthly_period()</td>
+                        <td>Sistem mengambil atau men-generate periode payroll default untuk bulan berjalan melalui <code>_default_monthly_period()</code>. Jika periode untuk bulan tersebut belum ada di sistem, metode ini akan men-generate record baru di model <code>hr.payslip.period</code>. Record ini menyimpan informasi: tahun, bulan, tanggal mulai (date_start), tanggal selesai (date_end), dan cutoff date attendance.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.9</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>CREATE hr.payslip.run (state=Draft)</td>
+                        <td>Sistem membuat record baru di model <code>hr.payslip.run</code>. Record ini mewakili satu batch penggajian bulanan. Status awal adalah <strong>Draft</strong>. Batch ini akan berisi seluruh payslip untuk semua karyawan eligible pada periode tersebut. Nama batch biasanya mengikuti format periode, misalnya: <em>"March 2026 Payroll"</em>.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.10</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>action_sync_contracts()</td>
+                        <td>Setelah batch terbuat, sistem melakukan sinkronisasi seluruh kontrak aktif ke backend Calculus API via <code>action_sync_contracts()</code> (dari <code>api_config.py</code>). Metode ini mengirim <code>POST /companies/{id}/contracts</code> untuk setiap kontrak yang berstatus <strong>Open</strong>. Payload mencakup seluruh data kontrak: employee_id, job_id, wage, tunjangan, BP JST, JP, kesehatan, dan lainnya. Tujuannya adalah memastikan backend Calculus memiliki data kontrak terbaru sebelum kalkulasi dilakukan.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.11</strong></td>
+                        <td>Backend Calculus API</td>
+                        <td>200 OK</td>
+                        <td>Backend menerima dan memproses semua data kontrak yang di-POST, lalu merespons dengan <strong>200 OK</strong>. Respons ini menandakan bahwa data kontrak telah tersimpan dengan benar di sisi backend dan siap untuk digunakan dalam proses kalkulasi gaji.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.12</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>create_payslip_data()</td>
+                        <td>Setelah kontrak tersinkronisasi, sistem memanggil <code>create_payslip_data()</code> untuk membuat draft payslip bagi setiap karyawan. Metode ini juga sekaligus memanggil <code>action_compute_overtime()</code> untuk men-reset flag <code>is_need_recompute_working_days=False</code> pada setiap payslip. Metode utama di dalamnya adalah <code>_prepare_payslip_data()</code> yang menyusun struktur payslip kosong yang akan diisi oleh data dari API.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.13</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>GET /companies/{id}/contracts?period=YYYY-MM</td>
+                        <td>Sistem mengirim <strong>GET request</strong> ke endpoint <code>/companies/{id}/contracts</code> dengan parameter query <code>period</code> (format: YYYY-MM) dan <code>standard_working_days</code>. Request ini meminta backend Calculus untuk menghitung dan mengembalikan seluruh komponen gaji: <em>Take Home Pay (THP), PPh21 (Pajak Penghasilan), BPJS Kesehatan, BPJS JKK/JKM/JHT/JP, allowances (tunjangan reguler), deductions (potongan),</em> dan komponen lainnya.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.14</strong></td>
+                        <td>Backend Calculus API</td>
+                        <td>JSON Response Paginated (THP, PPh21, BPJS, allowances, deductions)</td>
+                        <td>Backend Calculus memproses seluruh kontrak dan mengembalikan response JSON yang <strong>paginated</strong> (bisa beberapa halaman). Setiap record dalam JSON berisi: <code>employee_id</code>, <code>thp</code> (take home pay), <code>pph21</code> (pajak), <code>bpjs_kesehatan</code>, <code>bpjs_jht</code>, <code>bpjs_jp</code>, <code>bpjs_jkk</code>, <code>bpjs_jkm</code>, <code>irregular_allowances</code>, <code>irregular_deductions</code>, dan lainnya. Jika data paginated, Odoo akan mengulangi request untuk halaman berikutnya.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.15</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>mapping_response_data()</td>
+                        <td>Metode <code>mapping_response_data()</code> menerima JSON response dari API dan memetakannya ke dalam model Odoo. Proses ini mencakup: (1) Membuat record <code>hr.payslip.line</code> untuk setiap komponen allowance (gaji pokok, tunjangan transportasi, tunjangan makan, dll.), (2) Membuat record benefit lines, (3) Membuat record deduction lines (BPJS, PPh21, iuran lain), (4) Mengisi field <code>take_home_pay</code> di payslip header. Semua payslip masih berstatus <strong>Draft</strong> pada tahap ini.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.16</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>Trigger Inject Cicilan Bulan Berjalan</td>
+                        <td>Sistem secara otomatis mengecek apakah ada cicilan pinjaman aktif (dari modul <code>if_loan</code>) yang jatuh tempo pada bulan berjalan untuk setiap karyawan. Modul loan mendengarkan event dari payroll batch dan memeriksa jadwal pembayaran cicilan.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.17</strong></td>
+                        <td>Loan Module</td>
+                        <td>Inject "Loan Installment" ke deduction_ids payslip</td>
+                        <td>Modul <code>if_loan</code> injects record baru ke <code>deduction_ids</code> payslip dengan tipe <em>"Loan Installment"</em>. Nilai yang diinject sesuai dengan jumlah angsuran bulanan yang sudah dijadwalkan di sistem loan. Jika karyawan memiliki lebih dari satu pinjaman aktif, setiap cicilan akan dibuatkan baris deduction terpisah. Ini memastikan potongan pinjaman otomatis masuk ke payslip setiap bulan tanpa perlu input manual.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.18</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>Hitung actual_working_days dari hr_attendance (cutoff date)</td>
+                        <td>Sistem menghitung jumlah hari kerja aktual untuk setiap karyawan berdasarkan data attendance di <code>hr_attendance</code>. Perhitungan menggunakan <code>cutoff_date</code> dari kontrak/perusahaan (biasanya tanggal 25 atau akhir bulan). Tanggal mulai dihitung sebagai <code>cutoff_date previous month + 1 day</code>. Metode yang digunakan adalah <code>contract_id.get_actual_working_days(from_date, cutoff_date)</code>. Untuk daily worker, sistem menggunakan metode berbeda: <code>computed_wage = actual_working_days × daily_wage</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.19</strong></td>
+                        <td>Attendance Module</td>
+                        <td>Return: actual_working_days &amp; absent_days</td>
+                        <td>Attendance module mengembalikan jumlah hari kerja aktual dan jumlah hari absensi tidak excused ke payslip. Field <code>actual_working_days</code> dan <code>absent_days</code> di-populate ke payslip. Jika configuration <code>is_payroll_deduction_absences</code> aktif di company, maka hari absensi akan dipotong dari total hari kerja.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.20</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>Jika ada attendance belum approve → is_need_recompute_working_days=True</td>
+                        <td>Setelah semua proses di atas, sistem mengecek apakah ada record attendance untuk periode ini yang masih berstatus <strong>belum diapprove</strong>. Jika ada, flag <code>is_need_recompute_working_days=True</code> diset pada payslip terkait. Flag ini menandakan bahwa payslip perlu di-recalculate setelah attendancefinalize. Jika semua attendance sudah approved, flag ini tetap <code>False</code> dan payslip siap untuk difinalisasi.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Phase 3 -->
+            <div class="step-phase-header phase3">
+                <span class="phase-badge phase3">Phase 3</span>
+                Irregular Adjustment &amp; Recalculate
+            </div>
+            <table class="step-table">
+                <thead>
+                    <tr><th>Step</th><th>Aktor</th><th>Aksi / Method</th><th>Detail Penjelasan</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>3.1</strong></td>
+                        <td>Payroll Manager</td>
+                        <td>Tambah / Ubah Irregular Allowance atau Deduction pada Payslip</td>
+                        <td>Payroll Manager membuka payslip draft dan menambahkan komponen gaji yang bersifat <strong>irregular</strong> (tidak reguler/tidak tetap). Contoh irregular allowance: bonus, tunjangan khusus, uang lembur tambahan. Contoh irregular deduction: potongan kas bon, potongan Tunjangan Hari Raya (jika perlu penyesuaian manual). Komponen ini tidak ada dalam kalkulasi default backend Calculus karena bersifat situational/insidentil.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.2</strong></td>
+                        <td>Payroll Manager</td>
+                        <td>Klik "Recalculate" pada Payslip atau Batch</td>
+                        <td>Setelah menambahkan komponen irregular, Payroll Manager mengklik tombol <strong>"Recalculate"</strong>. Tombol ini tersedia baik di level payslip individual maupun di level batch (HrPayslipRun). Di level batch, sistem akan memanggil <code>helper_recalculate_payslip_one_by_one()</code> yang memproses payslip satu per satu secara berurutan. Recalculate juga bisa dilakukan pada payslip individu.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.3</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>wipe_salary_calculation()</td>
+                        <td>Sebelum data payslip dikirim ulang ke API untuk rekalkulasi, sistem terlebih dahulu membersihkan (wipe) seluruh komponen payslip yang sudah ada. Metode <code>wipe_salary_calculation()</code> menghapus semua record pada: <code>allowance_ids</code> (tunjangan reguler), <code>benefit_ids</code> (benefit), dan <code>deduction_ids</code> (potongan). Tujuannya adalah agar data yang dikirim ke API bersih dan tidak terjadi duplikasi atau inkonsistensi saat proses pemetaan ulang.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.4</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>sync_salary_computation()</td>
+                        <td>Setelah di-wipe, sistem mengirim kembali data payslip ke backend Calculus melalui <code>sync_salary_computation()</code>. Request ini adalah <code>POST</code> yang mengirimkan komponen irregular yang baru saja ditambahkan oleh manager. Payload berisi: <code>slip_id</code>, <code>employee_id</code>, <code>contract_id</code>, <code>allowances</code> (termasuk irregular), <code>deductions</code>. Backend menerima komponen irregular ini dan menghitung ulang seluruh komponen payroll (THP, PPh21, BPJS) menggunakan data salary computation terbaru. </td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.5</strong></td>
+                        <td>Backend Calculus API</td>
+                        <td>Updated JSON (THP, Tax ter-Recalculate)</td>
+                        <td>Backend Calculus memproses payload yang berisi komponen irregular allowance/deduction, kemudian menjalankan ulang kalkulasi pajak (PPh21) dan komponen BPJS yang dipengaruhi oleh perubahan tersebut. Hasilnya adalah JSON baru yang berisi: <code>thp</code> yang sudah disesuaikan, <code>pph21</code> yang sudah diperbarui, dan seluruh komponen lainnya yang mungkin terdampak. JSON ini kemudian dikirim balik ke Odoo sebagai response.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.6</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>Update Nilai Payslip Spesifik dari JSON</td>
+                        <td>Setelah menerima JSON response yang sudah ter-recalculate, Odoo memanggil <code>mapping_response_data()</code> kembali untuk memperbarui nilai-nilai yang ada di payslip. Komponen yang diperbarui meliputi: <code>take_home_pay</code> (THP final), <code>pph21</code> (pajak final), dan seluruh <code>allowance_ids</code> dan <code>deduction_ids</code>. Payslip kemudian kembali ke status <strong>Draft</strong> dengan nilai yang sudah akurat. Tahap ini memastikan bahwa payslip yang telah disesuaikan secara manual tetap konsisten secara pajak dan BP JST.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Phase 4 -->
+            <div class="step-phase-header phase4">
+                <span class="phase-badge phase4">Phase 4</span>
+                Finalize Wizard
+            </div>
+            <table class="step-table">
+                <thead>
+                    <tr><th>Step</th><th>Aktor</th><th>Aksi / Method</th><th>Detail Penjelasan</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>4.1</strong></td>
+                        <td>Payroll Manager</td>
+                        <td>Klik "Close / Finalize Wizard"</td>
+                        <td>Setelah semua payslip draft sudah dicek dan disetujui, Payroll Manager mengklik tombol <strong>"Close / Finalize Wizard"</strong>. Tombol ini触发 wizard <code>HrPayslipRunWizard</code> (<code>payslip_wizard.py</code>, line 594). Wizard ini bertanggung jawab untuk mengkoordinasikan seluruh proses finalisasi: mengubah status payslip menjadi Done, menutup batch, mengirim notifikasi ke backend, dan memicu modul journal.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.2</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>_check_lock_payroll</td>
+                        <td>Sebelum proses finalisasi dimulai, sistem menjalankan <code>_check_lock_payroll()</code> dari modul <code>if_hr_payroll_attendance</code>. Metode ini mengecek apakah semua attendance untuk periode terkait sudah diapprove dan terkunci. Jika ada attendance yang belum diapprove dan batch payroll sudah di-lock, sistem akan menolak finalisasi dengan error: <em>"Payslip data is locked. Please contact your payroll team to unlock the data before editing!"</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.3</strong></td>
+                        <td>Attendance Module</td>
+                        <td>Validation Passed</td>
+                        <td>Jika seluruh attendance sudah diapprove dan terkunci dengan benar, Attendance Module mengembalikan respons validasi berhasil. Ini menandakan bahwa tidak ada data attendance yang masih pending dan payroll bisa dilanjutkan ke tahap finalisasi.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.4</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>action_payslip_finalized() — Permanent &amp; Contract Employees</td>
+                        <td>Sistem memanggil <code>action_payslip_finalized()</code> untuk mengubah status payslip karyawan <strong>Permanen</strong> dan <strong>Kontrak</strong> menjadi <strong>Done</strong>. Di dalam metode ini juga dilakukan: (a) Update status overtime menjadi <em>"payroll"</em> dan set <code>is_waiting_to_pay=False</code>, (b) Update status attendance menjadi <em>"approve"</em> dan set <code>is_waiting_to_pay=False</code>, (c) Jika payslip include backpay, set <code>active_backpay=False</code> pada kontrak. Payslip yang sudah Done tidak bisa diedit lagi kecuali admin membuka lock.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.5</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>action_payslip_finalized() — Daily Worker Employees</td>
+                        <td>Sistem kemudian memanggil <code>action_payslip_finalized()</code> untuk payslip karyawan <strong>Daily Worker</strong> (pekerja harian tanpa kontrak tetap). Proses ini sama dengan step 4.4, hanya saja filter dilakukan pada payslip dengan <code>second_employment_status = 'daily_worker'</code>. Daily worker payslip juga berubah statusnya menjadi <strong>Done</strong>.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.6</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>action_partial_finalized(is_regular_payslip=True)</td>
+                        <td>Sistem memanggil <code>action_partial_finalized(is_regular_payslip=True)</code>. Metode ini men-set flag <code>is_finalized=True</code> pada batch payroll reguler. Flag ini menandakan bahwa batch reguler sudah memasuki tahap finalisasi dan tidak boleh ada perubahan lagi pada payslip-nya.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.7</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>action_partial_finalized(is_regular_payslip=False)</td>
+                        <td>Sistem memanggil <code>action_partial_finalized(is_regular_payslip=False)</code>. Metode ini men-set flag <code>is_daily_worker_finalized=True</code> pada batch payroll daily worker. Dengan adanya dua flag terpisah (<code>is_finalized</code> dan <code>is_daily_worker_finalized</code>), sistem memberikan fleksibilitas untuk finalisasi terpisah antara payroll reguler dan daily worker.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.8</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>close_payslip_run()</td>
+                        <td>Sistem memanggil <code>close_payslip_run()</code>. Metode ini mengubah status batch payroll dari <strong>Draft</strong> menjadi <strong>Close</strong>. Selain itu, metode ini juga mengisi field <code>finalized_date</code> dengan timestamp saat finalisasi dilakukan. Setelah batch Close, tidak ada payslip baru yang bisa ditambahkan ke batch ini.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.9</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>POST /companies/{id}/contracts/finalize<br>(atau /thr/finalize, /pesangon/finalize, /others/finalize)</td>
+                        <td>Setelah batch Close, sistem mengirim <strong>POST request</strong> ke endpoint finalize di backend Calculus. Untuk batch reguler: <code>POST /companies/{id}/contracts/finalize</code>. Untuk batch THR: <code>POST /companies/{id}/contracts/thr/finalize</code>. Untuk batch Pesangon: <code>POST /companies/{id}/contracts/pesangon/finalize</code>. Untuk batch Others: <code>POST /companies/{id}/contracts/others/finalize</code>. Payload berisi daftar payslip yang sudah difinalisasi. Request ini mengunci data payroll di sisi backend — tidak ada perubahan yang diizinkan setelah finalize.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.10</strong></td>
+                        <td>Backend Calculus API</td>
+                        <td>Validation Confirmed — Synced &amp; Locked</td>
+                        <td>Backend menerima request finalize, memvalidasi bahwa semua data sudah konsisten (jumlah kontrak, nilai THP, pajak, dll.), lalu mengunci periode payroll tersebut. Backend merespons dengan <strong>200 OK</strong> + JSON confirmation yang berisi ringkasan data yang telah di-lock. Data payroll untuk periode ini tidak bisa diubah lagi di kedua sistem (Odoo dan Backend Calculus).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.11</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>Trigger if_hr_payroll_journal (state=Close hook)</td>
+                        <td>Setelah batch Close, Odoo触发 hook di modul <code>if_hr_payroll_journal</code>. Hook ini bereaksi pada perubahan state <code>hr.payslip.run</code> menjadi <strong>Close</strong>. Modul journal mendengarkan event ini dan secara otomatis memulai proses pembuatan jurnal akuntansi untuk seluruh payslip yang sudah difinalisasi.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.12</strong></td>
+                        <td>Journal Module</td>
+                        <td>Generate Account Move (Jurnal BPJS, PPh21, THP)</td>
+                        <td>Modul <code>if_hr_payroll_journal</code> membuat <strong>Account Move</strong> (jurnal akuntansi) untuk setiap komponen payroll. Jurnal yang dibuat biasanya mencakup: (a) <strong>Jurnal Gaji (THP)</strong> — debit: biaya gaji, kredit: hutang gaji/bank, (b) <strong>Jurnal BPJS Kesehatan &amp; Ketenagakerjaan</strong> — debit: biaya BPJS perusahaan, kredit: hutang BPJS, (c) <strong>Jurnal PPh21</strong> — debit: biaya pajak karyawan, kredit: hutang PPh21, (d) <strong>Jurnal Iuran BPJS Karyawan</strong> — debit: hutang gaji, kredit: hutang BPJS. Setiap Account Move di-post untuk mengubah posisi account di general ledger.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.13</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>Generate PDF Payslip + Token</td>
+                        <td>Sistem menghasilkan dokumen PDF payslip untuk setiap karyawan yang sudah difinalisasi. PDF ini berisi slip gaji lengkap dengan seluruh komponen: gaji pokok, tunjangan, potongan, PPh21, BPJS, dan take home pay. Sistem juga men-generate <strong>token unik</strong> untuk setiap payslip. Token ini digunakan oleh modul <code>if_mobile_payroll</code> untuk mekanisme unduh PDF payslip melalui aplikasi mobile — karyawan bisa mengakses payslip mereka secara secure menggunakan token tanpa perlu login ke Odoo.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.14</strong></td>
+                        <td>Odoo (Master &amp; Batch)</td>
+                        <td>recalculate_concurrent_batch()</td>
+                        <td>Ini adalah langkah terakhir yang sangat penting. Setelah satu batch difinalisasi, sistem memanggil <code>recalculate_concurrent_batch()</code> untuk mengecek apakah ada batch payroll lain yang masih berstatus <strong>Draft, Submit, atau Correction</strong> yang perlu di-recalculate. Jika ada, sistem akan mengulangi proses <code>create_payslip_data()</code> untuk batch-batch tersebut agar data payroll tetap konsisten. Fungsi ini juga mereset flag <code>active_backpay=False</code> pada kontrak yang sudah diproses di batch lain. Ini memastikan bahwa payroll tidak tumpang tindih dan setiap batch terupdate dengan data terakhir.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 id="sec-14-13">14.13 Skenario UAT (User Acceptance Testing)</h3>
+        <table class="table-uat">
+            <thead>
+                <tr>
+                    <th width="15%">ID Skenario</th>
+                    <th width="25%">Skenario & Aksi UAT</th>
+                    <th width="40%">Expected Result (Kriteria Berhasil)</th>
+                    <th width="20%" class="status-header">Status & Validator</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>UAT-PY-01</strong><br><em>Master Sync</em></td>
+                    <td>Ubah Field NPWP dan Marital Status di Master Karyawan. Lalu simpan.</td>
+                    <td>- Tidak ada error traceback. Log Terminal menampilkan payload POST sukses menuju API `/employees`. Backend merespon 200.</td>
+                    <td class="status-header">___ Pass ___ Fail</td>
+                </tr>
+                <tr>
+                    <td><strong>UAT-PY-02</strong><br><em>New Batch</em></td>
+                    <td>Buat Batch baru (Regular run) untuk periode berjalan. Pastikan ada Contract Open.</td>
+                    <td>- Batch tercipta berstatus Draft. Payroll Engine membaca kontrak, mengirim POST /calculate. Draft payslip tercipta lengkap BPJS/PPh21.</td>
+                    <td class="status-header">___ Pass ___ Fail</td>
+                </tr>
+                <tr>
+                    <td><strong>UAT-PY-03</strong><br><em>Recalculate</em></td>
+                    <td>Pilih satu Draft Payslip. Tambahkan komponen Bonus sejumlah IDR 5.000.000. Tekan tombol 'Recalculate'.</td>
+                    <td>- Sistem menembak ulang API. Total Pajak PPh21 meningkat (progresif berlaku). Gross & Nett THP ter-update.</td>
+                    <td class="status-header">___ Pass ___ Fail</td>
+                </tr>
+                <tr>
+                    <td><strong>UAT-PY-04</strong><br><em>Loan Check</em></td>
+                    <td>Pastikan ada karyawan dengan Pinjaman aktif (Cicilan jatuh tempo bulan ini). Jalankan Batch.</td>
+                    <td>- Terdapat potongan baru berlabel "Pinjaman" di payslip draft. THP berkurang. Status cicilan di Modul Pinjaman menjadi "Paid (Linked)".</td>
+                    <td class="status-header">___ Pass ___ Fail</td>
+                </tr>
+                <tr>
+                    <td><strong>UAT-PY-05</strong><br><em>Finalize Rule</em></td>
+                    <td>Coba Finalize Batch Regular dengan posisi Attendance ada cuti/lembur yang belum diapprove.</td>
+                    <td>- Odoo menampilkan Warning/Error Exception. Batch dicegah dari state Closed hingga attendance di-approve penuh oleh SPV.</td>
+                    <td class="status-header">___ Pass ___ Fail</td>
+                </tr>
+                <tr>
+                    <td><strong>UAT-PY-06</strong><br><em>Journal & Post</em></td>
+                    <td>Luluskan (Finalize Wizard) Batch. Pastikan Master Payroll Journal sudah ter-mapping.</td>
+                    <td>- Endpoint /finalize sukses. Batch menjadi CLOSED. Odoo Account Move (Jurnal Akuntansi) tercipta otomatis.</td>
+                    <td class="status-header">___ Pass ___ Fail</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+<h2 id="section-15">15. Spesifikasi Wizard, API Endpoints & Model Data</h2>
+
+<h3 id="sec-15-1">15.1 Referensi Endpoint API NodeJS Backend</h3>
+
+<h3 id="sec-15-2">15.2 Arsitektur Komunikasi</h3>
+<p>Semua komunikasi dari Odoo ke NodeJS backend dilakukan via Python <code>requests</code> library dengan header <code>Content-Type: application/json</code>. Base URL dikonfigurasi di <code>hr.payroll.api.config</code> (company-specific). Respons API disimpan dalam <code>hr.api.log</code> untuk audit trail. Setiap request menyertakan API key autentikasi dari konfigurasi company.</p>
+<p><strong>Base URL:</strong> <code>https://api-payroll-development.impactfirst.co</code> (development) — production URL dikonfigurasi per environment.</p>
+
+<h3 id="sec-15-3">15.3 Endpoint Payroll Utama</h3>
+<table class="table-uat">
+<thead><tr><th>Endpoint</th><th>Method</th><th>Payload Utama</th><th>Response Utama</th><th>Called By</th></tr></thead>
+<tbody>
+<tr><td><code>/api/payroll/compute</code></td><td>POST</td><td><code>employee_ids[]</code>, <code>period_id</code>, <code>component_type</code></td><td>Computed salary components (wage, allowances, deductions)</td><td><code>compute_sheet()</code>, <code>action_run_payroll()</code></td></tr>
+<tr><td><code>/api/payroll/finalize</code></td><td>POST</td><td><code>payslip_batch_id</code>, <code>period_id</code></td><td>Finalized status + account_move_ids[]</td><td><code>action_payslip_finalized()</code></td></tr>
+<tr><td><code>/api/payroll/sync</code></td><td>POST</td><td><code>payslip_run_id</code>, <code>payslip_ids[]</code></td><td>Sync confirmation</td><td><code>action_post_finalized_data()</code></td></tr>
+<tr><td><code>/api/employee/sync</code></td><td>POST</td><td><code>contract_ids[]</code></td><td>Sync status per contract</td><td><code>action_sync_contracts()</code></td></tr>
+<tr><td><code>/api/employee/sync-irregular</code></td><td>POST</td><td><code>contract_ids[]</code></td><td>Sync irregular allowance status</td><td><code>action_sync_contracts_irregular()</code> <em>(commented out)</em></td></tr>
+<tr><td><code>/api/payroll/period/validate</code></td><td>GET</td><td>—</td><td>Current backend period: <code>{month, year}</code></td><td><code>action_run_payroll()</code> — last period validation</td></tr>
+<tr><td><code>/api/thr/compute</code></td><td>POST</td><td><code>employee_ids[]</code>, <code>thr_date</code>, <code>religion_id</code></td><td>THR amount per employee + calculation details</td><td><code>get_thr_api_data()</code></td></tr>
+<tr><td><code>/api/pesangon/compute</code></td><td>POST</td><td><code>employee_ids[]</code>, <code>payment_date</code></td><td>pesangon amount per employee + formula details</td><td><code>get_pesangon_data()</code></td></tr>
+<tr><td><code>/api/bonus/compute</code></td><td>POST</td><td><code>employee_ids[]</code></td><td>Bonus amount per employee</td><td><code>get_others_data()</code></td></tr>
+<tr><td><code>/api/annual-report/all-employee</code></td><td>GET</td><td><code>year</code>, <code>company_id</code></td><td>Annual gross, pph21, PTKP per employee</td><td><code>bupot_tahunan_wizard</code></td></tr>
+<tr><td><code>/api/annual-report/resigned-employee</code></td><td>GET</td><td><code>year</code>, <code>company_id</code></td><td>Annual data untuk employee resign mid-year</td><td><code>bupot_tahunan_wizard</code> (BPA1)</td></tr>
+<tr><td><code>/api/annual-report/per-employee</code></td><td>GET</td><td><code>employee_id</code>, <code>year</code></td><td>PTKP untuk employee tertentu</td><td><code>bupot_bulanan_wizard</code> (BPMP)</td></tr>
+<tr><td><code>/api/regulation/bpjs/sync</code></td><td>POST</td><td><code>bpjs_regulation_lines[]</code></td><td>Sync confirmation</td><td><code>sync_bpjs_regulation()</code></td></tr>
+<tr><td><code>/api/regulation/ptkp/sync</code></td><td>POST</td><td><code>marital_status_records[]</code></td><td>Sync PTKP confirmation</td><td><code>sync_marital_status()</code></td></tr>
+<tr><td><code>/api/regulation/tax-range/sync</code></td><td>POST</td><td><code>tax_rate_records[]</code></td><td>Sync confirmation</td><td><code>sync_tax_range()</code></td></tr>
+<tr><td><code>/api/regulation/ter/sync</code></td><td>POST</td><td><code>tax_ter_rate_records[]</code></td><td>Sync TER rate confirmation</td><td><code>sync_tax_ter_range()</code></td></tr>
+<tr><td><code>/api/payroll/correction</code></td><td>POST</td><td><code>payslip_run_id</code>, <code>correction_type</code></td><td>Correction batch id</td><td><code>action_payroll_correction()</code></td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-4">15.4 Validasi Period Backend</h3>
+<p>Sebelum <code>action_run_payroll()</code> dipanggil, sistem memanggil <code>company.get_enpoint_last_period()</code> untuk memastikan periode payroll Odoo sinkron dengan periode backend. Jika tidak cocok (kecuali untuk off-cycle: THR / Pesangon / Others), sistem raise <code>ValidationError("Last Period on backend doesn't match!")</code>.</p>
+<p>Jika periode belum ada di Odoo, sistem auto-generate via <code>hr.payslip.period._generate_payslip_period()</code> sebelum retry.</p>
+<p><strong>Off-Cycle Exception:</strong> THR, Pesangon, dan Others (off-cycle payroll) bypass validasi ini karena memang diproses di luar siklus reguler.</p>
+
+<h3 id="sec-15-5">15.5 Referensi Model Data (Sub-Models)</h3>
+
+<h3 id="sec-15-6">15.6 hr.payslip.allowance / hr.payslip.deduction / hr.payslip.benefit</h3>
+<p>Model transaksi detail payslip yang tercipta setiap kali payroll di-compute. Ketiga model ini adalah One2many dari <code>hr.payslip</code>. Setiap payslip memiliki:</p>
+<table class="table-uat">
+<thead><tr><th>Model</th><th>Deskripsi</th><th>Contoh Isi</th></tr></thead>
+<tbody>
+<tr><td><code>hr.payslip.allowance</code></td><td>Tunjangan regular bulanan — komponen yang menambah penghasilan bruto employee</td><td>Gaji pokok, tunjangan transportasi, tunjangan makan, tunjangan kesehatan</td></tr>
+<tr><td><code>hr.payslip.deduction</code></td><td>Potongan — komponen yang mengurangi take-home pay employee</td><td>BPJS Kesehatan, BPJS TK (JHT/JP), PPh21, unpaid leave, loan installment</td></tr>
+<tr><td><code>hr.payslip.benefit</code></td><td>Benefit non-cash — komponen perusahaan yang dibayarkan ke pihak ketiga (bukan ke employee)</td><td>JKK (Jaminan Kecelakaan Kerja), JKM (Jaminan Kematian), kontribusi pensiun</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-7">15.7 hr.updatable.payslip.* — Model Staging untuk Import Massal</h3>
+<p>Model staging yang menyimpan perubahan dari import wizard sebelum di-commit ke payslip utama. Fields sama dengan model utama plus <code>is_updated</code> flag. Alur:</p>
+<ol>
+<li>Import XLSX → data ditulis ke model <code>updatable_*</code></li>
+<li><code>sync_salary_computation()</code> → data di-commit ke model utama</li>
+<li>Record updatable di-mark <code>is_updated = True</code></li>
+</ol>
+<p>Tiga model staging: <code>hr.updatable.payslip.allowance</code>, <code>hr.updatable.payslip.deduction</code>, <code>hr.updatable.payslip.benefit</code>.</p>
+
+<h3 id="sec-15-8">15.8 hr.accumulated.payroll</h3>
+<p>Menyimpan akumulasi payroll sepanjang tahun berjalan per employee. Dibuat dan diupdate oleh NodeJS backend, di-sync via <code>action_post_data()</code>. Digunakan untuk menghitung Gaji dan Pajak 6 bulanan pada Form 1721 SPT Tahunan.</p>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>employee_id</code></td><td>Many2one</td><td>Employee yang terakumulasi</td></tr>
+<tr><td><code>year</code></td><td>Integer</td><td>Tahun akumulasi</td></tr>
+<tr><td><code>month</code></td><td>Integer</td><td>Bulan akumulasi (1-12)</td></tr>
+<tr><td><code>accumulated_gross</code></td><td>Float</td><td>Total gross income kumulatif dari Januari hingga bulan ini</td></tr>
+<tr><td><code>accumulated_tax</code></td><td>Float</td><td>Total PPh21 kumulatif yang sudah dipotong dari Januari</td></tr>
+<tr><td><code>accumulated_deduction</code></td><td>Float</td><td>Total deduction kumulatif (BPJS, iuran pensiun, dll.)</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-9">15.9 hr.api.log — Audit Trail API</h3>
+<p>Audit trail untuk semua request / response API. Setiap panggilan API yang dilakukan Odoo ke NodeJS backend dicatat di sini.</p>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>Char</td><td>Nama endpoint (misalnya: <code>/api/payroll/compute</code>)</td></tr>
+<tr><td><code>request_payload</code></td><td>Text</td><td>Full JSON payload yang dikirim ke backend</td></tr>
+<tr><td><code>response_payload</code></td><td>Text</td><td>Full JSON response dari backend</td></tr>
+<tr><td><code>state</code></td><td>Selection</td><td><code>success</code> / <code>fail</code></td></tr>
+<tr><td><code>error_message</code></td><td>Text</td><td>Pesan error jika state = fail</td></tr>
+<tr><td><code>request_date</code></td><td>Datetime</td><td>Timestamp request dikirim</td></tr>
+<tr><td><code>response_date</code></td><td>Datetime</td><td>Timestamp response diterima</td></tr>
+<tr><td><code>company_id</code></td><td>Many2one</td><td>Company yang melakukan request</td></tr>
+<tr><td><code>user_id</code></td><td>Many2one</td><td>User Odoo yang memicu request</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-10">15.10 Government Regulation Sub-Models</h3>
+<table class="table-uat">
+<thead><tr><th>Model</th><th>Fields Utama</th><th>Keterangan</th></tr></thead>
+<tbody>
+<tr><td><code>hr.bpjs.regulation</code></td><td><code>name</code>, <code>label</code>, <code>firm_percentage</code>, <code>employee_percentage</code>, <code>salary_limit</code>, <code>bpjs_type</code> (JK / JKK / JKM / JHT / JP), <code>view_type</code>, <code>is_active</code></td><td>JK: 1% employee + 4% company. JKK: 0.24–1.74% (company). JKM: 0.30% (company). JHT: 5.70% (3.70% TK + 2% P). JP: 3% (1% TK + 2% P). Semua subject to salary_limit.</td></tr>
+<tr><td><code>hr.occupational.expense</code></td><td><code>percentage</code>, <code>salary_limit</code>, <code>description</code></td><td>Batas biaya jabatan untuk pengurangan penghasilan bruto dalam perhitungan PPh21.</td></tr>
+<tr><td><code>hr.marital.status</code></td><td><code>name</code> (TK/0, K/0, K/1, K/2, K/3), <code>ptkp_value</code>, <code>description</code></td><td>Nilai PTKP: TK/0 = Rp 54.000.000, K/0 = Rp 58.500.000, K/1 = Rp 63.000.000, K/2 = Rp 67.500.000, K/3 = Rp 72.000.000 (sesuai regulasi berlaku).</td></tr>
+<tr><td><code>hr.tax.rate</code></td><td><code>minimum</code>, <code>maximum</code>, <code>percentage</code></td><td>Tarif lapisan PPh 21 UU Harmonisasi (5%, 15%, 25%, 30%, 35%)</td></tr>
+<tr><td><code>hr.tax.pinalty</code></td><td><code>percentage</code>, <code>effective_date</code></td><td>Denda keterlambatan pelaporan SPT Tahunan PPh 21.</td></tr>
+<tr><td><code>hr.tax.pension</code></td><td><code>from_rate</code>, <code>to_rate</code>, <code>percentage</code></td><td>Iuran pensiun — DPPensions, npayroll</td></tr>
+<tr><td><code>hr.tax.ter.rate</code></td><td><code>category</code>, <code>from_rate</code>, <code>to_rate</code>, <code>percentage</code></td><td>Tarif Efektif Final (TER) per kategori — alternatif metode perhitungan PPh 21 bulanan.</td></tr>
+<tr><td><code>history.change</code></td><td><code>name</code>, <code>field_id</code>, <code>parent_model_id</code>, <code>parent_res_id</code>, <code>before_value</code>, <code>after_value</code>, <code>change_date</code>, <code>valid_from</code>, <code>valid_to</code>, <code>user_id</code>, <code>notes</code></td><td>Effective-dated history per field change. Setiap perubahan data master payroll dicatat di sini.</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-11">15.11 hr.payslip.period — Master Periode Bulanan</h3>
+<p>Master periode payroll bulanan yang digunakan sebagai acuan untuk seluruh proses payroll. Scheduler <code>_generate_payslip_period()</code> membuat 12 records per tahun per company.</p>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>Char (computed)</td><td>Format: "January 2024". Computed dari month + year.</td></tr>
+<tr><td><code>month</code></td><td>Integer</td><td>Bulan (1-12)</td></tr>
+<tr><td><code>year</code></td><td>Integer</td><td>Tahun (YYYY)</td></tr>
+<tr><td><code>date_start</code><code>date_end</code></td><td>Date</td><td>Rentang tanggal periode</td></tr>
+<tr><td><code>working_days</code></td><td>Integer (computed)</td><td>Jumlah hari kerja (Monday–Friday) dalam periode. Dihitung otomatis.</td></tr>
+</tbody>
+</table>
+
+
+
+<h3 id="sec-15-12">15.12 HrPayslipEmployees — Wizard Input Karyawan THR / Pesangon / Others</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>hr.payslip.employees</code> (inherit) | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Memilih employee yang akan diikutsertakan dalam off-cycle payroll (THR, Pesangon, Bonus). Menyediakan mekanisme import dari file XLSX serta tiga jalur employee lines yang berbeda menurut komponen.
+</div>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th><th>Mode</th></tr></thead>
+<tbody>
+<tr><td><code>thr_date</code></td><td>Date</td><td>Tanggal THR — tanggal bayar THR ke karyawan. Mengikuti hari raya keagamaan (Idul Fitri, Natal, Nyepi, dll.)</td><td>Input</td></tr>
+<tr><td><code>religion_id</code></td><td>Many2one</td><td>Agama employee untuk filter THR eligibility — menentukan eligible religion sebelum compute THR</td><td>Input</td></tr>
+<tr><td><code>employee_ids</code></td><td>Many2many hr.employee</td><td>Daftar employee THR (tabel relasi <code>hr_employee_group_offcycle_rel</code>)</td><td>Input</td></tr>
+<tr><td><code>employee_2_ids</code></td><td>Many2many hr.employee</td><td>Daftar employee Pesangon (tabel relasi <code>hr_employee_group_offcycle_rel2</code>)</td><td>Input</td></tr>
+<tr><td><code>employee_3_ids</code></td><td>Many2many hr.employee</td><td>Daftar employee Others / Bonus (tabel relasi <code>hr_employee_group_offcycle_rel3</code>)</td><td>Input</td></tr>
+<tr><td><code>is_others</code></td><td>Boolean</td><td>Flag untuk mode Others (Bonus). Dihitung/detect otomatis berdasarkan apakah komponen yang dipilih Others</td><td>Computed</td></tr>
+<tr><td><code>payment_date</code></td><td>Date</td><td>Tanggal pembayaran (khusus untuk Pesangon)</td><td>Input</td></tr>
+<tr><td><code>is_import_emp</code></td><td>Boolean</td><td>Flag import dari XLSX. Default: True</td><td>Default True</td></tr>
+<tr><td><code>file_import</code></td><td>Binary</td><td>File XLSX dengan kolom: Employee Name, NIK, Amount. Menggunakan xlrd library untuk parsing</td><td>Input</td></tr>
+</tbody>
+</table>
+<p><strong>Metode Utama dan Alur Proses:</strong></p>
+<table class="table-uat">
+<thead><tr><th>Metode</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>button_import_file()</code></td><td>Membaca file XLSX, memanggil <code>import_employee()</code>, membuka ulang wizard dengan context <code>default_employee_ids</code>, <code>default_employee_2_ids</code>, dan <code>default_employee_3_ids</code> terisi.</td></tr>
+<tr><td><code>import_employee()</code></td><td>Parse XLSX — kolom [0]=Nama, [1]=NIK, [2]=Amount. Mencari employee via <code>name</code> + <code>barcode</code> (NIK). Jika ditemukan, menulis amount ke field <code>pesangon</code> atau <code>others</code> pada employee record. Validasi: nama/NIK tidak boleh kosong, amount harus numerik. NIK diformat: hapus suffix '.0' jika ada. Mengembalikan <code>[(6,0,employee_ids)]</code>.</td></tr>
+<tr><td><code>compute_sheet()</code></td><td>Mengirimkan employee yang dipilih ke NodeJS backend per komponen. Alur THR: <code>get_thr_api_data()</code> → <code>get_thr_data()</code> → <code>post_thr_data()</code> → <code>_schedule_thr()</code> pada employee. Pesangon dan Others mengikuti alur serupa.</td></tr>
+<tr><td><code>onchange_thr_date()</code></td><td>Memberikan domain filter pada <code>employee_ids</code> berdasarkan lama kerja. THR eligibility: minimal 1 bulan kerja. Mengambil <code>thr_eligible_days</code> dari <code>hr.thr.configuration</code>.</td></tr>
+<tr><td><code>get_thr_api_data()</code></td><td>Mengonsumsi API <code>get_enpoint_thr()</code> untuk setiap employee, menghitung THR berdasarkan masa kerja dan komposisi gaji bulanan.</td></tr>
+<tr><td><code>get_pesangon_data()</code></td><td>Mengonsumsi API <code>get_enpoint_pesangon()</code> untuk menghitung pesangon berdasarkan masa kerja dan formula regulasi UU Ketenagakerjaan.</td></tr>
+<tr><td><code>get_others_data()</code></td><td>Mengonsumsi API <code>get_enpoint_bonus()</code> atau mengambil nilai langsung dari kolom <code>others</code> di employee record.</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-13">15.13 HrPayslipRunWizard — Wizard Summary Finalisasi</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>hr.payslip.run.wizard</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Menampilkan ringkasan totals payroll (gaji pokok, allowance, potongan, PPh21, THP) sebelum finalisasi. Aksi Save memicu serangkaian posting ke jurnal akuntansi.
+</div>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>payslip_batch_id</code></td><td>Many2one hr.payslip.run</td><td>Batch payslip yang akan di-finalisasi</td></tr>
+<tr><td><code>payslip_period</code></td><td>Char</td><td>Period name (related dari batch)</td></tr>
+<tr><td><code>standard_working_days</code></td><td>Integer</td><td>Jumlah hari kerja standard bulan tersebut</td></tr>
+<tr><td><code>total_employee</code></td><td>Integer</td><td>Total employee di batch</td></tr>
+<tr><td><code>total_basic_salary</code></td><td>Float</td><td>Total gaji pokok seluruh employee</td></tr>
+<tr><td><code>total_allowance</code></td><td>Float</td><td>Total tunjangan (JKK + JK + lainnya)</td></tr>
+<tr><td><code>total_jkk</code></td><td>Float</td><td>Total kontribusi JKK (bagian perusahaan)</td></tr>
+<tr><td><code>total_jk</code></td><td>Float</td><td>Total kontribusi JKM (bagian perusahaan)</td></tr>
+<tr><td><code>total_pph21</code></td><td>Float</td><td>Total PPh21 bulan berjalan</td></tr>
+<tr><td><code>total_thp</code></td><td>Float</td><td>Total Take-Home Pay (gaji bersih)</td></tr>
+<tr><td><code>is_thr</code></td><td>Boolean</td><td>Flag THR. Jika True, kolom total_thr akan muncul</td></tr>
+<tr><td><code>total_thr</code></td><td>Float</td><td>Total THR yang dihitung dalam batch off-cycle</td></tr>
+<tr><td><code>is_regular_payslip</code></td><td>Boolean</td><td>Flag regular vs off-cycle payroll. Membedakan alur finalize.</td></tr>
+</tbody>
+</table>
+<p><strong>Metode Utama dan Aksi Finalisasi:</strong></p>
+<table class="table-uat">
+<thead><tr><th>Metode / Aksi</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>action_save()</code></td><td>Aksi utama wizard. Berdasarkan flag yang aktif: memanggil <code>action_payslip_finalized()</code> (full finalize + journal), <code>action_partial_finalized()</code> (partial finalize), <code>close_payslip_run()</code> (close batch only), <code>action_post_finalized_data()</code> (post finalized data to backend), atau <code>recalculate_concurent_batch()</code> (recalculate concurrent batch).</td></tr>
+<tr><td><code>action_payslip_finalized()</code></td><td>Memanggil <code>action_finalized()</code> pada payslip batch. Menghasilkan account move entries (jurnal akuntansi) untuk setiap payslip dalam batch. Setelah ini, payslip tidak dapat diedit lagi kecuali via correction flow.</td></tr>
+<tr><td><code>action_post_finalized_data()</code></td><td>Trigger <code>_post_finalized_data()</code> untuk sync hasil payroll ke backend NodeJS via API <code>/api/payroll/sync</code>. Menyimpan hasil ke <code>hr.api.log</code>.</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-14">15.14 HrAccumulatedPayrollWizard — Wizard Saldo Awal Akumulasi</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>hr.accumulated.payroll.wizard</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Menginisialisasi beginning balance Gaji dan Pajak untuk employee yang baru joining di tengah tahun. Memanggil <code>hr.accumulated.payroll.action_post_data()</code> untuk menyimpan saldo awal akumulasi.
+</div>
+<p>Employee yang joining di tengah tahun perlu memiliki saldo awal akumulasi (accumulated gross dan accumulated tax) agar Form 1721 di akhir tahun tetap akurat. Tanpa wizard ini, employee akan memiliki gap akumulasi dan perhitungan pajak 6 bulanan menjadi tidak tepat.</p>
+<table class="table-uat">
+<thead><tr><th>Metode</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>action_save()</code></td><td>Memanggil <code>hr.accumulated.payroll.action_post_data()</code> untuk menuliskan record saldo awal akumulasi ke model <code>hr.accumulated.payroll</code> per employee.</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-15">15.15 EbankingWizardReport — Wizard Export E-Banking</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>ebanking.wizard.report</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Menghasilkan file export e-banking dalam berbagai format (CSV, TXT, XLSX) untuk 4 bank: BCA, BRI, CIMB Niaga, dan Mandiri. Setiap bank memiliki format kolom yang berbeda.
+</div>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>payroll_type</code></td><td>Selection</td><td>salary / thr</td></tr>
+<tr><td><code>period_id</code></td><td>Many2one hr.payslip.run</td><td>Domain: state=close, type_payslip_run sesuai payroll_type</td></tr>
+<tr><td><code>bank_name</code></td><td>Selection</td><td>bca / bri / cimb / mandiri</td></tr>
+<tr><td><code>export_type</code></td><td>Selection</td><td>csv / txt / excel</td></tr>
+<tr><td><code>bank_branch_code</code></td><td>Char</td><td>Kode cabang bank</td></tr>
+<tr><td><code>initial_company</code></td><td>Char</td><td>Inisial perusahaan untuk BCA</td></tr>
+<tr><td><code>bank_acc_number</code></td><td>Char</td><td>Nomor rekening perusahaan</td></tr>
+<tr><td><code>seq_company</code></td><td>Char</td><td>Sequence number perusahaan</td></tr>
+<tr><td><code>notes</code></td><td>Text</td><td>Deskripsi transaksi</td></tr>
+<tr><td><code>trans_date</code></td><td>Date</td><td>Tanggal transaksi</td></tr>
+<tr><td><code>header_id</code></td><td>Char</td><td>ID header transaksi</td></tr>
+<tr><td><code>transaction_id</code></td><td>Char</td><td>ID transaksi unik (auto-increment numeric part)</td></tr>
+<tr><td><code>kode_transaksi</code></td><td>Char</td><td>Kode transaksi bank</td></tr>
+<tr><td><code>data</code></td><td>Binary</td><td>File binary hasil generate</td></tr>
+<tr><td><code>filename</code></td><td>Char</td><td>Nama file output</td></tr>
+</tbody>
+</table>
+<p><strong>Format Output per Bank:</strong></p>
+<table class="table-uat">
+<thead><tr><th>Bank</th><th>Format</th><th>Deskripsi Format</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>BCA</strong></td><td>CSV</td>
+<td>
+Header row:<br>
+<code>00000000000|branch|seq|company|day|01|bank_acc|00|MF|total_emp|amount|month|year</code><br><br>
+Detail row:<br>
+<code>0 + acc_bank + amount + 00 + nik + name</code><br>
+11-digit zero-padded total amount. Amount field: 11 digit. NIK = barcode employee.
+</td>
+</tr>
+<tr>
+<td><strong>BCA</strong></td><td>TXT</td>
+<td>
+Pipe-delimited. Header:<br>
+<code>0|PY|initial_company|branch_code|header_id|trans_date||bank_acc|total_employee|kode_transaksi||</code><br><br>
+Detail:<br>
+<code>1|customer_ref|BCA||acc_bank|name|amount|nik||remark||</code><br>
+Remark field: <code>Gaji [BulanID] [Tahun]</code>
+</td>
+</tr>
+<tr>
+<td><strong>BCA</strong></td><td>Excel (.xlsx)</td>
+<td>
+13 kolom: <code>No.</code>, <code>Transaction ID</code>, <code>Transfer Type</code>, <code>Beneficiary ID</code>, <code>Credited Account</code>, <code>Receiver Name</code>, <code>Amount</code>, <code>NIP</code>, <code>Remark</code>, <code>Beneficiary email</code>, <code>Swift Code</code>, <code>Cust Type</code>, <code>Cust Residence</code>.<br><br>
+Filter: hanya employee dengan <code>BIC = CENAIDJA</code>. Remark: <code>Gaji [BulanID] [Tahun]</code>. NIP = barcode employee.
+</td>
+</tr>
+<tr>
+<td><strong>BRI</strong></td><td>Excel (.xlsx)</td>
+<td>
+Semicolon-delimited. 5 kolom:<br>
+<code>NO;NAMA;ACCOUNT;AMOUNT;Email</code><br><br>
+Amount = nilai actual × 100. Row count MD5 hash appended pada filename atau cell footer.
+</td>
+</tr>
+<tr>
+<td><strong>CIMB Niaga</strong></td><td>Excel (.xlsx)</td>
+<td>
+CSV-style dengan header row containing: <code>bank_acc_number</code>, <code>company.name</code>, <code>currency</code>, <code>total_amount</code>, <code>notes</code>, <code>payslip_count</code>, <code>trans_date</code>.
+</td>
+</tr>
+<tr>
+<td><strong>Mandiri</strong></td><td>Excel (.xlsx)</td>
+<td>
+39 kolom comma-separated dengan:<br>
+— <em>IBU indicator</em>: flag untuk penerima dalam negeri<br>
+— <em>OUR cost handling</em>: opsi biaya transfer<br>
+— <em>Beneficiary details</em>: nama, alamat, kota, kodepos, negara<br>
+— <em>Bank details</em>: nama bank, kode BIC/SWIFT (<code>BMRIIDJA</code>), nomor rekening tujuan, tipe rekening<br>
+— <em>Email notification</em>: alamat email penerima
+</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-16">15.16 BpjsWizardReport — Wizard Laporan BPJS Kesehatan</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>bpjs.wizard.report</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Menghasilkan laporan BPJS Kesehatan bulanan dalam format XLSX dengan rincian iuran per employee.
+</div>
+<p>Output XLSX dengan <strong>10 kolom</strong>: No., No. BPJS Kesehatan, Company Name, Employee ID, Nama Karyawan, Data Upah, Iuran Employee 1%, Iuran Company 4%, Iuran Family, Total.</p>
+<p><strong>Dasar Perhitungan Iuran</strong> — mengikuti konfigurasi <code>bpjs_calculation_base</code> di company:</p>
+<table class="table-uat">
+<thead><tr><th>Mode</th><th>Base Perhitungan</th><th>Contoh</th></tr></thead>
+<tbody>
+<tr><td><code>base_salary_only</code></td><td><code>py.wage</code> (gaji pokok saja)</td><td>Upah: 5.000.000 → iuran employee: 50.000, company: 200.000</td></tr>
+<tr><td><code>base_salary_and_fa</code></td><td><code>py.wage + total_allowance</code></td><td>Upah+FA: 7.000.000 → iuran employee: 70.000, company: 280.000</td></tr>
+<tr><td><code>region_salary</code></td><td><code>region_salary.amount</code> dari <code>hr.salary.region</code></td><td>Regional UMK/UMR berlaku sebagai base iuran</td></tr>
+</tbody>
+</table>
+<p><strong>Query SQL:</strong> JOIN <code>hr_payslip_deduction</code> (filter <code>bpjs_type = JK</code>), <code>hr_payslip</code>, <code>hr_payslip_benefit</code> (JKK, JKM), <code>hr_employee</code>, <code>res_company</code>, <code>hr_salary_region</code>. Output di-download sebagai file <code>.xlsx</code>.</p>
+
+<h3 id="sec-15-17">15.17 BpjsTkWizardReport — Wizard Laporan BPJS Ketenagakerjaan (JKK/JHT/JP/JKM)</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>bpjstk.wizard.report</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Menghasilkan laporan BPJS TK bulanan dengan 4 worksheet tabs sesuai formulir resmi.
+</div>
+<table class="table-uat">
+<thead><tr><th>Tab</th><th>Nama</th><th>Deskripsi</th><th>Kolom Kunci</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>F2-A (Rincian Iuran)</td><td>Per-employee breakdown iuran bulan berjalan</td><td>14 kolom: No., No. e-KTP/KTP, No. KPJ, No. NIK, Nama, Tgl. Lahir, Data Upah, Rapel, Iuran JKK, Iuran JKM 0.30%, Iuran JHT TK 2%, Iuran JHT P 3.70%, Iuran JP TK 1%, Iuran JP P 2%, Total</td></tr>
+<tr><td>1</td><td>F2 (Rekapitulasi)</td><td>Rekapitulasi seluruh iuran perusahaan</td><td>6 bagian: Badan Usaha info, TK & Upah (bulan lalu, penambahan, pengurangan), Rincian Iuran (JKK/JHT/JKM/JP), Kompensasi, Denda, Jumlah</td></tr>
+<tr><td>2</td><td>Rekap F1-A (TKMasuk)</td><td>Tenaga kerja masuk bulan ini</td><td>Filter: <code>date_of_tick_bpjs</code> antara date_from dan date_to. Kolom: no_e_ktp, no_induk_karyawan, no_kartu_peserta, nama_lengkap, birthday, alamat, gender, upah_sebulan</td></tr>
+<tr><td>3</td><td>Rekap F1-B (TKKeluar)</td><td>Tenaga kerja keluar bulan ini</td><td>Filter: <code>resign_date</code> antara date_start dan date_end. Kolom serupa F1-A + NPP + company_name</td></tr>
+<tr><td>4</td><td>Perubahan Upah</td><td>Employee dengan perubahan gaji vs periode sebelumnya</td><td>CTE query membandingkan current vs previous period wages. Kolom: upah_sebulan_bulan_lalu, upah_sebulan_bulan_ini, selisih_upah</td></tr>
+</tbody>
+</table>
+<p><strong>Rate JKK per Jenis Risiko (sumber: hr.bpjs.regulation):</strong></p>
+<table class="table-uat">
+<thead><tr><th>Jenis Risiko</th><th>Rate JKK (Company)</th><th>Sektor</th></tr></thead>
+<tbody>
+<tr><td><code>very_low_risk</code></td><td>0.24%</td><td>Perkantoran / jasa ringan</td></tr>
+<tr><td><code>low_risk</code></td><td>0.54%</td><td>Perdagangan, industri ringan</td></tr>
+<tr><td><code>medium_risk</code></td><td>0.89%</td><td>Industri sedang, konstruksi</td></tr>
+<tr><td><code>high_risk</code></td><td>1.27%</td><td>Industri berat, pertambangan</td></tr>
+<tr><td><code>very_high_risk</code></td><td>1.74%</td><td>Konstruksi berat, quarry</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-18">15.18 BupotBulananWizard — Wizard Bukti Potong PPh 21 Bulanan</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>bupot.bulanan.wizard</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Menghasilkan laporan bukti potong PPh 21 bulanan dalam format e-bupot DJP untuk tiga jenis laporan yang dipilih via context <code>type_report</code>.
+</div>
+<table class="table-uat">
+<thead><tr><th>Context <code>type_report</code></th><th>Nama Output File</th><th>Sheet</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr>
+<td><code>regular</code></td>
+<td><code>format_upload_ebupot21.xlsx</code></td>
+<td>Rekap, 21, 26</td>
+<td>Format e-bupot standard DJP. Sheet '21' = resident employees. Sheet '26' = non-resident employees. Template dari <code>fp_hr_payroll/static/templates/</code></td>
+</tr>
+<tr>
+<td><code>BPMP</code></td>
+<td><code>Bupot Bulanan - BPMP.xlsx</code></td>
+<td>—</td>
+<td>14 kolom untuk pegawai tetap. Gross income = <code>backpay_wage + computed_wage + total_allowance + benefit_jkk_jkm_bpjsk</code>. Mengonsumsi API <code>get_enpoint_annual_report_per_employee()</code> untuk PTKP per employee.</td>
+</tr>
+<tr>
+<td><code>BP21</code></td>
+<td><code>Bupot Bulanan - BP21.xlsx</code></td>
+<td>—</td>
+<td>15 kolom untuk pegawai tidak tetap (BPTET). Menambahkan kolom referensi kontrak: Jenis Dok. Referensi, Nomor Dok. Referensi, Tanggal Dok. Referensi.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kolom Utama Format e-Bupot Regular (Sheet '21' — Pegawai Tetap):</strong></p>
+<table class="table-uat">
+<thead><tr><th>Kolom</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td>Finalized Date</td><td>Tanggal finalize bukti potong</td></tr>
+<tr><td>NPWP / NIK</td><td>NPWP 15 digit atau NIK 16 digit jika NPWP belum ada</td></tr>
+<tr><td>Nama</td><td>Nama lengkap employee</td></tr>
+<tr><td>Alamat</td><td>Alamat lengkap sesuai KTP</td></tr>
+<tr><td>Status Kepegawaian</td><td><code>pegawai-tetap</code> / <code>pegawai-tidak-tetap</code></td></tr>
+<tr><td>Metode Payroll</td><td><code>Gross</code> / <code>Gross-up</code> / <code>Direct</code></td></tr>
+<tr><td>Status Marital</td><td>Status PTKP employee saat pemotongan</td></tr>
+<tr><td>Gross Income</td><td>Total penghasilan bruto bulan berjalan</td></tr>
+<tr><td>PTKP Flags</td><td><code>K/3</code>, <code>K/2</code>, <code>K/1</code>, <code>TK/0</code></td></tr>
+<tr><td>Kode Objek Pajak</td><td><code>21-100-01</code> (pegawai tetap) / <code>21-100-03</code> (bukan pegawai tetap)</td></tr>
+<tr><td>Gross-up Flag</td><td>Flag apakah PPh21 ditanggung perusahaan (Gross-up)</td></tr>
+</tbody>
+</table>
+<p><strong>Data Pendukung:</strong> Wizard mengeksekusi query terpisah untuk mengambil data THR, bonus/others, dan pesangon dari off-cycle batch runs bulan tersebut sebagai komponen gross income tambahan.</p>
+
+<h3 id="sec-15-19">15.19 BupotTahunanWizard — Wizard Bukti Potong PPh 21 Tahunan (Form 1721)</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>bupot.tahunan.wizard</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Menghasilkan Form 1721-A1 dan 1721-BPA1 tahunan. Template: <code>format_upload_ebupot21_a1.xlsx</code>. Hasil disimpan sebagai <code>ir.attachment</code>.
+</div>
+<table class="table-uat">
+<thead><tr><th>Context <code>type_report</code></th><th>Nama Output File</th><th>Sheet</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr>
+<td><code>regular</code></td>
+<td><code>format_upload_ebupot21_a1.xlsx</code></td>
+<td>Rekap, A1</td>
+<td>Form 1721-A1 untuk pegawai tetap. Kolom mencakup seluruh penghasilan bruto (Gaji, Tunjangan PPh/gross-up, Tunjangan Lain, Honorarium, Premi, Natura, Tantiem/Bonus/THR), Biaya Jabatan (dari API), Iuran Pensiun/THT/JHT, Zakat, Netto Pajak Sebelumnya, Kode PTKP, PPh21 Telah Dilunasi, Fasilitas N/DTP. Query total pesangon dan THR year-to-date dari off-cycle batches.</td>
+</tr>
+<tr>
+<td><code>bpa1</code></td>
+<td><code>Bupot Bulanan - BPA1.xlsx</code></td>
+<td>—</td>
+<td>28 kolom untuk kelanjutan data employee di tahun sebelumnya (BPA1). Menyimpan ke model <code>bupot.bulanan.wizard</code>. Data dari pemberi kerja sebelumnya.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Metode Ekstraksi Komponen Gaji ke Kolom Form 1721-A1:</strong></p>
+<p>Sistem menggunakan field <code>a1_component</code> pada <code>hr_regular_allowance</code> dan <code>hr_irregular_allowance</code> untuk memetakan setiap komponen payslip ke kolom Form 1721-A1 yang sesuai:</p>
+<table class="table-uat">
+<thead><tr><th>Nilai <code>a1_component</code></th><th>Map ke Kolom Form 1721-A1</th></tr></thead>
+<tbody>
+<tr><td><code>gaji</code></td><td>Gaji / Upah</td></tr>
+<tr><td><code>tunjangan</code></td><td>Tunjangan Biasa (termasuk gross-up Tunjangan PPh)</td></tr>
+<tr><td><code>honorarium</code></td><td>Honorarium dan Imbalan Sejenis</td></tr>
+<tr><td><code>premi</code></td><td>Premi Asuransi</td></tr>
+<tr><td><code>natura</code></td><td>Natura / Kenikmatan dalam bentuk non-natura</td></tr>
+<tr><td><code>tantiem</code></td><td>Tantiem, Bonus, Gratifikasi, THR</td></tr>
+<tr><td><code>pensiunan</code></td><td>Iuran Pensiun / THT / JHT (bagian employee)</td></tr>
+<tr><td><code>zakat</code></td><td>Zakat yang dibayarkan employee</td></tr>
+</tbody>
+</table>
+<p><strong>API Data Sources:</strong></p>
+<ul>
+<li><code>get_enpoint_annual_myr_report_all_employee()</code> — Mengambil data annual gross, PPh21, dan PTKP untuk semua employee aktif di tahun berjalan</li>
+<li><code>get_enpoint_annual_myr_report_all_employee_resign()</code> — Mengambil data annual untuk employee yang resign di tengah tahun (untuk Form BPA1)</li>
+</ul>
+<p><strong>Penyimpanan Hasil:</strong> File yang di-generate disimpan sebagai <code>ir.attachment</code> dengan nama <code>Data Impor Bupot Tahunan</code> via method <code>add_file_in_attachment()</code>.</p>
+
+<h3 id="sec-15-20">15.20 WizardPayrollReport — Wizard Laporan Gaji Umum</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>wizard.payroll.report</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Menghasilkan laporan payroll dalam XLSX dengan kolom dinamis sesuai konfigurasi allowance dan deduction di company. Mendukung mode regular payroll dan THR.
+</div>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>is_thr</code></td><td>Boolean</td><td>Toggle antara mode THR (True) dan mode regular (False). Mengubah kolom yang di-query.</td></tr>
+<tr><td><code>payslip_run_id</code></td><td>Many2one hr.payslip.run</td><td>Batch payroll yang akan di-report</td></tr>
+<tr><td><code>period_start</code></td><td>Char (related)</td><td>Start date periode payroll</td></tr>
+<tr><td><code>period_end</code></td><td>Char (related)</td><td>End date periode payroll</td></tr>
+<tr><td><code>data</code></td><td>Binary</td><td>File binary XLSX hasil generate</td></tr>
+<tr><td><code>filename</code></td><td>Char</td><td>Nama file output</td></tr>
+</tbody>
+</table>
+<p><strong>Metode Pembuatan Kolom Dinamis:</strong></p>
+<ul>
+<li><code>get_company_component()</code> — Membaca <code>company.regular_allowance_ids</code>, <code>company.irregular_allowance_ids</code>, dan <code>company.deduction_ids</code> untuk membangun daftar kolom yang akan di-query.</li>
+<li><code>get_select_clause()</code> — Membangun SQL SELECT statement dengan LEFT JOIN ke <code>hr_payslip_allowance</code>, <code>hr_payslip_benefit</code>, dan <code>hr_payslip_deduction</code> per komponen. Mendukung dua variant query: regular payroll vs THR.</li>
+<li><code>get_header()</code> — Menghasilkan array header kolom untuk worksheet XLSX.</li>
+<li><code>get_data_payslip()</code> — Eksekusi SQL query dinamis dan return result set.</li>
+<li><code>download_report()</code> — Generate XLSX dengan SUM formula untuk footer totals, merge_range untuk title/period headers, dan bold styling.</li>
+</ul>
+
+<h3 id="sec-15-21">15.21 Wizard Laporan Pajak: Annual &amp; Bulanan</h3>
+<div class="modules-highlight">
+Terdapat dua wizard terpisah untuk laporan pajak — annual dan bulanan.
+</div>
+<table class="table-uat">
+<thead><tr><th>Wizard Model</th><th>Fields</th><th>Metode</th><th>Output</th></tr></thead>
+<tbody>
+<tr>
+<td><code>wizard.payroll.tax.report</code></td>
+<td><code>company_id</code>, <code>year</code></td>
+<td><code>get_data_report()</code></td>
+<td>Menulis flag <code>year_tax_report</code> pada employee records. Mengembalikan tree action ke <code>hr.employee</code> (filter: company + year + pegawai-tetap).</td>
+</tr>
+<tr>
+<td><code>wizard.payroll.tax.report.bulanan</code></td>
+<td><code>payslip_run_id</code>, <code>company_id</code>, <code>from_date</code>, <code>to_date</code> (related)</td>
+<td><code>get_data_report()</code></td>
+<td>CSV 9 kolom: Masa Pajak, Tahun Pajak, Pembetulan, NPWP, Nama, Kode Pajak (21-100-01), Jumlah Bruto, Jumlah PPh, Kode Negara. Disimpan sebagai <code>ir.attachment</code> dengan nama <code>1721 A - Bulanan raw.csv</code>.</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="sec-15-22">15.22 HistoryChangeWizard — Wizard Riwayat Perubahan Data Master</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>history.change.wizard</code> &amp; <code>history.change.confirmation</code> &amp; <code>history.change.confirmation.line</code><br>
+<strong>Purpose:</strong> Menyimpan history perubahan data master payroll (BPJS, Occupational Expense, Marital Status, Tax Rate, Tax Penalties, TER Rate) secara effective-dated.
+</div>
+<table class="table-uat">
+<thead><tr><th>Wizard</th><th>Model</th><th>Fields / Metode</th><th>Fungsi</th></tr></thead>
+<tbody>
+<tr>
+<td>Section Selector</td>
+<td><code>history.change.wizard</code></td>
+<td>Field: <code>section</code> (selection)</td>
+<td>Memilih section data yang akan dilihat/diubah. Options: <code>bpjs</code>, <code>occupational</code>, <code>marital_status</code>, <code>individual_tax_rate</code>, <code>individual_tax_penalties</code>, <code>tax_ter</code>, <code>tax_pension</code>. <code>button_view()</code> mengembalikan action ke ir.actions.act_window yang sesuai.</td>
+</tr>
+<tr>
+<td>Confirmation Dialog</td>
+<td><code>history.change.confirmation</code></td>
+<td>Field: <code>line_ids</code> (One2many)</td>
+<td>Menampilkan baris-baris perubahan untuk di-confirm. <code>button_confirm()</code> membuat records <code>history.change</code>.</td>
+</tr>
+<tr>
+<td>Change Line</td>
+<td><code>history.change.confirmation.line</code></td>
+<td>Fields: <code>name</code>, <code>parent_model_id</code>, <code>parent_res_id</code>, <code>model_id</code>, <code>field_id</code>, <code>change_date</code>, <code>before</code>, <code>change_to</code>, <code>valid_from</code>, <code>valid_to</code>, <code>notes</code>, <code>user_id</code></td>
+<td>Menyimpan detail satu perubahan: nilai sebelum (<code>before</code>), nilai baru (<code>change_to</code>), tanggal berlaku (<code>valid_from</code>/<code>valid_to</code>), dan catatan.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Effective Date Logic:</strong> Perubahan mulai berlaku pada <code>valid_from</code> dan berakhir pada <code>valid_to</code>. Query payslip menggunakan <code>valid_from</code> sebagai acuan tanggal untuk menentukan nilai mana yang berlaku pada periode tertentu.</p>
+
+<h3 id="sec-15-23">15.23 MaritalTaxStatusUpdateWizard — Wizard Perubahan Status Kawin</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>marital.tax.status.update.wizard</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Mengelola perubahan status marital employee untuk keperluan pajak (PTKP) dengan aturan effective date yang membedakan antara perubahan langsung (mid-year) dan yang harus menunggu awal tahun depan.
+</div>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th><th>Read-Only</th></tr></thead>
+<tbody>
+<tr><td><code>employee_id</code></td><td>Many2one hr.employee</td><td>Employee yang akan diubah status marital tax-nya</td><td>Yes (diisi otomatis)</td></tr>
+<tr><td><code>field_identifier</code></td><td>Char</td><td>Label field: "Marital Tax Status"</td><td>Yes</td></tr>
+<tr><td><code>before_value</code></td><td>Selection</td><td>Status marital saat ini (diambil dari <code>employee.marital_status</code>)</td><td>Yes</td></tr>
+<tr><td><code>change_to</code></td><td>Selection</td><td>Status marital baru yang diinginkan</td><td>No</td></tr>
+<tr><td><code>note</code></td><td>Text</td><td>Catatan informasi bahwa perubahan mungkin berlaku tahun depan</td><td>Yes</td></tr>
+</tbody>
+</table>
+<p><strong>Logika <code>action_confirm_changes()</code>:</strong></p>
+<ol>
+<li>Cek apakah <code>change_to == before_value</code> → raise ValidationError jika sama</li>
+<li>Panggil <code>employee._can_update_marital_tax_status_directly()</code>:
+<ul>
+<li><strong>True</strong> (payroll tahun berjalan belum diproses): langsung apply via <code>employee._apply_direct_marital_tax_status_update(change_to)</code>. Perubahan langsung aktif untuk periode berjalan.</li>
+<li><strong>False</strong> (payroll tahun berjalan sudah diproses): schedule via <code>employee._schedule_marital_tax_status_update(change_to, effective_date)</code> dengan <code>effective_date = January 1, (tahun_sekarang + 1)</code>. Perubahan akan dieksekusi oleh scheduler annual.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Catatan Wizard:</strong> <em>"Please note that if payroll for the current year has already been processed, the changes will only take place in the beginning of the following year."</em></p>
+<p><strong>Use Case:</strong> Employee resigns dan menikah di bulan Januari — perubahan langsung. Employee sudah ada dan payroll berjalan — harus tunggu tahun depan per regulasi PTKP.</p>
+
+<h3 id="sec-15-24">15.24 HrPayslipImportWizard — Wizard Import Massal Payslip via XLSX</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>hr.payslip.import.wizard</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Bulk editing payslip via XLSX — mengupdate irregular allowance, deduction, unpaid leaves, dan BPJS overwrite value secara massal. Menggunakan xlrd untuk parsing file XLSX.
+</div>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>file_data</code></td><td>Binary</td><td>File XLSX binary yang diupload user</td></tr>
+<tr><td><code>file_name</code></td><td>Char</td><td>Nama file asli (untuk validasi extension)</td></tr>
+<tr><td><code>type_action</code></td><td>Selection</td><td>import / export. Default: import. Untuk export, wizard menghasilkan template XLSX kosong.</td></tr>
+<tr><td><code>allow_overwrite_bpjs</code></td><td>Boolean</td><td>Computed dari konfigurasi company — apakah company mengijinkan overwrite nilai BPJS</td></tr>
+</tbody>
+</table>
+<p><strong>Format Kolom XLSX (urutan kolom absolut):</strong></p>
+<table class="table-uat">
+<thead><tr><th>Index Kolom</th><th>Nama Field</th><th>Tipe Data</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td>[0]</td><td><code>employee_nik</code></td><td>String</td><td>Barcode / NIP employee. Dicari di <code>hr.employee.barcode</code></td></tr>
+<tr><td>[1]</td><td><code>irregular_allowance_name</code></td><td>String</td><td>Nama irregular allowance yang akan di-overwrite</td></tr>
+<tr><td>[2]</td><td><code>irregular_allowance_amount</code></td><td>Float</td><td>Jumlah baru untuk irregular allowance (jika overwrite)</td></tr>
+<tr><td>[3]</td><td><code>deduction_name</code></td><td>String</td><td>Nama deduction yang akan di-input/overwrite</td></tr>
+<tr><td>[4]</td><td><code>deduction_amount</code></td><td>Float</td><td>Jumlah deduction</td></tr>
+<tr><td>[5]</td><td><code>unpaid_leaves</code> / <code>bpjs_overwrite_value</code></td><td>Integer / Float</td><td>Jika <code>allow_overwrite_bpjs=True</code>: ini adalah kolom BPJS overwrite. Jika tidak: kolom unpaid leaves.</td></tr>
+<tr><td>[6]</td><td><code>bpjs_overwrite_amount</code></td><td>Float</td><td>Nilai overwrite komponen BPJS (hanya jika <code>allow_overwrite_bpjs=True</code>)</td></tr>
+<tr><td>[7]</td><td><code>bpjs_overwrite_value</code></td><td>Float</td><td>Jenis komponen BPJS yang di-overwrite (hanya jika <code>allow_overwrite_bpjs=True</code>)</td></tr>
+</tbody>
+</table>
+<p><strong>Validasi Import:</strong></p>
+<ul>
+<li>Employee harus ditemukan via <code>barcode</code> (NIK)</li>
+<li>Payslip harus memiliki <code>state = draft</code></li>
+<li>Irregular allowance harus memiliki <code>basic_calculation = 'manual'</code></li>
+<li>Deduction harus ada di konfigurasi company</li>
+</ul>
+<p><strong>Output Proses:</strong> Membuat records <code>updatable_irregular_allowance_ids</code>, <code>updatable_deduction_ids</code>, <code>updatable_benefit.allowance_ids</code> (staging), lalu memanggil <code>sync_salary_computation()</code> untuk commit ke model utama.</p>
+
+<h3 id="sec-15-25">15.25 RunOffCycle — Wizard Eksekusi Off-Cycle Payroll</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>run.off.cycle</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Wizard utama untuk menjalankan THR, Pesangon, dan Bonus off-cycle payroll. Membuat payslip batch, menulis metadata (tanggal THR / religion / payment_date), dan trigger compute_sheet.
+</div>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>component</code></td><td>Selection</td><td>thr / pesangon / others. Required. Default: thr.</td></tr>
+<tr><td><code>thr_payslip_period_id</code></td><td>Many2one hr.payslip.period</td><td>Periode THR. Default dari <code>_default_monthly_period(True)</code>. Jika kosong, auto-generate via <code>_generate_payslip_period()</code>.</td></tr>
+<tr><td><code>payslip_period_id</code></td><td>Many2one hr.payslip.period</td><td>Periode untuk Pesangon / Others (domain dibatasi oleh <code>domain_payslip_period_ids</code>)</td></tr>
+<tr><td><code>domain_payslip_period_ids</code></td><td>Many2many hr.payslip.period</td><td>Domain periode yang dihitung oleh <code>get_domain_period()</code>. Computed, tidak diedit manual.</td></tr>
+<tr><td><code>thr_date</code></td><td>Date</td><td>Tanggal pembayaran THR (hari raya)</td></tr>
+<tr><td><code>religion_id</code></td><td>Many2one employee.religion</td><td>Agama employee yang berhak THR (filter)</td></tr>
+<tr><td><code>employee_ids / employee_2_ids / employee_3_ids</code></td><td>Many2many hr.employee</td><td>Tiga field employee untuk THR / Pesangon / Others</td></tr>
+<tr><td><code>payment_date</code></td><td>Date</td><td>Tanggal pembayaran Pesangon</td></tr>
+<tr><td><code>is_import_emp</code></td><td>Boolean</td><td>Flag apakah employee di-import dari XLSX. Default: True</td></tr>
+<tr><td><code>file_import</code></td><td>Binary</td><td>File XLSX import employee</td></tr>
+</tbody>
+</table>
+<p><strong>Logika <code>get_domain_period()</code> — Menghitung Periode Valid untuk Off-Cycle:</strong></p>
+<ol>
+<li>Ambil payslip run reguler terakhir yang sudah <code>close</code> (dengan <code>type_payslip_run = 'regular'</code>)</li>
+<li>Ambil payslip run terakhir di bulan Desember (dari semua tipe)</li>
+<li>Ambil semua periode <strong>SETELAH</strong> periode Desember terakhir</li>
+<li>Tambahkan periode berikutnya jika ada batch yang sudah finalized (next period dari current period)</li>
+<li>Jika belum ada batch sama sekali (initial setup): gunakan periode Januari tahun berjalan</li>
+</ol>
+<p><strong>Logika <code>run_off_cycle()</code> — Eksekusi Off-Cycle:</strong></p>
+<ol>
+<li>Panggil <code>action_run_payroll(is_thr=True / is_pesangon=True / is_others=True)</code> dengan context <code>bypass_approve=True</code> dan <code>bypass_lock_payroll=True</code></li>
+<li>Tulis metadata di payslip batch: <code>hari_raya_date</code>, <code>religion_id</code>, <code>payment_date</code></li>
+<li>Ambil <code>res_id</code> dari action result → browse payslip batch yang baru dibuat</li>
+<li>Buat <code>hr.payslip.employees</code> wizard dengan vals sesuai komponen</li>
+<li>Panggil <code>compute_sheet()</code> untuk menghitung dan mengassign payslip ke employee</li>
+</ol>
+
+<h3 id="sec-15-26">15.26 ConfirmationDeleteBatch — Wizard Konfirmasi Hapus Batch</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>confirmation.delete.batch</code> | <strong>Type:</strong> TransientModel<br>
+<strong>Purpose:</strong> Konfirmasi sebelum penghapusan batch payroll. Mengirim notifikasi via <code>api_config.message_post()</code> sebelum unlink records. Menggunakan wizard <code>confirmation.success</code> untuk menampilkan hasil.
+</div>
+<table class="table-uat">
+<thead><tr><th>Wizard</th><th>Model</th><th>Fields / Metode</th><th>Fungsi</th></tr></thead>
+<tbody>
+<tr>
+<td>Confirmation Dialog</td>
+<td><code>confirmation.delete.batch</code></td>
+<td>Field: <code>payslip_batch_ids</code> (Many2many hr.payslip.run)</td>
+<td>Menampilkan daftar batch yang akan dihapus. <code>confirm_delete()</code>: kirim notifikasi via <code>api_config.message_post()</code>, lalu <code>unlink()</code> semua batch yang dipilih.</td>
+</tr>
+<tr>
+<td>Success Dialog</td>
+<td><code>confirmation.success</code></td>
+<td>Field: <code>name</code> (Char)</td>
+<td>Dialog sukses sederhana setelah delete berhasil. <code>action_ok()</code> menutup wizard.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Catatan Keamanan:</strong> Penghapusan batch payroll yang sudah memiliki payslip harus dilakukan dengan hati-hati. Pastikan tidak ada attendance atau overtime yang sudah terkait dengan payslip di batch tersebut.</p>
+
+<h2 id="section-16">16. Pemetaan Akun Payroll Journal & Mekanisme Attendance Lock</h2>
+
+<h3 id="sec-16-1">16.1 Metode Penghitungan Biaya Karyawan</h3>
+<table class="table-uat">
+<thead><tr><th>Metode</th><th>Kode</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td>Direct Costing</td><td>D</td><td>Gaji dan tunjangan di-debit langsung ke departemen employee (analytic_account_id dari contract)</td></tr>
+<tr><td>Indirect Costing</td><td>I</td><td>Gaji dan tunjangan di-debit ke akun biaya umum (cost center perusahaan), bukan ke departemen spesifik</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-16-2">16.2 Struktur Journal Entry per Payslip</h3>
+<p>Setiap finalize payslip menghasilkan Account Move dengan minimal 4 baris:</p>
+<ul>
+<li><strong>Debit:</strong> Gaji Pokok → Akun Biaya Gaji (direct/indirect)</li>
+<li><strong>Credit:</strong> Gaji Pokok → Akun Hutang Gaji (liability)</li>
+<li><strong>Debit:</strong> Allowance (JKK, JKM, dll.) → Akun Biaya Perusahaan (per benefit type)</li>
+<li><strong>Credit:</strong> Allowance → Akun Hutang respective</li>
+<li><strong>Debit:</strong> Deduction (BPJS, PPh21) → Akun respective</li>
+<li><strong>Credit:</strong> Deduction → Hutang respective</li>
+<li><strong>Debit/Credit:</strong> Take-Home Pay → Kas/Bank</li>
+</ul>
+<p>Payroll costing type diatur per employee via field di <code>hr.employee</code> yang di-copy dari <code>hr.contract</code>. Konfigurasi akun per komponen (gaji, tunjangan, JKK, JKM, JHT, JP, PPh21, dll.) diatur di <code>hr.payroll.account.config</code>.</p>
+
+<h3 id="sec-16-3">16.3 THR Journal Entry</h3>
+<p>THR di-posting sebagai expense terpisah dari payroll reguler. Account move THR dibuat pada saat batch THR difinalize, dengan akun expense THR per department dan akun liability THR (hutang kepada karyawan).</p>
+
+<h3 id="sec-16-4">16.4 Pesangon Journal Entry</h3>
+<h2 id="section-17">17. Alur Teknis Payroll Correction, Loan Injection & Mobile Payslip</h2>
+
+<h3 id="sec-17-1">17.1 Kondisi Pemicu Correction</h3>
+<p>Correction dibutuhkan ketika:</p>
+<ul>
+<li>Employee belum termasuk di batch regular (missed input)</li>
+<li>Ada kesalahan input komponen gaji (allowance/deduction)</li>
+<li>Ada perubahan data employee yang mempengaruhi payroll SETELAH batch difinalisasi</li>
+<li>Payroll salah bulan (misalnya di-assign ke periode yang salah)</li>
+</ul>
+
+<h3 id="sec-17-2">17.2 Langkah Teknis Correction</h3>
+<ol>
+<li><strong>Buka Batch:</strong> Batch kembali ke state <code>draft</code> (jika state memungkinkan) menggunakan wizard atau button khusus.</li>
+<li><strong>Rollback Attendance:</strong> Semua attendance terkait dikembalikan ke state <code>approve</code> dengan <code>is_waiting_to_pay=True</code>. Lihat <code>HrPayslip.unlink()</code>.</li>
+<li><strong>Rollback Overtime:</strong> Sama dengan attendance, overtime dikembalikan ke state <code>approve</code>.</li>
+<li><strong>Hapus Payslip:</strong> Payslip employee yang dikoreksi di-unlink. Proses ini trigger rollback attendance dan overtime secara otomatis.</li>
+<li><strong>Input Koreksi:</strong> Data payroll yang benar di-input via wizard atau import XLSX.</li>
+<li><strong>Reproses Batch:</strong> Batch diproses ulang, attendance diapprove ulang, dan payslip dihitung ulang.</li>
+<li><strong>Repost Journal:</strong> Account move entries yang lama di-reverse (jika applicable) dan entries baru di-post.</li>
+</ol>
+
+<h3 id="sec-17-3">17.3 Mekanisme Context Bypass</h3>
+<p>Correction menggunakan <code>context = {'bypass_lock_payroll': True, 'bypass_approve': True}</code> untuk melewati:</p>
+<ul>
+<li><code>bypass_lock_payroll</code>: melewati validasi payslip lock (state=done / lock_payroll=True)</li>
+<li><code>bypass_approve</code>: melewati validasi data approval attendance/leave/overtime</li>
+</ul>
+
+<h3 id="sec-17-4">17.4 Logika Injeksi Angsuran Pinjaman (if_loan)</h3>
+
+<h3 id="sec-17-5">17.5 Model Pinjaman</h3>
+<p><code>hr.loan</code> (dari modul <code>if_loan</code>) menyimpan data pinjaman employee.</p>
+<table class="table-uat">
+<thead><tr><th>Field</th><th>Type</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td><code>employee_id</code></td><td>Many2one</td><td>Employee yang memiliki pinjaman</td></tr>
+<tr><td><code>loan_type</code></td><td>Selection</td><td>Tipe pinjaman: <code>pinjaman_bri</code>, <code>pinjaman_bni</code>, dll.</td></tr>
+<tr><td><code>loan_amount</code></td><td>Float</td><td>Total jumlah pinjaman pokok</td></tr>
+<tr><td><code>interest_amount</code></td><td>Float</td><td>Total bunga pinjaman</td></tr>
+<tr><td><code>tenure_months</code></td><td>Integer</td><td>Tenor pinjaman dalam bulan</td></tr>
+<tr><td><code>installment_amount</code></td><td>Float</td><td>Angsuran bulanan (pokok + bunga / tenure_months)</td></tr>
+<tr><td><code>start_date</code></td><td>Date</td><td>Tanggal mulai angsuran (bulan pertama dihitung)</td></tr>
+<tr><td><code>remaining_amount</code></td><td>Float</td><td>Sisa amount yang belum dibayar</td></tr>
+<tr><td><code>state</code></td><td>Selection</td><td>draft → approve → done (lunas)</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-17-6">17.6 Injeksi Otomatis ke Payslip</h3>
+<p>Setiap kali payroll di-compute (<code>sync_salary_computation()</code>), sistem memproses pinjam aktif employee:</p>
+<ol>
+<li>Cari semua <code>hr.loan</code> dengan <code>employee_id</code>=payslip.employee_id, <code>state</code>='approve'</li>
+<li>Untuk setiap loan, cek apakah bulan berjalan sudah masuk dalam periode loan (<code>start_date</code> ≤ period_end)</li>
+<li>Jika ya, catat <code>installment_amount</code> sebagai <code>hr.payslip.deduction</code> dengan name=loan_type dan amount=installment_amount</li>
+<li>Kurangi <code>remaining_amount</code> di record loan</li>
+<li>Jika <code>remaining_amount</code> ≤ 0, auto-close loan (state='done')</li>
+</ol>
+
+<h3 id="sec-17-7">17.7 Konteks Pengabaian Lock</h3>
+<p>Pembayaran angsuran loan menggunakan <code>with_context(bypass_lock_payroll=True)</code> agar tidak terblokir oleh payroll lock yang mungkin aktif. Ini memungkinkan loan deduction tetap ter-input meskipun payroll sudah di-lock.</p>
+
+<h3 id="sec-17-8">17.8 Alur Mobile Payslip PDF (if_mobile_payroll)</h3>
+
+<h3 id="sec-17-9">17.9 Mekanisme Generate</h3>
+<p> Payslip PDF digenerate on-demand saat employee atau admin mengakses payslip dari mobile app. Sistem menggunakan report engine Odoo dengan template QWeb <code>if_mobile_payroll.report_payslip</code>. PDF dilindungi token: URL download mengandung token unik yang expire dalam waktu tertentu.</p>
+
+<h3 id="sec-17-10">17.10 Token-Based Security</h3>
+<p>Setiap employee memiliki <code>token</code> field di record mereka. Token ini digunakan sebagai parameter untuk generate PDF payslip. Token expires setelah periode tertentu (konfigurasi di <code>hr.payroll.api.config</code>). Jika token tidak valid atau expired, akses ditolak dengan error response.</p>
+
+<h3 id="sec-17-11">17.11 Data Payslip di Mobile</h3>
+<p>Mobile app consuming data via REST API endpoint <code>/api/payslip/mobile/[id]</code>. Response JSON mengandung: employee info, period, computed_wage, allowance breakdown (regular/irregular), deduction breakdown (BPJS/health, tax, loan, dll.), take_home_pay, dan URL signed untuk PDF attachment.</p>
+
+<h2 id="section-18">18. Spesifikasi Laporan Detail & Skenario UAT Extended</h2>
+
+<h3 id="sec-18-1">18.1 Skenario UAT Extended</h3>
+
+<table class="table-uat">
+<thead><tr><th>ID</th><th>Kategori</th><th>Langkah UAT</th><th>Ekspektasi</th><th>Status</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>UAT-PY-07</strong><br><em>THR - THR Date Configuration</em></td>
+<td>THR</td>
+<td>1. Buat payslip THR via Run Off Cycle. 2. Set THR Date di wizard. 3. Compute sheet. 4. Finalize batch.</td>
+<td>Report THR menggunakan THR Date, bukan tanggal finalize. Period THR sesuai.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-08</strong><br><em>THR - Religion Filter</em></td>
+<td>THR</td>
+<td>1. Buat batch THR. 2. Pilih Religion=Islam. 3. Pilih employee Muslim dan non-Muslim. 4. Compute THR.</td>
+<td>Hanya employee dengan religion matching yang diinclude. Report sesuai agama.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-09</strong><br><em>THR - Eligibility Based on Joining Date</em></td>
+<td>THR</td>
+<td>1. Employee A: joining_date = 13 bulan lalu. 2. Employee B: joining_date = 2 bulan lalu. 3. Compute THR.</td>
+<td>Employee A dapat THR proporsional. Employee B: system raise error THR eligibility violation atau 0 THR.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-10</strong><br><em>Pesangon - Resign Flow</em></td>
+<td>Pesangon</td>
+<td>1. Resign employee dengan masa kerja 5 tahun. 2. Input pesangon via wizard. 3. Run off-cycle pesangon. 4. Check account move.</td>
+<td>Pesangon sesuai formula (9 bulan gaji). Journal entry sesuai: debit compensation expense, credit cash/bank.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-11</strong><br><em>BPJS Kesehatan - Base Salary Change</em></td>
+<td>BPJS</td>
+<td>1. Employee wage naik dari 5jt ke 7jt di tengah tahun. 2. Generate BPJS report bulan sebelum dan sesudah.</td>
+<td>Sebelum: iuran berdasarkan 5jt. Sesudah: iuran berdasarkan 7jt. Perubahan Upah di-F1-A/-B report.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-12</strong><br><em>BPJS TK - Risk Category Change</em></td>
+<td>BPJS TK</td>
+<td>1. Company risk category berubah dari low_risk ke medium_risk. 2. Generate F2-A report.</td>
+<td>JKK rate berubah dari 0.54% ke 0.89%. Total JKK company portion meningkat sesuai.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-13</strong><br><em>Payroll Correction - Attendance Rollback</em></td>
+<td>Correction</td>
+<td>1. Finalize batch. 2. Delete payslip employee A. 3. Approve ulang attendance. 4. Create new payslip.</td>
+<td>Attendance state di-rollback. Payslip baru ter-link dengan attendance yang baru. Journal entries tidak duplicate.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-14</strong><br><em>Marital Status Change - Effective Next Year</em></td>
+<td>Tax</td>
+<td>1. Ubah marital_status employee X dari TK ke K1 di bulan November. 2. Run payroll November. 3. Run payroll December. 4. Run payroll January tahun depan.</td>
+<td>November &amp; December: PPh21 dihitung dengan PTKP TK/0. January tahun depan: PPh21 dihitung dengan PTKP K/1. Effective date stored di history.change record.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-15</strong><br><em>Marital Status Change - Immediate</em></td>
+<td>Tax</td>
+<td>1. Employee X resigns December dan menikah January. 2. Ubah marital di January (payroll belum diproses).</td>
+<td>PTKP langsung berubah tanpa harus tunggu tahun depan. history.change record dibuat.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-16</strong><br><em>E-Banking BCA - CSV Export</em></td>
+<td>E-Banking</td>
+<td>1. Buat batch regular. 2. Generate BCA CSV. 3. Upload ke BCA Cash Management.</td>
+<td>File ter-download dengan format 11-digit amount padding. Remark "Gaji MMYYYY". Hanya employee dengan BIC=CENAIDJA.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-17</strong><br><em>E-Banking BRI - XLSX Export</em></td>
+<td>E-Banking</td>
+<td>1. Buat batch regular. 2. Generate BRI XLSX. 3. Open di Excel.</td>
+<td>Kolom NO;NAMA;ACCOUNT;AMOUNT;Email. Amount = nilai × 100. MD5 hash correct.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-18</strong><br><em>E-Banking Mandiri - Full Detail Export</em></td>
+<td>E-Banking</td>
+<td>1. Buat batch regular. 2. Generate Mandiri XLSX. 3. Verifikasi 39 kolom.</td>
+<td>IBU indicator, OUR cost, Swift Code, full beneficiary address semua terisi.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-19</strong><br><em>Bupot Bulanan - BPMP Report</em></td>
+<td>Tax</td>
+<td>1. Run payroll reguler. 2. Generate Bupot Bulanan BPMP. 3. Verifikasi gross income.</td>
+<td>Gross income = backpay_wage + computed_wage + total_allowance + benefit_jkk_jkm_bpjsk. PTKP dari API.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-20</strong><br><em>Bupot Tahunan - 1721-A1 Form</em></td>
+<td>Tax</td>
+<td>1. Generate Bupot Tahunan Regular. 2. Verifikasi setiap kolom terhadap Form 1721-A1 fisik. 3. Check iuran pensiun &amp; biaya jabatan dari API.</td>
+<td>Semua 40+ kolom sesuai Form 1721-A1. Biaya jabatan, iuran pensiun, zakat sesuai data aktual.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-21</strong><br><em>Loan - Auto Installment Injection</em></td>
+<td>Loan</td>
+<td>1. Buat loan untuk employee A (10jt, tenor 10x). 2. Run payroll 10 bulan berturut-turut. 3. Check remaining_amount after month 10.</td>
+<td>Setiap bulan: angsuran terinject sebagai deduction. remaining_amount decrement. After month 10: state=done, remaining_amount=0.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-22</strong><br><em>Loan - Partial Early Settlement</em></td>
+<td>Loan</td>
+<td>1. Employee A punya loan active. 2. Admin input manual payment outside system. 3. Run payroll.</td>
+<td>Angsuran tetap terinject penuh (sistem tidak tahu partial settlement di luar). Admin harus manually adjust remaining_amount di record loan.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-23</strong><br><em>Accumulated Payroll - Mid-Year Joining</em></td>
+<td>Accumulation</td>
+<td>1. Employee X join di bulan Juli. 2. Generate akumulasi payroll. 3. Check Form 1721.</td>
+<td>Akumulasi gross dan tax dimulai dari July, bukan January. Bi-yearly report (1721) tetap akurat.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-24</strong><br><em>Payroll Import Wizard - Bulk Update</em></td>
+<td>Import</td>
+<td>1. Siapkan XLSX dengan 50 employee rows. 2. Import ke draft payslip batch. 3. Verify each row updated correctly.</td>
+<td>50 payslip updated dalam satu transaksi. Errors dilaporkan per row. Payslip dengan state≠draft ditolak dengan clear error message.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-25</strong><br><em>Daily Worker - Computed Wage Based on Actual Days</em></td>
+<td>Daily Worker</td>
+<td>1. Daily worker contract: daily_wage=200.000. 2. Period dengan 22 actual working days. 3. Run payroll.</td>
+<td>computed_wage = 22 × 200.000 = 4.400.000. BPJS/JHT/JP dihitung dari computed_wage (bukan contractual daily_wage).</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-26</strong><br><em>Government Regulation - Effective Date</em></td>
+<td>Regulation</td>
+<td>1. Update PTKP per January 1, 2026. 2. Run payroll December 2025. 3. Run payroll January 2026.</td>
+<td>December 2025: old PTKP. January 2026: new PTKP. All regulation changes logged in history.change.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-27</strong><br><em>Period Mismatch - Backend vs Odoo</em></td>
+<td>Integration</td>
+<td>1. Backend period = February 2026. 2. User mencoba run payroll March 2026 dari Odoo.</td>
+<td>ValidationError: "Last Period on backend doesn't match!" Off-cycle (THR/Pesangon/others) bypass validasi ini.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-28</strong><br><em>Lock Payroll - Prevent Edit After Finalize</em></td>
+<td>Security</td>
+<td>1. Finalize batch January. 2. User mencoba edit payslip January employee A.</td>
+<td>ValidationError: "Payslip data is locked. Please contact your payroll team to unlock the data before editing!"</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="sec-18-2">18.2 Laporan Gaji Umum (wizard_payroll_report)</h3>
+<p>XLSX dengan header merged cells untuk title dan period. Kolom-kolom bersifat dinamis mengikuti konfigurasi company, namun berikut struktur dasar:</p>
+<table class="table-uat">
+<thead><tr><th>Grup Kolom</th><th>Field</th><th>Sumber Data</th></tr></thead>
+<tbody>
+<tr><td rowspan="5"><strong>Header</strong></td><td>No.</td><td>Auto-increment</td></tr>
+<tr><td>Employee ID</td><td><code>hr.employee.barcode</code></td></tr>
+<tr><td>Employee Name</td><td><code>hr.employee.name</code></td></tr>
+<tr><td>Department</td><td><code>hr.employee.department_id</code></td></tr>
+<tr><td>Job Title / Marital Status</td><td><code>hr.employee.job_id</code> / <code>marital_status</code></td></tr>
+<tr><td rowspan="3"><strong>Komponen Gaji</strong></td><td>Basic Salary</td><td><code>hr.payslip.computed_wage</code></td></tr>
+<tr><td>Actual Working Days</td><td><code>hr.payslip.actual_working_days</code></td></tr>
+<tr><td>Computed Wage</td><td>Calculated: actual_working_days × daily_wage (daily worker)</td></tr>
+<tr><td rowspan="4"><strong>Allowances</strong></td><td>Regular Allowances (dinamis)</td><td>LEFT JOIN <code>hr_payslip_allowance</code> per komponen company</td></tr>
+<tr><td>Benefit JKK</td><td><code>hr.payslip.benefit_ids</code> (JKK)</td></tr>
+<tr><td>Benefit JKM</td><td><code>hr.payslip.benefit_ids</code> (JKM)</td></tr>
+<tr><td>Benefit BPJS Kesehatan</td><td><code>hr.payslip.benefit_ids</code> (BPJS Kesehatan)</td></tr>
+<tr><td rowspan="5"><strong>Deductions</strong></td><td>BPJS Kesehatan Employee</td><td><code>hr.payslip.deduction_ids</code> (JK)</td></tr>
+<tr><td>BPJS TK JHT + JP</td><td><code>hr.payslip.deduction_ids</code></td></tr>
+<tr><td>PPh 21</td><td><code>hr.payslip.deduction_ids</code> (tax)</td></tr>
+<tr><td>Unpaid Leave</td><td><code>hr.payslip.deduction_ids</code> (unpaid)</td></tr>
+<tr><td>Pinjaman / Lainnya</td><td><code>hr.payslip.deduction_ids</code> (loan)</td></tr>
+<tr><td><strong>Footer</strong></td><td>Total per kolom numerik</td><td>SUM formula pada baris footer XLSX</td></tr>
+</tbody>
+</table>
+<p>Footer: SUM formula untuk total per numeric column. Header cells menggunakan <code>merge_range</code> Excel dengan bold styling untuk title dan period.</p>
+
+<h3 id="sec-18-3">18.3 Laporan Pajak 1721-A Bulanan (wizard_payroll_tax_report_bulanan)</h3>
+<p>CSV 9 kolom untuk pelaporan SPT Masa PPh 21 bulanan — compatible dengan format upload DJP:</p>
+<table class="table-uat">
+<thead><tr><th>No.</th><th>Nama Kolom</th><th>Format / Contoh</th><th>Deskripsi</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Masa Pajak</td><td>MM (01–12)</td><td>Bulan pemotongan</td></tr>
+<tr><td>2</td><td>Tahun Pajak</td><td>YYYY</td><td>Tahun pemotongan</td></tr>
+<tr><td>3</td><td>Pembetulan</td><td>0 / 1 / 2 / dst</td><td>Nomor pembetulan SPT (0 = normal)</td></tr>
+<tr><td>4</td><td>NPWP</td><td>##.###.###.#-###.###</td><td>NPWP 15 digit dengan format titik</td></tr>
+<tr><td>5</td><td>Nama</td><td>String</td><td>Nama lengkap employee</td></tr>
+<tr><td>6</td><td>Kode Pajak</td><td>21-100-01</td><td>Kode objek pajak pegawai tetap</td></tr>
+<tr><td>7</td><td>Jumlah Bruto</td><td>Numeric</td><td>Total penghasilan bruto bulan berjalan</td></tr>
+<tr><td>8</td><td>Jumlah PPh</td><td>Numeric</td><td>Total PPh 21 yang dipotong bulan berjalan</td></tr>
+<tr><td>9</td><td>Kode Negara</td><td>ID</td><td>Kode negara domisili employee (ID = domestic)</td></tr>
+</tbody>
+</table>
+<p>File disimpan sebagai <code>ir.attachment</code> dengan nama <code>1721 A - Bulanan raw.csv</code>.</p>
+
+<h3 id="sec-18-4">18.4 Laporan BPJS Kesehatan (bpjs_wizard_report)</h3>
+<p>XLSX 10 kolom untuk pelaporan iuran BPJS Kesehatan bulanan ke BPJS:</p>
+<table class="table-uat">
+<thead><tr><th>No.</th><th>Nama Kolom</th><th>Sumber Data</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>No.</td><td>Auto-increment</td></tr>
+<tr><td>2</td><td>No. BPJS Kesehatan</td><td><code>hr.employee.bpjs_health_number</code></td></tr>
+<tr><td>3</td><td>Company Name</td><td><code>res.company.name</code></td></tr>
+<tr><td>4</td><td>Employee ID</td><td><code>hr.employee.barcode</code></td></tr>
+<tr><td>5</td><td>Nama Karyawan</td><td><code>hr.employee.name</code></td></tr>
+<tr><td>6</td><td>Data Upah</td><td>Base calculation: wage / (wage+FA) / region_salary (sesuai bpjs_calculation_base)</td></tr>
+<tr><td>7</td><td>Iuran Employee 1%</td><td>upah × 1% (dibulatkan)</td></tr>
+<tr><td>8</td><td>Iuran Company 4%</td><td>upah × 4% (dibulatkan)</td></tr>
+<tr><td>9</td><td>Iuran Family</td><td>Jika applicable — iuran tambahan untuk tanggungan</td></tr>
+<tr><td>10</td><td>Total Iuran</td><td>Sum dari 3 kolom iuran di atas</td></tr>
+</tbody>
+</table>
+<p>Footer: Total per kolom numerik.</p>
+
+<h3 id="sec-18-5">18.5 Laporan BPJS TK — F2-A Rincian Iuran (bpjstk_wizard_report)</h3>
+<p>XLSX 14 kolom + baris TOTAL per worksheet. Rate mengikuti <code>hr.bpjs.regulation</code> per type:</p>
+<table class="table-uat">
+<thead><tr><th>Kolom</th><th>Deskripsi</th><th>Rate / Formula</th></tr></thead>
+<tbody>
+<tr><td>No.</td><td>Auto-increment</td><td>—</td></tr>
+<tr><td>No. e-KTP / KTP</td><td>NIK KTP employee</td><td><code>hr.employee.identification_id</code></td></tr>
+<tr><td>No. KPJ</td><td>Nomor KPJ BPJS TK</td><td><code>hr.employee.bpjs_labor_number</code></td></tr>
+<tr><td>No. NIK</td><td>NIK KTP (duplikat)</td><td><code>hr.employee.identification_id</code></td></tr>
+<tr><td>Nama Lengkap</td><td>Nama employee</td><td><code>hr.employee.name</code></td></tr>
+<tr><td>Tgl. Lahir</td><td>Tanggal lahir</td><td><code>hr.employee.birthday</code></td></tr>
+<tr><td>Data Upah</td><td>Upah sebulan sebagai dasar iuran</td><td>wage (capped pada salary_limit)</td></tr>
+<tr><td>Rapel</td><td>Iuran rapel bulan sebelumnya</td><td>Jika ada selisih upah dari perubahan upah</td></tr>
+<tr><td>Iuran JKK</td><td>JKK — bagian company</td><td>upah × rate_risiko (0.24%–1.74%)</td></tr>
+<tr><td>Iuran JKM 0.30%</td><td>JKM — bagian company</td><td>upah × 0.30%</td></tr>
+<tr><td>Iuran JHT TK 2%</td><td>JHT — bagian employee (TK)</td><td>upah × 2%</td></tr>
+<tr><td>Iuran JHT P 3.70%</td><td>JHT — bagian employee (P)</td><td>upah × 3.70%</td></tr>
+<tr><td>Iuran JP TK 1%</td><td>JP — bagian employee (TK)</td><td>upah × 1%</td></tr>
+<tr><td>Iuran JP P 2%</td><td>JP — bagian employee (P)</td><td>upah × 2%</td></tr>
+<tr><td><strong>TOTAL</strong></td><td>Total seluruh iuran per employee</td><td>Sum kolom 8–14</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-18-6">18.6 Laporan Perubahan Upah BPJS TK</h3>
+<p>Menggunakan CTE SQL untuk join current_period vs previous_period payslips berdasarkan employee. Menghasilkan diff: upah_sebulan_bulan_lalu vs upah_sebulan_bulan_ini vs selisih_upah. Filter: hanya employee dengan diff > 0 (kenaikan/upah berubah).</p>
+<p>Data Perubahan Upah ini dilaporkan ke BPJS TK sebagai bagian dari laporan F1-A (Tenaga Kerja Masuk) dan F1-B (Tenaga Kerja Keluar), serta secara terpisah di tab "Perubahan Upah" pada workbook XLSX.</p>
+
+1 Skenario UAT Extended</h3>
+
+<table class="table-uat">
+<thead><tr><th>ID</th><th>Kategori</th><th>Langkah UAT</th><th>Ekspektasi</th><th>Status</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>UAT-PY-07</strong><br><em>THR - THR Date Configuration</em></td>
+<td>THR</td>
+<td>1. Buat payslip THR via Run Off Cycle. 2. Set THR Date di wizard. 3. Compute sheet. 4. Finalize batch.</td>
+<td>Report THR menggunakan THR Date, bukan tanggal finalize. Period THR sesuai.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-08</strong><br><em>THR - Religion Filter</em></td>
+<td>THR</td>
+<td>1. Buat batch THR. 2. Pilih Religion=Islam. 3. Pilih employee Muslim dan non-Muslim. 4. Compute THR.</td>
+<td>Hanya employee dengan religion matching yang diinclude. Report sesuai agama.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-09</strong><br><em>THR - Eligibility Based on Joining Date</em></td>
+<td>THR</td>
+<td>1. Employee A: joining_date = 13 bulan lalu. 2. Employee B: joining_date = 2 bulan lalu. 3. Compute THR.</td>
+<td>Employee A dapat THR proporsional. Employee B: system raise error THR eligibility violation atau 0 THR.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-10</strong><br><em>Pesangon - Resign Flow</em></td>
+<td>Pesangon</td>
+<td>1. Resign employee dengan masa kerja 5 tahun. 2. Input pesangon via wizard. 3. Run off-cycle pesangon. 4. Check account move.</td>
+<td>Pesangon sesuai formula (9 bulan gaji). Journal entry sesuai: debit compensation expense, credit cash/bank.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-11</strong><br><em>BPJS Kesehatan - Base Salary Change</em></td>
+<td>BPJS</td>
+<td>1. Employee wage naik dari 5jt ke 7jt di tengah tahun. 2. Generate BPJS report bulan sebelum dan sesudah.</td>
+<td>Sebelum: iuran berdasarkan 5jt. Sesudah: iuran berdasarkan 7jt. Perubahan Upah di-F1-A/-B report.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-12</strong><br><em>BPJS TK - Risk Category Change</em></td>
+<td>BPJS TK</td>
+<td>1. Company risk category berubah dari low_risk ke medium_risk. 2. Generate F2-A report.</td>
+<td>JKK rate berubah dari 0.54% ke 0.89%. Total JKK company portion meningkat sesuai.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-13</strong><br><em>Payroll Correction - Attendance Rollback</em></td>
+<td>Correction</td>
+<td>1. Finalize batch. 2. Delete payslip employee A. 3. Approve ulang attendance. 4. Create new payslip.</td>
+<td>Attendance state di-rollback. Payslip baru ter-link dengan attendance yang baru. Journal entries tidak duplicate.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-14</strong><br><em>Marital Status Change - Effective Next Year</em></td>
+<td>Tax</td>
+<td>1. Ubah marital_status employee X dari TK ke K1 di bulan November. 2. Run payroll November. 3. Run payroll December. 4. Run payroll January tahun depan.</td>
+<td>November & December: PPh21 dihitung dengan PTKP TK/0. January tahun depan: PPh21 dihitung dengan PTKP K/1. Effective date stored di history.change record.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-15</strong><br><em>Marital Status Change - Immediate</em></td><td>Tax</td>
+<td>1. Employee X resigns December dan menikah January. 2. Ubah marital di January (payroll belum diproses).</td>
+<td>PTKP langsung berubah tanpa harus tunggu tahun depan. history.change record dibuat.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-16</strong><br><em>E-Banking BCA - CSV Export</em></td>
+<td>E-Banking</td>
+<td>1. Buat batch regular. 2. Generate BCA CSV. 3. Upload ke BCA Cash Management.</td>
+<td>File ter-download dengan format 11-digit amount padding. Remark "Gaji MMYYYY". Hanya employee dengan BIC=CENAIDJA.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-17</strong><br><em>E-Banking BRI - XLSX Export</em></td>
+<td>E-Banking</td>
+<td>1. Buat batch regular. 2. Generate BRI XLSX. 3. Open di Excel.</td>
+<td>Kolom NO;NAMA;ACCOUNT;AMOUNT;Email. Amount = nilai × 100. MD5 hash correct.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-18</strong><br><em>E-Banking Mandiri - Full Detail Export</em></td>
+<td>E-Banking</td>
+<td>1. Buat batch regular. 2. Generate Mandiri XLSX. 3. Verifikasi 39 kolom.</td>
+<td>IBU indicator, OUR cost, Swift Code, full beneficiary address semua terisi.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-19</strong><br><em>Bupot Bulanan - BPMP Report</em></td>
+<td>Tax</td>
+<td>1. Run payroll reguler. 2. Generate Bupot Bulanan BPMP. 3. Verifikasi gross income.</td>
+<td>Gross income = backpay_wage + computed_wage + total_allowance + benefit_jkk_jkm_bpjsk. PTKP dari API.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-20</strong><br><em>Bupot Tahunan - 1721-A1 Form</em></td>
+<td>Tax</td>
+<td>1. Generate Bupot Tahunan Regular. 2. Verifikasi setiap kolom terhadap Form 1721-A1 fisik. 3. Check iuran pensiun &amp; biaya jabatan dari API.</td>
+<td>Semua 40+ kolom sesuai Form 1721-A1. Biaya jabatan, iuran pensiun, zakat sesuai data aktual.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-21</strong><br><em>Loan - Auto Installment Injection</em></td>
+<td>Loan</td>
+<td>1. Buat loan untuk employee A (10jt, tenor 10x). 2. Run payroll 10 bulan berturut-turut. 3. Check remaining_amount after month 10.</td>
+<td>Setiap bulan: angsuran terinject sebagai deduction. remaining_amount decrement. After month 10: state=done, remaining_amount=0.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-22</strong><br><em>Loan - Partial Early Settlement</em></td><td>Loan</td>
+<td>1. Employee A punya loan active. 2. Admin input manual payment outside system. 3. Run payroll.</td>
+<td>Angsuran tetap terinject penuh (sistem tidak tahu partial settlement di luar). Admin harus manually adjust remaining_amount di record loan.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-23</strong><br><em>Accumulated Payroll - Mid-Year Joining</em></td>
+<td>Accumulation</td>
+<td>1. Employee X join di bulan Juli. 2. Generate akumulasi payroll. 3. Check Form 1721.</td>
+<td>Akumulasi gross dan tax dimulai dari July, bukan January. Bi-yearly report (1721) tetap akurat.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-24</strong><br><em>Payroll Import Wizard - Bulk Update</em></td><td>Import</td>
+<td>1. Siapkan XLSX dengan 50 employee rows. 2. Import ke draft payslip batch. 3. Verify each row updated correctly.</td>
+<td>50 payslip updated dalam satu transaksi. Errors dilaporkan per row. Payslip dengan state≠draft ditolak dengan clear error message.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-25</strong><br><em>Daily Worker - Computed Wage Based on Actual Days</em></td><td>Daily Worker</td>
+<td>1. Daily worker contract: daily_wage=200.000. 2. Period dengan 22 actual working days. 3. Run payroll.</td>
+<td>computed_wage = 22 × 200.000 = 4.400.000.BPJS/JHT/JP dihitung dari computed_wage (bukan contractual daily_wage).</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-26</strong><br><em>Government Regulation - Effective Date</em></td><td>Regulation</td>
+<td>1. Update PTKP per January 1, 2026. 2. Run payroll December 2025. 3. Run payroll January 2026.</td>
+<td>December 2025: old PTKP. January 2026: new PTKP. All regulation changes logged in history.change.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-27</strong><br><em>Period Mismatch - Backend vs Odoo</em></td><td>Integration</td>
+<td>1. Backend period = February 2026. 2. User mencoba run payroll March 2026 dari Odoo.</td>
+<td>ValidationError: "Last Period on backend doesn't match!" Off-cycle (THR/Pesangon/others) bypass validasi ini.</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+<tr>
+<td><strong>UAT-PY-28</strong><br><em>Lock Payroll - Prevent Edit After Finalize</em></td><td>Security</td>
+<td>1. Finalize batch January. 2. User mencoba edit payslip January employee A.</td>
+<td>ValidationError: "Payslip data is locked. Please contact your payroll team to unlock the data before editing!"</td>
+<td class="status-header">___ Pass ___ Fail</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="section-19">19. Matriks Keamanan dan Access Control</h2>
+
+<h3 id="sec-19-1">19.1 Tabel Aktor dan Hak Akses</h3>
+<table class="table-uat">
+<thead><tr><th>Aktor</th><th>/hr.payslip</th><th>/run</th><th>/finalize</th><th>/wizard/*</th><th>/report/*</th><th>/ebanking</th><th>/bpjs/*</th><th>/bupot/*</th><th>/attendance</th><th>/loan</th></tr></thead>
+<tbody>
+<tr><td>Payroll Admin</td><td>CRUD</td><td>✓</td><td>✓</td><td>All Wizards</td><td>All Reports</td><td>All Banks</td><td>All</td><td>All</td><td>Read</td><td>CRUD</td></tr>
+<tr><td>HR Manager</td><td>CRUD</td><td>✓</td><td>✓ (own dept)</td><td>THR, Payslip Import</td><td>Payroll, Tax</td><td>Read only</td><td>Read only</td><td>Read only</td><td>Read</td><td>Read</td></tr>
+<tr><td>SPV Attendance</td><td>Read</td><td>✗</td><td>✗</td><td>—</td><td>—</td><td>✗</td><td>✗</td><td>✗</td><td>Approve</td><td>✗</td></tr>
+<tr><td>Finance</td><td>Read</td><td>✗</td><td>✗</td><td>Ebanking Export</td><td>Payroll Report, Tax Report</td><td>Export</td><td>Read</td><td>Read</td><td>✗</td><td>✗</td></tr>
+<tr><td>Employee (Mobile)</td><td>Own Read</td><td>✗</td><td>✗</td><td>—</td><td>Own Payslip PDF</td><td>✗</td><td>✗</td><td>✗</td><td>Own</td><td>Read</td></tr>
+<tr><td>System (Scheduler)</td><td>CRUD</td><td>✗</td><td>✗</td><td>—</td><td>—</td><td>✗</td><td>Sync</td><td>✗</td><td>✗</td><td>✗</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-19-2">19.2 Record Rules</h3>
+<ul>
+<li><code>hr.payslip</code>: Employee hanya bisa read/edit payslip miliknya sendiri (<code>employee_id = uid.employee_id</code>)</li>
+<li><code>hr.attendance</code>: SPV bisa approve attendance milik department-nya saja</li>
+<li><code>hr.loan</code>: Employee bisa read loans miliknya, HR/Admin bisa CRUD semua</li>
+<li><code>hr.payroll.api.config</code>: Admin only — tidak bisa di-read oleh user biasa (credential/api key)</li>
+<li><code>hr.api.log</code>: Admin + Payroll Admin bisa read</li>
+</ul>
+
+<h3 id="sec-19-3">19.3 Field-Level Security</h3>
+<ul>
+<li><code>hr.employee.bpjs_health_number</code>: HR Admin + Employee (own record) can read</li>
+<li><code>hr.employee.npwp</code>: HR Admin + Employee (own record) can read</li>
+<li><code>hr.payroll.api.config</code>: Semua API credential fields — Admin only write, no read untuk others</li>
+<li><code>hr.contract.wage</code>: HR Manager + Payroll Admin can write</li>
+<li><code>hr.payslip.computed_wage</code>: Auto-computed, no manual write untuk employee</li>
+</ul>
+
+<h3 id="sec-19-4">19.4 Context Bypass Usage Policy</h3>
+<p>Context <code>bypass_lock_payroll</code> dan <code>bypass_approve</code> adalah elevated privileges yang HARUS:</p>
+<ul>
+<li>Hanya digunakan oleh Payroll Admin atau System Scheduler</li>
+<li>Selalu accompanied dengan audit log di <code>hr.api.log</code></li>
+<li>Tidak boleh digunakan untuk routine employee self-service flows</li>
+<li>Di-review quarterly oleh IT Security</li>
+</ul>
+
+<h2 id="section-20">20. Definisi Scheduler Otomatis & Glosarium Istilah</h2>
+
+<h3 id="sec-20-1">20.1 Scheduler: Generate Payslip Period</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>hr.payslip.period</code> | <strong>Method:</strong> <code>_generate_payslip_period()</code><br>
+<strong>Frequency:</strong> Annual (sekali setahun, January)<br>
+<strong>Deskripsi:</strong> Membuat 12 records <code>hr.payslip.period</code> untuk satu tahun fiscal. Menghitung <code>working_days</code> (Monday-Friday count) per bulan.
+</div>
+
+<h3 id="sec-20-2">20.2 Scheduler: Sync Government Regulations</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>hr.government.regulation</code> | <strong>Method:</strong> <code>sync_*()</code> family<br>
+<strong>Frequency:</strong> Monthly (weekday 00:00, day 1 of month)<br>
+<strong>Deskripsi:</strong> Mensync semua regulasi pemerintah (BPJS, PTKP, Tax Rate, TER Rate, dll.) ke NodeJS backend. Methods: <code>sync_bpjs_regulation()</code>, <code>sync_occupational_expense()</code>, <code>sync_marital_status()</code>, <code>sync_tax_range()</code>, <code>sync_tax_pinalty()</code>, <code>sync_tax_pension()</code>, <code>sync_tax_ter_range()</code>.
+</div>
+
+<h3 id="sec-20-3">20.3 Scheduler: Apply Scheduled Marital Tax Status Updates</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>hr.employee</code> | <strong>Method:</strong> <code>_apply_scheduled_marital_tax_status_update()</code><br>
+<strong>Frequency:</strong> Annual (January 1, 00:05)<br>
+<strong>Deskripsi:</strong> Mengeksekusi semua scheduled marital status update yang effective_date=1 Januari tahun berjalan. Membuat <code>history.change</code> records. Langsung mengapply PTKP baru untuk payroll tahun berjalan.
+</div>
+
+<h3 id="sec-20-4">20.4 Scheduler: Reset Calculated Irregular Allowance</h3>
+<div class="modules-highlight">
+<strong>Model:</strong> <code>hr.payslip</code> (commented out) | <strong>Method:</strong> reset <code>calculated_amount</code> on <code>hr.contract.irregular.allowance</code><br>
+<strong>Frequency:</strong> Per batch finalize (setelah <code>action_payslip_finalized()</code>)<br>
+<strong>Deskripsi:</strong> Me-reset <code>calculated_amount</code> pada irregular allowances (khusus yang <code>basic_calculation!='contract'</code>) setelah payslip difinalize. Mempersiapkan kalkulasi bulan berikutnya.
+</div>
+
+<h3 id="terminology">20.5 Glosarium Istilah</h3>
+
+<table class="table-uat">
+<thead><tr><th>Istilah</th><th>Definisi</th></tr></thead>
+<tbody>
+<tr><td><strong>THR (Tunjangan Hari Raya)</strong></td><td>Tunjangan wajib tahunan sebesar 1 bulan gaji yang dibayarkan menjelang hari raya keagamaan (Idul Fitri, Natal, Nyepi, dll.). Dihitung proporsional berdasarkan masa kerja.</td></tr>
+<tr><td><strong>Pesangon</strong></td><td>Kompensasi yang dibayarkan kepada employee yang mengalamiPHK (Pemutusan Hubungan Kerja), dihitung berdasarkan UU Ketenagakerjaan yang berlaku (masa kerja × 1-9 bulan gaji).</td></tr>
+<tr><td><strong>BPJS Kesehatan (JK)</strong></td><td>Jaminan Kesehatan Nasional — iuran 5% dari upah (1% employee, 4% company). Subject to salary ceiling.</td></tr>
+<tr><td><strong>BPJS TK (JKK/JKM/JHT/JP)</strong></td><td>Jaminan Kecelakaan Kerja (0.24-1.74%), Jaminan Kematian (0.30%), Jaminan Hari Tua (5.70%), Jaminan Pensiun (3%).</td></tr>
+<tr><td><strong>PTKP</strong></td><td>Penghasilan Tidak Kena Pajak — batas penghasilan yang tidak dikenakan PPh21. Status TK/0, K/0, K/1, K/2, K/3 dengan nilai yang ditetapkan pemerintah.</td></tr>
+<tr><td><strong>TER (Tarif Efektif Final)</strong></td><td>Tarif PPh 21 yang dihitung secara efektif berdasarkan gross income tahunan, diterapkan bulanan. Digunakan untuk metode TER (bukan tarif lapisan UU PPh).</td></tr>
+<tr><td><strong>TER / PPh 21 TER</strong></td><td>Tarif efektif final — metode perhitungan PPh 21 menggunakan tarif lapis efektif yang lebih sederhana, menggantikan perhitungan PTKP reguler dalam kondisi tertentu.</td></tr>
+<tr><td><strong>Gross-up</strong></td><td>Metode payroll dimana perusahaan menanggung PPh21 employee sehingga employee menerima take-home pay sesuai expectation. Gross-up amount ditambahkan ke gross income dan PPh21 dihitung dari total tersebut.</td></tr>
+<tr><td><strong>Direct Costing (Payroll)</strong></td><td>Metode pembebanan biaya payroll langsung ke departemen/analytic account employee, bukan ke cost center umum perusahaan.</td></tr>
+<tr><td><strong>Indirect Costing (Payroll)</strong></td><td>Metode pembebanan biaya payroll ke cost center umum perusahaan, tidak langsung ke departemen employee.</td></tr>
+<tr><td><strong>Cutoff Date</strong></td><td>Tanggal batas akhir periode attendance dan payroll. Attendance antara cutoff_date_lalu + 1 sampai cutoff_date_sekarang dihitung dalam payroll bulan berjalan.</td></tr>
+<tr><td><strong>Off-Cycle Payroll</strong></td><td>Payroll yang diproses di luar siklus regular bulanan — mencakup THR, Pesangon, Bonus/THR keagamaan lain.</td></tr>
+<tr><td><strong>Pay Period</strong></td><td>Periode bulanan payroll (January-December) yang memiliki <code>hr.payslip.period</code> record dengan date_start dan date_end.</td></tr>
+<tr><td><strong>Accumulated Payroll</strong></td><td>Saldo akumulasi gross income dan tax sepanjang tahun berjalan per employee, digunakan untuk Form 1721 SPT Tahunan.</td></tr>
+<tr><td><strong>Bupot</strong></td><td>Bukti Potong PPh 21 — dokumen yang diterbitkan oleh pemotong pajak (perusahaan) untuk employee sebagai bukti pemotongan pajak.</td></tr>
+<tr><td><strong>1721-A1</strong></td><td>Formulir SPT Tahunan PPh 21 untuk pegawai tetap — berisi rangkuman penghasilan bruto, pengurangan, dan PPh 21 setahun.</td></tr>
+<tr><td><strong>1721-BPA1</strong></td><td>Formulir kelanjutan SPT Tahunan PPh 21 untuk employee yang berpindah kerja di tengah tahun, melaporkan penghasilan dari pemberi kerja sebelumnya.</td></tr>
+<tr><td><strong>BPMP</strong></td><td>Bukti Potong Masa PPh 21 untuk Pegawai Tetap — format bulanan dari Form 1721.</td></tr>
+<tr><td><strong>BP21</strong></td><td>Bukti Potong PPh 21 untuk Bukan Pegawai Tetap (BPTET) — digunakan untuk karyawan tidak tetap / freelancer / tenaga ahli.</td></tr>
+<tr><td><strong>E-Bupot</strong></td><td>Sistem elektronik bukti potong pajak dari DJP (Direktorat Jenderal Pajak) — format upload yang digunakan untuk melaporkan bukti potong secara elektronik.</td></tr>
+<tr><td><strong>Kode Objek Pajak</strong></td><td>Kode referensi perpajakan Indonesia: 21-100-01 (Pegawai Tetap), 21-100-03 (Bukan Pegawai Tetap), 21-xxx untuk jenis penghasilan lainnya.</td></tr>
+<tr><td><strong>Regular Allowance</strong></td><td>Tunjangan yang selalu ada setiap bulan dengan nilai fix atau formula tetap (gaji pokok, tunjangan transportasi, tunjangan makan, dll.)</td></tr>
+<tr><td><strong>Irregular Allowance</strong></td><td>Tunjangan yang tidak rutin: overtime, bonus, THR, lembur, dll. Sering dikalkulasi per periode berdasarkan performa atau kondisi khusus.</td></tr>
+<tr><td><strong>Take-Home Pay (THP)</strong></td><td>Gaji bersih yang diterima employee setelah dikurangi semua komponen (gaji pokok + allowance - deduction - PPh21).</td></tr>
+<tr><td><strong>Computed Wage</strong></td><td>Gaji yang dihitung berdasarkan actual working days × daily wage (khusus daily worker). Untuk monthly employee = wage.</td></tr>
+<tr><td><strong>is_waiting_to_pay</strong></td><td>Flag boolean pada attendance dan overtime yang menandakan record siap untuk di-assign ke payslip batch berikutnya.</td></tr>
+<tr><td><strong>Effective Date / Valid From</strong></td><td>Tanggal mulai berlaku perubahan data master payroll. Perubahan berlaku mundur (backdated) atau ke depan (forward-dated) berdasarkan tanggal ini.</td></tr>
+<tr><td><strong>History Change</strong></td><td>Record audit trail yang menyimpan nilai sebelum (before) dan sesudah (after) setiap perubahan data master payroll.</td></tr>
+<tr><td><strong>BIC / SWIFT Code</strong></td><td>Bank Identifier Code — kode 8 atau 11 karakter yang mengidentifikasi bank secara unik. BCA=CENAIDJA, Mandiri=BMRIIDJA, dll.</td></tr>
+<tr><td><strong>iLovePDF API</strong></td><td>REST API pihak ketiga yang digunakan untuk menggabungkan (merge) file PDF payslip menjadi satu dokumen annual report.</td></tr>
+<tr><td><strong>iPayroll / NodeJS Backend</strong></td><td>Backend compute engine berbasis NodeJS yang menyimpan logika payroll computation. Odoo berfungsi sebagai frontend, NodeJS sebagai brain.</td></tr>
+</tbody>
+</table>
+
+<h2 id="section-21">21. Informasi Versi Dokumen</h2>
+
+<table class="table-uat">
+<thead><tr><th>Versi</th><th>Tanggal</th><th>Penulis</th><th>Deskripsi Perubahan</th></tr></thead>
+<tbody>
+<tr><td>1.0</td><td>2024-Q1</td><td>Development Team</td><td>Initial PRD — Phase 1 implementation baseline (Architecture, API Integration, Core Payroll).</td></tr>
+<tr><td>1.1</td><td>2024-Q2</td><td>Development Team</td><td>Phase 2 UAT configurations — Attendance Lock, Correction Flow, Loan Module, Mobile Payslip.</td></tr>
+<tr><td>1.2</td><td>2024-Q3</td><td>Development Team</td><td>Added BPJS Kesehatan &amp; TK reports, e-Banking multi-bank export, Bupot reports.</td></tr>
+<tr><td>1.3</td><td>2024-Q4</td><td>Development Team</td><td>Added Annual Tax Report (1721), TER calculation, Government Regulation sync scheduler, Marital Status wizard.</td></tr>
+<tr><td>1.4</td><td>2025-Q1</td><td>Development Team</td><td>Added complete Wizard Specifications (Section 29), API Endpoint Reference (Section 30), Data Model Reference (Section 31), Journal Mapping (Section 32), Attendance Lock (Section 33), Correction Flow (Section 34), Loan Injection (Section 35), Report Specifications (Section 37), Extended UAT (Section 38), Security Matrix (Section 39), Scheduler (Section 40), Glossary (Section 41).</td></tr>
+<tr><td>1.5</td><td>2026-Q1</td><td>Development Team</td><td>PRD Completion — semua 13 wizard specs, error handling matrix, final alignment dengan codebase Odoo 13.</td></tr>
+<tr><td>1.6</td><td>2026-Q1</td><td>Development Team</td><td>Konsolidasi section: 43 section → 22 section. Menggabungkan section yang related tanpa mengurangi informasi manapun.</td></tr>
+</tbody>
+</table>
+
+<h2 id="section-22">22. Matriks Penanganan Error</h2>
+
+<h3 id="sec-22-1">22.1 Validation Errors (User-Level)</h3>
+<table class="table-uat">
+<thead><tr><th>Kode Error</th><th>Pesan</th><th>Kondisi Pemicu</th><th>Solusi</th></tr></thead>
+<tbody>
+<tr><td>VE-001</td><td>"Last Period on backend doesn't match!"</td><td>Periode payroll Odoo tidak sesuai dengan current period di NodeJS backend. Bukan off-cycle payroll.</td><td>Sync period dari backend atau administrator harus menyesuaikan periode Odoo.</td></tr>
+<tr><td>VE-002</td><td>"Payslip data is locked. Please contact your payroll team to unlock the data before editing!"</td><td>User mencoba edit payslip dengan state=done atau payslip_run_id.lock_payroll=True. Context tidak bypass.</td><td>Payroll Admin unlock via bypass_lock_payroll=True context. Atau gunakan payroll correction flow.</td></tr>
+<tr><td>VE-003</td><td>"The payslips related to the Cut Off: Attendance period has been finalized. Please contact your Payroll Administrator if manual changes are required.!"</td><td>User mencoba mengedit payslip dengan state=done tanpa bypass context.</td><td>Gunakan correction wizard atau unlock batch.</td></tr>
+<tr><td>VE-004</td><td>"Masa Pajak backend tidak sama!"</td><td>Backend period berbeda saat generate Bupot Bulanan/Tahunan.</td><td>Administrator harus memastikan backend period sinkron dengan Odoo sebelum generate report.</td></tr>
+<tr><td>VE-005</td><td>"Monthly period is empty!, please call your administrator!"</td><td><code>_default_monthly_period()</code> mengembalikan False dan <code>_generate_payslip_period()</code> gagal.</td><td>Jalankan scheduler <code>_generate_payslip_period()</code> atau buat period manual via <code>hr.payslip.period</code>.</td></tr>
+<tr><td>VE-006</td><td>"Change To must be different from the current marital tax status."</td><td>User memilih status perkawinan baru yang sama dengan status saat ini di MaritalTaxStatusUpdateWizard.</td><td>Pilih status yang berbeda.</td></tr>
+<tr><td>VE-007</td><td>"Employee Name and NIK doesn't match or Employee cannot be found"</td><td>Import THR/Pesangon XLSX: kombinasi nama+NIK tidak ditemukan di database.</td><td>Perbaiki XLSX dengan data employee yang valid. Pastikan barcode=NIP.</td></tr>
+<tr><td>VE-008</td><td>"Please fill the employee lines!"</td><td>RunOffCycle: ketiga Many2many employee (employee_ids, employee_2_ids, employee_3_ids) semuanya kosong.</td><td>Isi minimal satu employee line sesuai komponen.</td></tr>
+<tr><td>VE-009</td><td>"Please add a xlsx document to import!"</td><td>Import wizard: is_import_emp=True tapi file_import kosong.</td><td>Upload file XLSX terlebih dahulu.</td></tr>
+<tr><td>VE-010</td><td>"BPJS employee number cannot be empty"</td><td>Generate BPJS report: employee tanpa BPJS number.</td><td>Lengkapi field bpjs_health_number dan bpjs_labor_number di employee record.</td></tr>
+<tr><td>VE-011</td><td>"No default monthly period configured"</td><td>Run off-cycle tanpa default period yang valid.</td><td>Generate payslip period via <code>_generate_payslip_period()</code> scheduler.</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-22-2">22.2 API Errors (Integration-Level)</h3>
+<table class="table-uat">
+<thead><tr><th>Kode Error</th><th>Pesan</th><th>Kondisi Pemicu</th><th>Solusi</th></tr></thead>
+<tbody>
+<tr><td>AE-001</td><td>"Connection refused" / Timeout</td><td>Backend NodeJS tidak reachable dari Odoo server.</td><td>Check network connectivity, firewall rules, dan status service NodeJS backend.</td></tr>
+<tr><td>AE-002</td><td>"401 Unauthorized"</td><td>API key/token di <code>hr.payroll.api.config</code> tidak valid atau expired.</td><td>Refresh API key di konfigurasi company.</td></tr>
+<tr><td>AE-003</td><td>"500 Internal Server Error" (Backend)</td><td>Payload API malformed atau backend crash saat processing.</td><td>Check <code>hr.api.log</code> untuk request/response detail. Check NodeJS backend logs.</td></tr>
+<tr><td>AE-004</td><td>"Null response from backend"</td><td>Backend merespon tapi response body kosong/null.</td><td>Check NodeJS backend. Retry request. Log di <code>hr.api.log</code>.</td></tr>
+<tr><td>AE-005</td><td>"Period data mismatch after sync"</td><td>Data yang di-sync dari Odoo ke backend tidak sesuai ekspektasi.</td><td>Review sync payload di <code>hr.api.log</code>. Administrator harus audit sync data.</td></tr>
+<tr><td>AE-006</td><td>"iLovePDF API Error"</td><td>API iLovePDF gagal saat merge PDF payslip annual report.</td><td>Check iLovePDF quota/credits. Retry. Manual merge sebagai fallback.</td></tr>
+<tr><td>AE-007</td><td>"PTKP data empty from API"</td><td><code>get_enpoint_annual_report_per_employee()</code> mengembalikan data kosong.</td><td>Check apakah backend sudah memiliki data PTKP untuk employee tersebut.</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-22-3">22.3 Data Integrity Errors</h3>
+<table class="table-uat">
+<thead><tr><th>Kode Error</th><th>Pesan</th><th>Kondisi Pemicu</th><th>Solusi</th></tr></thead>
+<tbody>
+<tr><td>DE-001</td><td>"Duplicate payslip for employee in same period"</td><td>Dua records payslip untuk employee yang sama di periode yang sama.</td><td>Hapus salah satu payslip. Gunakan correction flow untuk regenerate.</td></tr>
+<tr><td>DE-002</td><td>"Attendance already assigned to another payslip"</td><td>Attendance dengan state=payroll di-assign ke payslip berbeda.</td><td>Unlink payslip lama terlebih dahulu, baru buat payslip baru.</td></tr>
+<tr><td>DE-003</td><td>"Computed wage exceeds contract wage"</td><td>computed_wage daily worker > wage contract.</td><td>Check attendance data dan daily_wage configuration.</td></tr>
+<tr><td>DE-004</td><td>"BPJS contribution exceeds salary limit"</td><td>Perhitungan BPJS尝试 melebihi salary ceiling yang ditetapkan.</td><td>Lihat <code>hr.bpjs.regulation.salary_limit</code>. Iuran di-capped pada salary_limit.</td></tr>
+<tr><td>DE-005</td><td>"THR eligibility days not met"</td><td>Employee dengan masa kerja &lt; 1 bulan tapi dimasukkan ke batch THR.</td><td>Filter employee berdasarkan masa kerja minimum sebelum compute THR.</td></tr>
+<tr><td>DE-006</td><td>"Accumulated payroll gap detected"</td><td>Ada bulan yang terlewat dalam akumulasi payroll (employee resign/joining mid-year).</td><td>Gunakan HrAccumulatedPayrollWizard untuk mengisi saldo awal bulan joining.</td></tr>
+</tbody>
+</table>
+
+<h3 id="sec-22-4">22.4 Security/Access Errors</h3>
+<table class="table-uat">
+<thead><tr><th>Kode Error</th><th>Pesan</th><th>Kondisi Pemicu</th><th>Solusi</th></tr></thead>
+<tbody>
+<tr><td>SE-001</td><td>"Insufficient rights to finalize payroll"</td><td>User tanpa hak Payroll Admin mencoba finalize batch.</td><td>Assign grup <code>payroll.group_payroll_manager</code> atau equivalent.</td></tr>
+<tr><td>SE-002</td><td>"Access denied: API config not accessible"</td><td>User biasa mencoba read <code>hr.payroll.api.config</code> record.</td><td>Normal — field ini hanya accessible oleh Admin. Data di-<code>hr.api.log</code>.</td></tr>
+<tr><td>SE-003</td><td>"Payslip lock bypass attempted"</td><td>Context <code>bypass_lock_payroll</code> digunakan oleh non-admin user.</td><td>Audit log. Investigasi apakah intented action. Reset context jika unauthorized.</td></tr>
+</tbody>
+</table>
+
+<h2 id="section-23">23. Deployment Notes</h2>
+<p>Dokumen ini adalah bagian dari dokumentasi teknis FP HR Payroll Ecosystem untuk Odoo 13. Untuk deployment, pastikan semua modul <code>fp_hr_payroll</code>, <code>if_hr_payroll_attendance</code>, <code>if_hr_payroll_journal</code>, <code>if_loan</code>, dan <code>if_mobile_payroll</code> terinstal berurutan sesuai dependency. Konfigurasi API endpoint dan credential dilakukan via <code>hr.payroll.api.config</code> per company. Scheduler harus diaktifkan di menu Settings &gt; Technical &gt; Automation &gt; Scheduled Actions.</p>
+
+<h2 id="section-24">24. Glossary Reference</h2>
+<p>Lihat <a href="#terminology"><strong>Section 20.5 Glosarium Istilah</strong></a> untuk definisi lengkap semua istilah teknis yang digunakan dalam dokumen ini.</p>
+
+</div><!-- end .main-content -->
