@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titus Dirgantoro - Documentation Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f111a;
+            --bg-card: #181b28;
+            --bg-card-hover: #1e2233;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --border: #2e364f;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+            border-bottom: 1px solid var(--border);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 1rem auto 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .category-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            grid-column: 1 / -1;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category-header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .doc-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: transparent;
+            transition: background-color 0.3s ease;
+        }
+
+        .doc-card:hover {
+            background-color: var(--bg-card-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .doc-card.blue:hover::before { background-color: var(--accent-blue); }
+        .doc-card.purple:hover::before { background-color: var(--accent-purple); }
+        .doc-card.green:hover::before { background-color: var(--accent-green); }
+        .doc-card.orange:hover::before { background-color: var(--accent-orange); }
+        .doc-card.red:hover::before { background-color: var(--accent-red); }
+
+        .doc-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .doc-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-blue);
+            background: rgba(59,130,246,0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            display: inline-flex;
+            width: max-content;
+        }
+
+        .doc-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .badge.hot { background-color: rgba(239,68,68,0.2); color: #f87171; }
+        .badge.ai { background-color: rgba(139,92,246,0.2); color: #c084fc; }
+        .badge.core { background-color: rgba(16,185,129,0.2); color: #34d399; }
+        .badge.secure { background-color: rgba(239,68,68,0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+        .badge.impact { background-color: rgba(245,158,11,0.2); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
+
+        .unlock-btn {
+            background-color: transparent;
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .unlock-btn:hover {
+            background-color: var(--accent-red);
+            color: white;
+            box-shadow: 0 0 15px rgba(239,68,68,0.4);
+        }
+
+        .unlock-btn.impact {
+            color: var(--accent-orange);
+            border-color: var(--accent-orange);
+        }
+
+        .unlock-btn.impact:hover {
+            background-color: var(--accent-orange);
+            color: white;
+            box-shadow: 0 0 15px rgba(245,158,11,0.4);
+        }
+
+        .unlock-btn.granted {
+            background-color: var(--accent-green);
+            color: white;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px rgba(16,185,129,0.4);
+            cursor: default;
+        }
+
+        .private-docs {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+        }
+
+        /* Modal Overlay CSS */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-red);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(239,68,68,0.2);
+        }
+        .modal-box input {
+            width: 90%;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 6px;
+            outline: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .modal-box input:focus {
+            border-color: var(--accent-red);
+        }
+        .modal-box button {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .modal-box button:hover {
+            background: #dc2626;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem">Titus Dirgantoro <br/> <span style="font-size: 2rem; color: var(--text-muted); background: none; -webkit-text-fill-color: initial">Engineering Docs Portal</span></h1>
+        <p>Central repository for technical documentations, system architectures, and procedural manual references.</p>
+    </div>
+
+    <div class="container">
+
+        <!-- 1. PUBLIC CATEGORY -->
+        <div class="category-header" style="color: var(--accent-orange)">
+            <div class="category-header-title">
+                <span>🌍</span> Public Documentation
+            </div>
+        </div>
+        <div class="category-grid">
+            <a href="public/index.html" class="doc-card orange">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <span class="doc-path">public/index.html</span>
+                    <span class="badge hot">NEW</span>
+                </div>
+                <h3 class="doc-title">Security Seal Serial Management</h3>
+                <p class="doc-desc">Technical walkthrough for custom unique serial allocation module, complete with UAT cases, edge scenario coverage, and architecture definitions.</p>
+            </a>
+        </div>
+
+        <!-- 2. IMPACT CATEGORY -->
+        <div class="category-header" style="color: var(--accent-orange); margin-top: 2rem;">
+            <div class="category-header-title">
+                <span>🟠</span> Impact
+            </div>
+            <button id="btn-impact-unlock" class="unlock-btn impact" onclick="showAuthModal('impact')">Authenticate</button>
+        </div>
+
+        <div class="category-grid private-docs" id="impactDocs">
+            <a href="impact/prd_fp_hr_payroll.html" class="doc-card orange">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="doc-path">impact/prd_fp_hr_payroll.html</span>
+                    <span class="badge impact">IMPACT</span>
+                </div>
+                <h3 class="doc-title">Odoo 13 Payroll PRD</h3>
+                <p class="doc-desc">PRD lengkap payroll Odoo 13 mencakup flow, wizard, business rules, security matrix, dan UAT scenario.</p>
+            </a>
+
+            <a href="impact/walkthrough_wa_odoo_ai.html" class="doc-card orange">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="doc-path">impact/walkthrough_wa_odoo_ai.html</span>
+                    <span class="badge impact">IMPACT</span>
+                </div>
+                <h3 class="doc-title">WhatsApp AI (Base Integration)</h3>
+                <p class="doc-desc">Foundation architecture for connecting Odoo with WhatsApp API powered by LLM routing and chatbot agents.</p>
+            </a>
+
+            <a href="impact/walkthrough_wa_odoo_ai_production_grade.html" class="doc-card orange">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="doc-path">impact/walkthrough_wa_odoo_ai_production_grade.html</span>
+                    <span class="badge impact">IMPACT</span>
+                </div>
+                <h3 class="doc-title">WhatsApp AI (Production Grade)</h3>
+                <p class="doc-desc">Scalability improvements, queues, worker load balancing, and Redis integration for enterprise WhatsApp AI deployment.</p>
+            </a>
+
+            <a href="impact/walkthrough_impactlab_prd.html" class="doc-card orange">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="doc-path">impact/walkthrough_impactlab_prd.html</span>
+                    <span class="badge impact">IMPACT</span>
+                </div>
+                <h3 class="doc-title">ImpactLab PRD</h3>
+                <p class="doc-desc">Product Requirements Document (PRD) detailing the technical implementation goals for ImpactLab AI environments.</p>
+            </a>
+
+            <a href="impact/prd-ai-agent-knowledge-management.html" class="doc-card orange">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="doc-path">impact/prd-ai-agent-knowledge-management.html</span>
+                    <div style="display: flex; gap: 0.4rem;">
+                        <span class="badge hot">NEW</span>
+                        <span class="badge impact">IMPACT</span>
+                    </div>
+                </div>
+                <h3 class="doc-title">AI Agent Knowledge Management — Telegram Bot (Odoo 17)</h3>
+                <p class="doc-desc">PRD sistem asisten virtual berbasis RAG + Telegram Bot untuk tim Business Analyst. Mencakup arsitektur Dify.ai self-hosted, AST-aware chunking, hybrid search, estimasi biaya, dan analisis risiko.</p>
+            </a>
+        </div>
+
+        <!-- 3. TIUS ONLY CATEGORY -->
+        <div class="category-header" style="color: var(--accent-red); margin-top: 2rem;">
+            <div class="category-header-title">
+                <span>🔒</span> Tius Only
+            </div>
+            <button id="btn-tius-unlock" class="unlock-btn" onclick="showAuthModal('tius')">Authenticate</button>
+        </div>
+
+        <div class="category-grid private-docs" id="tiusDocs">
+            <a href="owner/walkthrough_odoo17_vs_odoo19.html" class="doc-card red">
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="doc-path">owner/walkthrough_odoo17_vs_odoo19.html</span>
+                    <span class="badge secure">TIUS</span>
+                </div>
+                <h3 class="doc-title">Odoo 17 vs 19 Framework Analysis</h3>
+                <p class="doc-desc">Deep dive into performance leaps, ORM optimizations, OWL component upgrades, and technical comparisons across versions.</p>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Password Modal -->
+    <div id="modal-overlay">
+        <div class="modal-box">
+            <h3 id="modal-title" style="margin-top:0; color:var(--text-main)">Vault Authentication</h3>
+            <p id="modal-desc" style="color:var(--text-muted); font-size: 0.85rem;">Documentation access is locked. Enter the correct password to continue.</p>
+            <input type="password" id="auth-pwd" placeholder="Enter password..." onkeypress="checkEnter(event)" />
+            <button onclick="verifyPassword()">Unlock Vault</button>
+            <div id="pwd-error" style="color: #f87171; font-size: 0.8rem; margin-top: 10px; display: none;">Invalid password! Access Denied.</div>
+        </div>
+    </div>
+
+
+    <div class="footer">
+        Generated & Maintained by Titus Dirgantoro &copy; 2026<br>
+        <i>Deployed in /opt/odoo13/documentation_pages_publish</i>
+    </div>
+
+    <script>
+        const VAULTS = {
+            impact: {
+                storageKey: "ImpactVaultToken",
+                storageValue: "IMPACT_VALID",
+                docsId: "impactDocs",
+                buttonId: "btn-impact-unlock",
+                buttonText: "Impact Access Granted",
+                title: "Impact | Identity Check",
+                desc: "Impact documentation is locked. Enter password to access."
+            },
+            tius: {
+                storageKey: "TitusVaultToken",
+                storageValue: "AUTH_VALID",
+                docsId: "tiusDocs",
+                buttonId: "btn-tius-unlock",
+                buttonText: "Tius Access Granted",
+                title: "Tius Only | Identity Check",
+                desc: "Tius-only documentation is locked. Enter password to access."
+            }
+        };
+
+        const overlay = document.getElementById("modal-overlay");
+        const errorMsg = document.getElementById("pwd-error");
+        const modalTitle = document.getElementById("modal-title");
+        const modalDesc = document.getElementById("modal-desc");
+        let activeVault = null;
+
+        function showAuthModal(vaultName) {
+            const vault = VAULTS[vaultName];
+            if (!vault) return;
+            if (localStorage.getItem(vault.storageKey) === vault.storageValue) return;
+            activeVault = vaultName;
+            modalTitle.textContent = vault.title;
+            modalDesc.textContent = vault.desc;
+            document.getElementById("auth-pwd").value = "";
+            errorMsg.style.display = "none";
+            overlay.style.display = "flex";
+            setTimeout(() => { overlay.style.opacity = "1"; }, 10);
+            document.getElementById("auth-pwd").focus();
+        }
+
+        function enableVault(vaultName) {
+            const vault = VAULTS[vaultName];
+            if (!vault) return;
+            const docs = document.getElementById(vault.docsId);
+            const btn = document.getElementById(vault.buttonId);
+            docs.style.display = "grid";
+            setTimeout(() => { docs.style.opacity = "1"; }, 50);
+            btn.classList.add("granted");
+            btn.innerHTML = vault.buttonText;
+            btn.onclick = null;
+        }
+
+        async function verifyPassword() {
+            if (!activeVault) return;
+            const vault = VAULTS[activeVault];
+            const val = document.getElementById("auth-pwd").value;
+            
+            try {
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ vault: activeVault, password: val })
+                });
+
+                if (response.ok) {
+                    localStorage.setItem(vault.storageKey, vault.storageValue);
+                    enableVault(activeVault);
+                    overlay.style.opacity = "0";
+                    setTimeout(() => { overlay.style.display = "none"; }, 300);
+                } else {
+                    errorMsg.style.display = "block";
+                    document.getElementById("auth-pwd").value = "";
+                    document.getElementById("auth-pwd").focus();
+                }
+            } catch (err) {
+                console.error("Authentication check failed:", err);
+                errorMsg.style.display = "block";
+            }
+        }
+
+        function checkEnter(e) {
+            if (e.key === "Enter") {
+                verifyPassword();
+            }
+        }
+        
+        Object.keys(VAULTS).forEach((vaultName) => {
+            const vault = VAULTS[vaultName];
+            if (localStorage.getItem(vault.storageKey) === vault.storageValue) {
+                enableVault(vaultName);
+            }
+        });
+
+        overlay.addEventListener("click", function(e) {
+            if(e.target === overlay) {
+                overlay.style.opacity = "0";
+                setTimeout(() => { overlay.style.display = "none"; }, 300);
+            }
+        });
+
+    </script>
+</body>
+</html>

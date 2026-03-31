@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Perbandingan Arsitektur ImpactLab — Doc A vs Doc B</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060912;--s1:#0f1623;--s2:#161f30;--br:#1e2d45;--br2:#253347;--tx:#e8edf5;--mu:#64748b;--dm:#94a3b8;--red:#ef4444;--rdb:rgba(239,68,68,.12);--rdr:rgba(239,68,68,.3);--grn:#10b981;--grb:rgba(16,185,129,.12);--grr:rgba(16,185,129,.3);--blu:#3b82f6;--ind:#6366f1;--pur:#8b5cf6;--amb:#f59e0b;--tel:#14b8a6;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);line-height:1.65;font-size:15px;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(99,102,241,.15);color:#a5b4fc;padding:2px 7px;border-radius:5px;}
+.hero{padding:80px 24px 60px;text-align:center;background:linear-gradient(180deg,#0a0f1e,var(--bg));position:relative;border-bottom:1px solid var(--br);overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(99,102,241,.18),transparent 70%);pointer-events:none;}
+.pill{display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:5px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px;}
+.hero h1{font-size:clamp(26px,5vw,50px);font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:14px;position:relative;}
+.hero h1 span { background: linear-gradient(90deg, #6366f1, #34d399, #10b981); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p{color:var(--dm);font-size:15px;max-width:700px;margin:0 auto 24px;position:relative;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--br2);color:var(--dm);padding:9px 18px;border-radius:9px;text-decoration:none;font-size:13px;font-weight:500;}
+.snav{position:sticky;top:0;z-index:100;background:rgba(6,9,18,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--br);}
+.snav-i{max-width:1300px;margin:0 auto;padding:0 24px;display:flex;gap:2px;overflow-x:auto;}
+.snav-i a{display:block;padding:12px 13px;color:var(--mu);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.3px;}
+.snav-i a:hover{color:var(--tx);border-color:var(--ind);}
+.wrap{max-width:1300px;margin:0 auto;padding:0 24px;}
+.sec{padding:64px 0;border-bottom:1px solid var(--br);}
+.slbl{font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--ind);text-transform:uppercase;margin-bottom:6px;}
+.stit{font-size:clamp(20px,3vw,32px);font-weight:800;letter-spacing:-.5px;margin-bottom:10px;}
+.sdsc{color:var(--dm);font-size:14px;max-width:720px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr;}}
+.dc{background:var(--s1);border:1px solid var(--br);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.dct{padding:12px 18px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.dcb{padding:20px;overflow-x:auto;}.dcb .mermaid{min-width:450px;}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dr{background:rgba(239,68,68,.7);}.dg{background:rgba(16,185,129,.7);}.db{background:rgba(59,130,246,.7);}.dp{background:rgba(139,92,246,.7);}.da{background:rgba(245,158,11,.7);}
+.side{border-radius:12px;padding:22px 26px;}
+.side-a{background:var(--rdb);border:1px solid var(--rdr);}
+.side-b{background:var(--grb);border:1px solid var(--grr);}
+.stag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.side-a .stag{color:#fca5a5;}.side-b .stag{color:#6ee7b7;}
+.side h3{font-size:18px;font-weight:700;margin-bottom:8px;}
+.side p{color:var(--dm);font-size:13.5px;}
+.plist{list-style:none;}
+.plist li{display:flex;gap:10px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--br);font-size:13.5px;}
+.plist li:last-child{border-bottom:none;}
+.ico{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;margin-top:2px;}
+.ico-bad{background:rgba(239,68,68,.2);color:#fca5a5;}.ico-good{background:rgba(16,185,129,.2);color:#6ee7b7;}
+.plist .ttl{font-weight:600;color:var(--tx);display:block;margin-bottom:3px;}
+.plist .dsc{color:var(--dm);}
+.alert{border-radius:10px;padding:14px 18px;margin-top:16px;font-size:13.5px;display:flex;gap:10px;}
+.aw{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:#fcd34d;}
+.ai{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);color:#93c5fd;}
+.ag{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;}
+.ar{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5;}
+.lflow{display:flex;flex-direction:column;}
+.li2{display:grid;grid-template-columns:48px 1fr;gap:0;}
+.lnum{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;z-index:1;}
+.lcon{width:2px;flex:1;min-height:16px;}
+.lbody{background:var(--s1);border:1px solid var(--br);border-radius:12px;padding:20px 24px;margin-bottom:14px;}
+.lbody:hover{border-color:var(--br2);}
+.lbody h4{font-size:15px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.lrole{font-size:10px;background:rgba(99,102,241,.15);color:#a5b4fc;padding:2px 8px;border-radius:999px;font-weight:700;letter-spacing:.5px;}
+.lbody p{color:var(--dm);font-size:13px;margin-bottom:10px;}
+.tags{display:flex;flex-wrap:wrap;gap:5px;}
+.tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.tdb{background:rgba(16,185,129,.1);color:#6ee7b7;border:1px solid rgba(16,185,129,.2);}
+.tsy{background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2);}
+.tai{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3);}
+.twa{background:rgba(245,158,11,.1);color:#fcd34d;border:1px solid rgba(245,158,11,.2);}
+.gbox{background:var(--s1);border:1px solid var(--br);border-radius:12px;padding:20px 24px;margin-bottom:20px;}
+.gbox h4{font-size:13px;font-weight:700;letter-spacing:.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:8px;}
+.dbi{background:var(--s2);border:1px solid var(--br);border-radius:7px;padding:7px 12px;margin-bottom:6px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--dm);display:flex;align-items:center;gap:7px;}
+.dbi .ti{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+.tb{background:rgba(59,130,246,.5);}.tg{background:rgba(16,185,129,.5);}.tp{background:rgba(139,92,246,.5);}.to{background:rgba(245,158,11,.5);}.tr{background:rgba(239,68,68,.5);}.tt{background:rgba(20,184,166,.5);}
+.smtab{width:100%;border-collapse:collapse;font-size:13px;}
+.smtab th{text-align:left;padding:10px 14px;background:rgba(99,102,241,.1);color:var(--ind);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--br);}
+.smtab td{padding:10px 14px;border-bottom:1px solid rgba(30,45,69,.5);vertical-align:top;}
+.smtab td:first-child{color:var(--dm);font-weight:600;width:200px;}
+.bad{color:#fca5a5;}.good{color:#6ee7b7;}
+footer{text-align:center;padding:40px 24px;color:var(--mu);font-size:13px;border-top:1px solid var(--br);}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div style="position:relative;z-index:1;">
+    <div class="pill">📋 Analisis Komparatif Arsitektur</div>
+    <h1>Evolusi Arsitektur <span class="gr">ImpactLab</span></h1>
+    <p>Perbandingan antara Dokumentasi A (RAG-centric) dan Dokumentasi B (Metrics-First) — termasuk penjelasan lengkap peran AI di setiap tahap, dan bagaimana sistem menangani format file yang berbeda-beda.</p>
+    <a href="walkthrough_impactlab_prd.html" class="back-btn">← Kembali ke Dokumentasi A</a>
+  </div>
+</div>
+
+<nav class="snav">
+  <div class="snav-i">
+    <a href="#ringkasan">Ringkasan</a>
+    <a href="#awam">RAG vs Metrics (Bahasa Awam)</a>
+    <a href="#schema-mapping">Schema Mapping</a>
+    <a href="#arch">Diagram Arsitektur</a>
+    <a href="#pipeline">Pipeline Upload</a>
+    <a href="#sequence">Sequence Diagram</a>
+    <a href="#metric-engine">Metric Engine Detail</a>
+    <a href="#layers">5-Layer System</a>
+    <a href="#database">Database</a>
+    <a href="#tabel">Tabel Perbandingan</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- SECTION 1: RINGKASAN -->
+<section id="ringkasan" class="sec">
+  <div class="slbl">Section 1</div>
+  <div class="stit">Ringkasan Perbedaan Fundamental</div>
+  <div class="sdsc">Keduanya punya tujuan bisnis yang sama. Yang berbeda adalah cara membangun pondasinya — dan ini berdampak besar pada akurasi, kepercayaan, dan skalabilitas.</div>
+  <div class="g2" style="margin-top:28px;">
+    <div class="side side-a">
+      <div class="stag">Dokumentasi A · Desain Lama</div>
+      <h3>RAG-Centric Architecture</h3>
+      <p>Data dipecah menjadi <em>chunks</em> teks, disimpan sebagai vektor, lalu AI melakukan pencarian semantik untuk menjawab pertanyaan. KPI dihitung dari hasil retrieval — tidak deterministik.</p>
+    </div>
+    <div class="side side-b">
+      <div class="stag">Dokumentasi B · Rekomendasi Baru</div>
+      <h3>Metrics-First Architecture</h3>
+      <p>Data dinormalisasi dengan bantuan AI untuk pemetaan skema (sekali saja), lalu semua KPI dihitung oleh Metric Engine dengan formula baku. AI difungsikan hanya sebagai lapisan penjelasan dan rekomendasi di atas angka yang sudah stabil.</p>
+    </div>
+  </div>
+  <div class="g2" style="margin-top:20px;">
+    <ul class="plist" style="background:var(--s1);border:1px solid var(--rdr);border-radius:12px;padding:6px 18px;">
+      <li><div class="ico ico-bad">✗</div><div><span class="ttl">Dua Backend Terpisah dari Hari Pertama</span><span class="dsc">Logika bisnis terduplikasi, biaya maintenance tinggi, fitur bisa drift ke arah berbeda.</span></div></li>
+      <li><div class="ico ico-bad">✗</div><div><span class="ttl">RAG sebagai Inti Analitik Bisnis</span><span class="dsc">KPI, tren, dan alert diharapkan muncul dari semantic search — padahal butuh formula deterministik yang bisa diaudit.</span></div></li>
+      <li><div class="ico ico-bad">✗</div><div><span class="ttl">Claude Mem-parse File Langsung (Berisiko)</span><span class="dsc">Angka dan tanggal bisa salah dibaca, debugging sangat sulit, biaya inference tidak terkontrol.</span></div></li>
+      <li><div class="ico ico-bad">✗</div><div><span class="ttl">Tidak Ada Metric Layer di Database</span><span class="dsc">Schema hanya punya: organizations, uploads, chunks, conversations, messages. Tidak ada tabel metric_definitions, thresholds, anomalies, atau task_impact.</span></div></li>
+    </ul>
+    <ul class="plist" style="background:var(--s1);border:1px solid var(--grr);border-radius:12px;padding:6px 18px;">
+      <li><div class="ico ico-good">✓</div><div><span class="ttl">Satu Core Platform, Dua Channel Adapter</span><span class="dsc">Logika bisnis satu sumber kebenaran. Web dan WhatsApp hanya berbeda adapter — tidak duplikasi.</span></div></li>
+      <li><div class="ico ico-good">✓</div><div><span class="ttl">AI Bantu Mapping Format Acak (Sekali Saja)</span><span class="dsc">Saat upload pertama, AI mendeteksi struktur kolom dan mengusulkan mapping ke skema kanonik. User validasi, mapping disimpan permanen untuk upload berikutnya.</span></div></li>
+      <li><div class="ico ico-good">✓</div><div><span class="ttl">Metric Engine Deterministik setelah Mapping Tersimpan</span><span class="dsc">KPI dihitung dengan formula baku yang konsisten, bisa diaudit, dan tidak berubah-ubah. Angkanya bisa dipercaya manajer.</span></div></li>
+      <li><div class="ico ico-good">✓</div><div><span class="ttl">AI Hanya di Lapisan Penjelasan & Rekomendasi</span><span class="dsc">Claude menerima input berupa angka stabil — bukan file mentah — dan bertugas menjelaskan artinya, menyarankan task, dan menyusun playbook.</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- SECTION AWAM: RAG vs METRICS -->
+<section id="awam" class="sec">
+  <div class="slbl">Untuk Semua — Bahasa Sederhana</div>
+  <div class="stit">Perbedaan RAG dan Metrics: Analoginya seperti ini</div>
+  <div class="sdsc">Sebelum masuk ke diagram teknis, pahami dulu perbedaan mendasarnya dengan perbandingan yang mudah dibayangkan.</div>
+
+  <!-- ANALOGI UTAMA -->
+  <div style="margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);border-radius:14px;padding:28px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fca5a5;margin-bottom:12px;">Doc A · RAG</div>
+      <div style="font-size:36px;margin-bottom:12px;">🗂️ Seperti tumpukan arsip kertas</div>
+      <p style="color:var(--dm);font-size:14px;line-height:1.8;">
+        Bayangkan seluruh data perusahaan Anda dicetak dan ditumpuk jadi satu tumpukan kertas besar.
+        <br><br>
+        Setiap kali Anda bertanya sesuatu — misalnya <em>"Berapa penjualan bulan ini?"</em> — seseorang harus <strong>membaca ulang tumpukan kertas itu dari awal</strong>, mencari bagian yang paling mirip dengan pertanyaan Anda, lalu mencoba menjawab dari potongan-potongan yang ditemukan.
+        <br><br>
+        Masalahnya? Kalau pencarian keliru — misalnya menemukan kertas bulan yang salah — <strong>jawabannya bisa salah tanpa ada yang tahu</strong>.
+      </p>
+    </div>
+    <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25);border-radius:14px;padding:28px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6ee7b7;margin-bottom:12px;">Doc B · Metrics-First</div>
+      <div style="font-size:36px;margin-bottom:12px;">📊 Seperti dashboard speedometer mobil</div>
+      <p style="color:var(--dm);font-size:14px;line-height:1.8;">
+        Bayangkan data perusahaan Anda sudah <strong>dihitung dan ditampilkan seperti speedometer</strong>: penjualan hari ini sekian, stok tersisa sekian, kehadiran tim sekian persen.
+        <br><br>
+        Setiap kali Anda bertanya — <em>"Berapa penjualan bulan ini?"</em> — sistem langsung membaca angka yang sudah terpasang di dashboard. Tidak perlu cari-cari dulu.
+        <br><br>
+        AI hanya bertugas <strong>menjelaskan apa artinya angka itu</strong> dan menyarankan tindakan — bukan menebak-nebak dari tumpukan kertas.
+      </p>
+    </div>
+  </div>
+
+  <!-- PERBANDINGAN SKENARIO NYATA -->
+  <div style="margin-top:32px;">
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:var(--dm);text-transform:uppercase;margin-bottom:16px;">Skenario nyata yang sama, dua cara yang berbeda</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:12px;overflow:hidden;">
+        <div style="padding:12px 18px;background:rgba(239,68,68,.1);border-bottom:1px solid rgba(239,68,68,.2);font-size:12px;font-weight:700;color:#fca5a5;">❓ Manager bertanya: "Kenapa penjualan turun bulan ini?"</div>
+        <div style="padding:18px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#fca5a5;margin-bottom:10px;">DOC A — RAG melakukan ini:</div>
+          <ol style="padding-left:18px;color:var(--dm);font-size:13.5px;line-height:2;">
+            <li>Ubah pertanyaan jadi kode matematika (vector)</li>
+            <li>Cari potongan teks yang paling <em>mirip</em> dengan pertanyaan itu di seluruh data</li>
+            <li>Ambil 10 potongan teks yang dianggap paling relevan</li>
+            <li>Serahkan potongan teks itu ke AI beserta pertanyaan</li>
+            <li>AI menjawab berdasarkan potongan yang ditemukan</li>
+          </ol>
+          <div style="margin-top:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:12px;font-size:13px;color:#fca5a5;">⚠️ <strong>Masalah:</strong> Jika potongan teks yang ditemukan adalah data bulan yang salah, atau kolom yang salah dibaca AI — jawaban jadi salah. Dan tidak ada cara mudah untuk tahu itu terjadi.</div>
+        </div>
+      </div>
+
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:12px;overflow:hidden;">
+        <div style="padding:12px 18px;background:rgba(16,185,129,.1);border-bottom:1px solid rgba(16,185,129,.2);font-size:12px;font-weight:700;color:#6ee7b7;">❓ Manager bertanya: "Kenapa penjualan turun bulan ini?"</div>
+        <div style="padding:18px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#6ee7b7;margin-bottom:10px;">DOC B — Metrics-First melakukan ini:</div>
+          <ol style="padding-left:18px;color:var(--dm);font-size:13.5px;line-height:2;">
+            <li>Sistem langsung buka tabel <code>metric_snapshots</code>: revenue = 4.2M, turun 6.67%</li>
+            <li>Sistem buka tabel <code>metric_trends</code>: tren 4 minggu terakhir ikut diambil</li>
+            <li>Sistem cek <code>anomalies</code>: ada stockout kritis di Supply Chain</li>
+            <li>Semua angka pasti itu baru diserahkan ke AI</li>
+            <li>AI menjelaskan artinya dan menyarankan tindakan</li>
+          </ol>
+          <div style="margin-top:14px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:12px;font-size:13px;color:#6ee7b7;">✅ <strong>Hasilnya:</strong> Angka 4.2M dan -6.67% itu pasti benar — dihitung dari rumus yang sama setiap saat. AI hanya bertugas menjelaskan, bukan menebak.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TABEL SEDERHANA -->
+  <div style="margin-top:32px;background:var(--s1);border:1px solid var(--br);border-radius:14px;overflow:hidden;">
+    <div style="padding:14px 20px;border-bottom:1px solid var(--br);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dm);">Perbandingan Sederhana — Tanpa Istilah Teknis</div>
+    <table class="smtab">
+      <thead><tr><th>Situasi</th><th>Doc A (RAG)</th><th>Doc B (Metrics)</th></tr></thead>
+      <tbody>
+        <tr><td>Dari mana angka KPI berasal?</td><td class="bad">Dari tebakan AI berdasarkan teks yang ditemukan</td><td class="good">Dari rumus yang sudah ditentukan dan dihitung sistem</td></tr>
+        <tr><td>Apakah angkanya selalu sama jika ditanya ulang?</td><td class="bad">Belum tentu — bisa berbeda tergantung pencarian</td><td class="good">Ya, selalu sama — rumus yang sama, data yang sama</td></tr>
+        <tr><td>Jika ada kesalahan angka, bisa dilacak?</td><td class="bad">Sulit — AI tidak bisa menjelaskan "kenapa jawab ini"</td><td class="good">Ya — bisa dilihat dari tabel metric per periode</td></tr>
+        <tr><td>Apakah bisa dipercaya oleh manajer?</td><td class="bad">Rendah kepercayaannya jika pernah salah sekali</td><td class="good">Tinggi — transparan dan bisa dicek ulang</td></tr>
+        <tr><td>Apa peran AI di sistem ini?</td><td class="bad">AI melakukan segalanya: baca data, cari, hitung, jawab</td><td class="good">AI hanya menjelaskan dan menyarankan — angka sudah siap</td></tr>
+        <tr><td>Apa yang terjadi jika AI salah?</td><td class="bad">Tidak ada safety net — langsung ke output akhir</td><td class="good">Angka tetap benar — hanya penjelasannya yang perlu diperbaiki</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- KESIMPULAN SEDERHANA -->
+  <div style="margin-top:24px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.06));border:1px solid rgba(99,102,241,.25);border-radius:14px;padding:28px;">
+    <div style="font-size:13px;font-weight:700;color:#a5b4fc;margin-bottom:10px;">💡 Intinya sesederhana ini:</div>
+    <p style="color:var(--dm);font-size:15px;line-height:1.9;">
+      <strong style="color:var(--tx);">Doc A (RAG)</strong> seperti bertanya kepada seorang asisten yang harus <em>membaca ulang semua berkas</em> setiap kali Anda bertanya — hasilnya bergantung pada seberapa tepat ia menemukan berkas yang benar.
+      <br><br>
+      <strong style="color:var(--tx);">Doc B (Metrics)</strong> seperti memiliki <em>papan kontrol yang sudah menampilkan semua angka</em> — asisten (AI) tinggal membaca angka itu dan menjelaskan artinya kepada Anda dengan bahasa yang mudah dipahami.
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 2: SCHEMA MAPPING -->
+<section id="schema-mapping" class="sec">
+  <div class="slbl">Section 2 — Kunci Utama Dokumentasi B</div>
+  <div class="stit">Bagaimana Sistem Menangani Format File yang Berbeda-beda?</div>
+  <div class="sdsc">Ini pertanyaan paling penting: jika setiap user punya format Excel yang berbeda, bagaimana Doc B bisa tetap deterministik? Jawabannya: <strong>Schema Mapping Layer</strong> — dan di sinilah AI sebenarnya sangat berguna.</div>
+
+  <div class="alert ai" style="margin-top:20px;">
+    💡 <strong>Klarifikasi penting:</strong> "Deterministik" di Doc B <strong>bukan berarti tidak pakai AI sama sekali</strong>. AI tetap digunakan — tapi di tempat yang tepat: membantu memahami format file yang acak, <strong>bukan menghitung KPI dari file mentah</strong>. Setelah mapping tersimpan, barulah pipeline berjalan deterministik.
+  </div>
+
+  <div class="dc" style="margin-top:28px;">
+    <div class="dct"><span class="dot da"></span> Alur Lengkap: Upload Pertama (Template Baru) — AI Aktif untuk Schema Discovery</div>
+    <div class="dcb">
+      <div class="mermaid">
+flowchart TD
+    UP["👤 User Upload File\nExcel / CSV format acak"] --> PEEK
+
+    subgraph DISCOVERY ["🤖 AI Schema Discovery — Hanya Terjadi Sekali per Template"]
+        PEEK["AI membaca header & sample baris pertama\nTidak membaca seluruh data"]
+        DET["AI mendeteksi:\n• nama kolom yang mungkin = revenue\n• format tanggal yang dipakai\n• satuan (juta, ribu, unit)\n• kolom yang tidak dikenal"]
+        MAP["AI mengusulkan mapping:\n'Penjualan Bersih' → revenue\n'Tgl Transaksi' → date\n'Sales Person' → salesperson"]
+        PEEK --> DET --> MAP
+    end
+
+    MAP --> REVIEW
+
+    subgraph HUMAN ["👤 Human-in-the-Loop Validation"]
+        REVIEW["User mereview mapping yang diusulkan AI"]
+        CONFIRM["User konfirmasi / koreksi mapping\nContoh: ubah 'Region' → department"]
+        SAVE["Mapping Template disimpan ke database\ncolumn_mappings table"]
+        REVIEW --> CONFIRM --> SAVE
+    end
+
+    SAVE --> PIPELINE
+
+    subgraph PIPELINE ["⚙️ Deterministic Pipeline — Berjalan Otomatis Setelah Mapping Tersimpan"]
+        READ["Parser membaca file\nmenggunakan mapping yang tersimpan"]
+        NORM["Normalisasi data:\n• standarisasi format tanggal\n• konversi satuan\n• validasi tipe data"]
+        FACTS["INSERT ke facts_[dept]_daily\nCanonical Business Facts"]
+        READ --> NORM --> FACTS
+    end
+
+    FACTS --> METRIC["📊 Metric Engine\nHitung KPI dengan formula baku"]
+
+    style DISCOVERY fill:#1e2a0a,stroke:#84cc16,color:#d9f99d
+    style HUMAN fill:#1e1b4b,stroke:#6366f1,color:#a5b4fc
+    style PIPELINE fill:#052e16,stroke:#10b981,color:#6ee7b7
+      </div>
+    </div>
+  </div>
+
+  <div class="dc">
+    <div class="dct"><span class="dot dg"></span> Upload Berikutnya (Template yang Sama) — Deterministik 100%</div>
+    <div class="dcb">
+      <div class="mermaid">
+flowchart LR
+    UP2["👤 User Upload File\n(template sama seperti sebelumnya)"]
+    CHECK["Sistem cek: apakah template ini\nsudah punya mapping tersimpan?"]
+    FOUND["✅ Mapping ditemukan\ndi column_mappings table"]
+    PARSE["Parser langsung pakai mapping\ntanpa melibatkan AI"]
+    NORM2["Normalisasi data otomatis\nvalidasi & standarisasi"]
+    FACTS2["INSERT canonical facts\nke facts_[dept]_daily"]
+    METRIC2["📊 Metric Engine berjalan\nHitung semua KPI"]
+
+    UP2 --> CHECK --> FOUND --> PARSE --> NORM2 --> FACTS2 --> METRIC2
+
+    style FOUND fill:#052e16,stroke:#10b981,color:#6ee7b7
+    style PARSE fill:#052e16,stroke:#10b981,color:#6ee7b7
+    style METRIC2 fill:#0f1535,stroke:#3b82f6,color:#93c5fd
+      </div>
+    </div>
+  </div>
+
+  <div class="dc">
+    <div class="dct"><span class="dot dp"></span> Jika Template Berubah / Template Baru</div>
+    <div class="dcb">
+      <div class="mermaid">
+flowchart TD
+    UP3["👤 User Upload File\n(template baru / ada kolom berubah)"]
+    CHECK2["Sistem bandingkan header file\ndengan mapping yang tersimpan"]
+    PARTIAL["Partial match terdeteksi:\n80% kolom cocok, 2 kolom baru\natau 1 kolom berubah nama"]
+    HIGHLIGHT["UI highlight kolom yang berubah\nHanya minta konfirmasi untuk kolom itu saja"]
+    UPDATE["Mapping diupdate & disimpan\nVersi baru dari template"]
+    GO["Pipeline deterministik jalan\ndengan mapping baru"]
+
+    UP3 --> CHECK2 --> PARTIAL --> HIGHLIGHT --> UPDATE --> GO
+
+    style PARTIAL fill:#1c1107,stroke:#f59e0b,color:#fcd34d
+    style HIGHLIGHT fill:#1e1b4b,stroke:#6366f1,color:#a5b4fc
+    style GO fill:#052e16,stroke:#10b981,color:#6ee7b7
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;">
+    <div class="alert ag">✅ <strong>Kesimpulan:</strong> User tidak perlu format khusus. AI membantu sekali di awal untuk "belajar" format mereka, user validasi, lalu sistem berjalan deterministik sepenuhnya. Ini adalah tempat yang tepat untuk menggunakan AI — bukan untuk menghitung KPI.</div>
+    <div class="alert aw" style="margin-top:10px;">⚠️ <strong>Catatan koreksi dokumen:</strong> Label "Parser deterministik — bukan AI" di diagram sebelumnya adalah penyederhanaan yang menyesatkan. Yang benar: <em>Pipeline deterministik setelah AI membantu mapping schema (sekali saja per template).</em></div>
+  </div>
+</section>
+
+</div><!-- end wrap, continued in script below -->
+<div class="wrap">
+
+<!-- SECTION 3: ARCHITECTURE DIAGRAMS -->
+<section id="arch" class="sec">
+  <div class="slbl">Section 3</div>
+  <div class="stit">Diagram Arsitektur Sistem — Perbandingan Langsung</div>
+  <div class="sdsc">Dua pendekatan yang berbeda secara fundamental dalam menyusun komponen sistem.</div>
+
+  <div class="dc" style="margin-top:28px;">
+    <div class="dct"><span class="dot dr"></span> Doc A — Dua Backend Terpisah, RAG-Centric</div>
+    <div class="dcb">
+      <div class="mermaid">
+graph LR
+    subgraph CL_ID ["👤 Klien Indonesia"]
+        WA_C["📱 WhatsApp"]
+    end
+    subgraph CL_GL ["👤 Klien Global"]
+        WEB_C["💻 Web Browser"]
+    end
+
+    subgraph IF ["🟡 ImpactFirst Backend — Self-Hosted Indonesia"]
+        NX["Node.js + Express\nREST API"]
+        PG1["PostgreSQL\nself-hosted\nchunks + vectors"]
+        NX_CL["Claude API\nparse + retrieval"]
+        OD_SYNC["Odoo Sync\nevery 6h"]
+        NX <--> PG1
+        NX --> NX_CL
+        NX --> OD_SYNC
+    end
+
+    subgraph IL ["🟣 ImpactLab Backend — Cloud Vercel/Supabase"]
+        NJ["Next.js App\nVercel"]
+        SB["Supabase\nPostgres + pgvector\nchunks + vectors"]
+        EMB["OpenAI Embeddings\ntext-embedding-3-small"]
+        IL_CL["Claude API\nparse + retrieval"]
+        NJ <--> SB
+        NJ --> IL_CL
+        SB <--> EMB
+    end
+
+    subgraph ODOO ["⚙️ Odoo 17"]
+        OAPI["REST API (Read-Only)\nSales, HR, Inventory, Payroll"]
+    end
+
+    WA_C <--> NX
+    WEB_C <--> NJ
+    ODOO --> IF
+
+    style IF fill:#1a1200,stroke:#f59e0b,color:#fcd34d
+    style IL fill:#120020,stroke:#8b5cf6,color:#c4b5fd
+    style ODOO fill:#051a10,stroke:#10b981,color:#6ee7b7
+      </div>
+    </div>
+  </div>
+
+  <div class="alert ar">🚨 <strong>Masalah Doc A:</strong> Dua backend = dua logic bisnis = dua set bugs = dua jalur maintenance. Claude di kedua sistem melakukan parsing file mentah dan retrieval — tidak stabil, tidak konsisten antar produk, dan tidak bisa diaudit.</div>
+
+  <div class="dc" style="margin-top:24px;">
+    <div class="dct"><span class="dot dg"></span> Doc B — Satu Core Platform, Channel Adapters</div>
+    <div class="dcb">
+      <div class="mermaid">
+graph TB
+    subgraph CLIENTS ["👥 Client Interfaces"]
+        WEB_U["💻 Web App"]
+        WA_U["📱 WhatsApp"]
+        EMAIL_U["📧 Email Digest"]
+    end
+
+    subgraph ADAPTERS ["🔌 Channel Adapters — hanya antarmuka, bukan logika"]
+        WEB_A["Web Adapter\nNext.js / REST API"]
+        WA_A["WhatsApp Adapter\nMeta Cloud API"]
+        EM_A["Email Adapter\nResend / Postmark"]
+    end
+
+    subgraph CORE ["⚙️ Shared Core Domain — satu sumber kebenaran"]
+        direction TB
+        SM["Schema Mapping Layer\nAI detect + user validate + simpan mapping"]
+        DL["Data Layer\nParser deterministik pakai saved mapping"]
+        ME["Metric Engine\nFormula: revenue_growth, stockout_rate, dll"]
+        AE["Analytics Engine\nTrend % · Threshold check · Anomaly detect"]
+        AL["AI Strategy Layer\nClaude: explain · suggest tasks · draft playbook"]
+        LL["Learning Loop\nVerify task impact → what worked → playbook"]
+        SM --> DL --> ME --> AE --> AL --> LL
+        LL -.->|improves next analysis| AE
+    end
+
+    subgraph SOURCES ["📦 Data Sources"]
+        ODOO2["Odoo ERP\nREST API"]
+        FILES["Excel / CSV\n(format bebas)"]
+        GS["Google Sheets\nDropbox / OneDrive"]
+    end
+
+    subgraph DB ["🗄️ Unified Database — PostgreSQL"]
+        DFD["Data Foundation\nfacts tables"]
+        MLD["Metric Layer\nsnapshots + thresholds"]
+        ALD["Action Layer\ntasks + assignments"]
+        LLD["Learning Layer\nwhat_worked + playbooks"]
+    end
+
+    WEB_U --> WEB_A --> CORE
+    WA_U --> WA_A --> CORE
+    SOURCES --> CORE
+    CORE <--> DB
+    AL --> WEB_A
+    AL --> WA_A
+    AL --> EM_A
+
+    style CORE fill:#0a0f28,stroke:#6366f1,color:#a5b4fc
+    style DB fill:#051a10,stroke:#10b981,color:#6ee7b7
+    style ADAPTERS fill:#12082a,stroke:#8b5cf6,color:#c4b5fd
+    style SM fill:#1c2010,stroke:#84cc16,color:#d9f99d
+      </div>
+    </div>
+  </div>
+
+  <div class="alert ag">✅ <strong>Keunggulan Doc B:</strong> Satu core = satu sumber kebenaran. Logika KPI, aturan threshold, dan AI prompts konsisten untuk Web dan WhatsApp. Update satu tempat, berlaku ke semua channel.</div>
+</section>
+
+<!-- SECTION 4: UPLOAD PIPELINE -->
+<section id="pipeline" class="sec">
+  <div class="slbl">Section 4</div>
+  <div class="stit">Pipeline Upload — Detail Lengkap per Kondisi</div>
+  <div class="sdsc">Bagaimana data masuk, diproses, dan menjadi metric — dibandingkan antara Doc A dan Doc B.</div>
+
+  <div class="g2" style="margin-top:28px;">
+    <div>
+      <div class="dc">
+        <div class="dct"><span class="dot dr"></span> Doc A — Upload ke RAG Pipeline</div>
+        <div class="dcb">
+          <div class="mermaid">
+flowchart TD
+    U1["👤 Upload file .xlsx"] --> API1["Backend API"]
+    API1 --> STORE["Simpan ke Supabase Storage"]
+    API1 --> DB1["INSERT uploads\nstatus: pending"]
+
+    BG1["🔄 Background Job\npoll status pending"] --> FILE1["Ambil file dari storage"]
+
+    subgraph LOOP1 ["Loop per sheet / grup data"]
+        C1["🤖 Claude\nlangsung baca raw file content"]
+        E1["OpenAI Embeddings\n1536 dimensions"]
+        INS1["INSERT chunks\ncontent + vector + metadata"]
+        C1 --> E1 --> INS1
+    end
+
+    FILE1 --> LOOP1
+    LOOP1 --> DONE1["UPDATE status: done"]
+    DONE1 --> UI1["UI: Analisis selesai"]
+
+    subgraph QUERY1 ["Saat user bertanya..."]
+        Q1["Embed pertanyaan user"] --> VS["Vector similarity search\nSELECT WHERE org_id\nORDER BY embedding distance"]
+        VS --> TOP["Top 10 chunks paling mirip"]
+        TOP --> C2["🤖 Claude\nbuat jawaban dari chunks ini"]
+        C2 --> ANS1["Jawaban AI\n(akurasi bergantung chunk yang ditemukan)"]
+    end
+
+    UI1 --> QUERY1
+
+    style LOOP1 fill:#2a0a0a,stroke:#ef4444,color:#fca5a5
+    style QUERY1 fill:#1a1f30,stroke:#374151,color:#94a3b8
+          </div>
+        </div>
+      </div>
+      <div class="alert ar">🚨 <strong>Risiko:</strong> Claude salah baca angka dalam file mentah → seluruh chunk salah → semua jawaban salah. Tidak bisa dideteksi atau di-audit.</div>
+    </div>
+
+    <div>
+      <div class="dc">
+        <div class="dct"><span class="dot dg"></span> Doc B — Upload ke Metrics Pipeline</div>
+        <div class="dcb">
+          <div class="mermaid">
+flowchart TD
+    U2["👤 Upload file .xlsx\n(format bebas, acak)"] --> API2["Backend API"]
+
+    subgraph MAPCHECK ["🔍 Cek Template Mapping"]
+        CHK["Bandingkan header file\ndengan column_mappings table"]
+        NEW_T["Template baru →\nAI Schema Discovery"]
+        OLD_T["Template dikenal →\nSkip AI, langsung parse"]
+        CHK --> NEW_T & OLD_T
+    end
+
+    API2 --> MAPCHECK
+
+    subgraph AI_MAP ["🤖 AI Schema Discovery (hanya sekali per template)"]
+        AI1["Claude baca header + 5 baris sample\nbukan seluruh file"]
+        PROP["Usulkan mapping kolom → canonical field"]
+        VAL["👤 User validasi di UI\n+ simpan ke column_mappings"]
+        AI1 --> PROP --> VAL
+    end
+
+    NEW_T --> AI_MAP
+    AI_MAP --> PARSE2
+    OLD_T --> PARSE2
+
+    subgraph PARSE2 ["⚙️ Deterministic Parser (pakai saved mapping)"]
+        P1["Baca file dengan library pandas/xlsx\nbukan AI"]
+        P2["Standardisasi: tanggal, satuan, kategori"]
+        P3["Validasi: cek missing kolom wajib, outlier"]
+        P1 --> P2 --> P3
+    end
+
+    PARSE2 --> FACTS["INSERT facts_[dept]_daily\nCanonical Business Facts"]
+    FACTS --> ME2["📊 Metric Engine\nHitung semua KPI pakai formula baku\nSimpan ke metric_snapshots"]
+    ME2 --> AE2["📈 Analytics Engine\nTrend %, threshold check, anomaly detect\nSimpan ke metric_trends + anomalies"]
+    AE2 --> AI2["🤖 Claude AI\nTerima metric snapshots (angka stabil)\nBuat AI Summary + Task Suggestions"]
+    AI2 --> UI2["✅ Dashboard: KPI siap\nAI Summary tersedia\nAlert jika ada Priority status"]
+
+    style AI_MAP fill:#1c2010,stroke:#84cc16,color:#d9f99d
+    style PARSE2 fill:#052e16,stroke:#10b981,color:#6ee7b7
+    style ME2 fill:#0f1535,stroke:#3b82f6,color:#93c5fd
+    style AI2 fill:#1e1b4b,stroke:#6366f1,color:#a5b4fc
+          </div>
+        </div>
+      </div>
+      <div class="alert ag">✅ <strong>Keunggulan:</strong> Claude hanya membaca 5 baris sample untuk mapping — bukan seluruh file. Setelah mapping tersimpan, tidak ada AI dalam pipeline data. Semua angka bisa diaudit.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: SEQUENCE DIAGRAM -->
+<section id="sequence" class="sec">
+  <div class="slbl">Section 5</div>
+  <div class="stit">Sequence Diagram — Upload, WhatsApp & Odoo</div>
+  <div class="sdsc">Urutan interaksi antar komponen untuk tiga skenario utama: upload file, pertanyaan via WhatsApp, dan sinkronisasi data dari Odoo.</div>
+
+  <div class="dc" style="margin-top:28px;">
+    <div class="dct"><span class="dot dg"></span> Doc B — Upload File Pertama (Template Baru)</div>
+    <div class="dcb">
+      <div class="mermaid">
+sequenceDiagram
+    actor User
+    participant UI as Web UI
+    participant API as Backend API
+    participant CM as column_mappings DB
+    participant Claude as 🤖 Claude AI
+    participant Parser as ⚙️ Det. Parser
+    participant ME as 📊 Metric Engine
+    participant AE as 📈 Analytics Engine
+    participant DB as Database
+
+    User->>UI: Upload file .xlsx (format bebas)
+    UI->>API: POST /upload (file + dept_tag + org_id)
+    API->>CM: Cek: ada mapping untuk template ini?
+    CM-->>API: ❌ Tidak ditemukan — template baru
+
+    Note over API,Claude: AI Schema Discovery — hanya baca header + 5 baris sample
+    API->>Claude: Kirim header + 5 baris pertama file
+    Claude-->>API: Usulan mapping: {col_A: revenue, col_B: date, ...}
+    API-->>UI: Tampilkan mapping untuk divalidasi user
+    User->>UI: Review & konfirmasi mapping (edit jika perlu)
+    UI->>API: POST /mapping/confirm
+    API->>CM: INSERT column_mapping (org_id, template_hash, mapping JSON)
+    CM-->>API: mapping_id
+
+    Note over Parser,DB: Pipeline deterministik berjalan
+    API->>Parser: Parse file dengan saved mapping
+    Parser-->>API: Canonical rows (validated, normalized)
+    API->>DB: INSERT facts_sales_daily / facts_hr_daily / dll
+    API->>ME: Trigger: hitung KPI untuk periode ini
+    ME->>DB: SELECT canonical facts
+    ME->>ME: Hitung: revenue_growth, absenteeism_rate, dll
+    ME->>DB: INSERT metric_snapshots (nilai per periode)
+    API->>AE: Trigger: analitik
+    AE->>DB: SELECT metric_snapshots (minggu ini + historis)
+    AE->>AE: Hitung trend %, cek threshold, deteksi anomali
+    AE->>DB: INSERT metric_trends, anomalies, priority_signals
+
+    Note over AE,Claude: Baru AI masuk — dengan data yang sudah stabil
+    AE->>Claude: Kirim metric_snapshots + trends + anomalies (JSON terstruktur)
+    Claude-->>AE: AI Summary + 3 Task Suggestions
+    AE->>DB: INSERT ai_summaries, task_suggestions
+    AE-->>UI: Realtime push: dashboard siap
+    UI-->>User: ✅ KPI Dashboard aktif. 2 Priority alert. AI Summary tersedia.
+      </div>
+    </div>
+  </div>
+
+  <div class="dc" style="margin-top:20px;">
+    <div class="dct"><span class="dot da"></span> ImpactFirst — Alur Terintegrasi: Odoo sebagai Sumber Data, WA sebagai Interface</div>
+    <div class="dcb">
+      <div class="mermaid">
+sequenceDiagram
+    participant ODOO as ⚙️ Odoo 17 REST API
+    participant NX as Node.js Backend
+    participant DB as PostgreSQL
+    participant ME as 📊 Metric Engine
+    participant AE as 📈 Analytics Engine
+    participant Claude as 🤖 Claude AI
+    participant META as 📱 Meta WA API
+    actor Mgr as 👤 Manager
+
+    Note over ODOO,AE: FASE 1 — Sync Odoo ke Metrics DB (background, setiap 6 jam)
+    ODOO->>NX: GET /api/sales, /api/hr, /api/inventory, /api/payroll
+    NX->>NX: Normalisasi JSON Odoo → canonical format\n(pakai saved Odoo field mapping, tanpa AI)
+    NX->>DB: INSERT facts_sales_daily, facts_hr_daily, facts_inventory_daily
+    NX->>ME: Trigger: hitung KPI dari facts baru
+    ME->>DB: SELECT facts (periode ini + lalu)
+    ME->>ME: Hitung: revenue_growth, stockout_rate, absenteeism_rate, dll
+    ME->>DB: INSERT metric_snapshots (nilai + trend + status per periode)
+    ME->>AE: Trigger: analitik
+    AE->>DB: SELECT metric_snapshots (8 minggu historis)
+    AE->>AE: Label status: Stable / At Risk / Priority
+    AE->>AE: Deteksi anomali (>2 StdDev dari median)
+    AE->>DB: INSERT anomalies, priority_signals
+    Note over DB: Metrics DB sekarang berisi KPI terhitung\nsiap dijawab kapan saja tanpa sync ulang
+
+    Note over META,Claude: FASE 2 — Manager Bertanya via WhatsApp (real-time query dari Metrics DB)
+    Mgr->>META: "Bagaimana kondisi penjualan bulan ini?"
+    META->>NX: Webhook: pesan masuk (org_id, wa_number, text)
+    NX->>NX: Identifikasi organisasi dari wa_number
+    NX->>NX: Parse intent: topik revenue, Sales dept, periode bulan ini
+
+    rect rgb(42, 10, 10)
+        Note over NX,Claude: Doc A — RAG approach (dicari dari chunks teks)
+        NX->>DB: Embed pertanyaan → vector search di chunks table
+        DB-->>NX: Top 10 chunks (teks — tidak pasti angkanya benar)
+        NX->>Claude: chunks + pertanyaan
+        Claude-->>NX: Jawaban (bisa tidak akurat jika chunk tidak tepat)
+    end
+
+    rect rgb(5, 46, 22)
+        Note over NX,Claude: Doc B — Metrics-First approach (query langsung dari metric DB yang akurat)
+        NX->>DB: SELECT metric_snapshots WHERE dept=Sales AND period=bulan_ini
+        DB-->>NX: {revenue: 4.2M, growth: -6.67%, status: At Risk}
+        NX->>DB: SELECT metric_trends (komparasi 4 periode terakhir)
+        DB-->>NX: [{W10: -6.67%}, {W9: +2.1%}, {W8: +0.3%}, {W7: -1.2%}]
+        NX->>DB: SELECT anomalies WHERE dept=Sales AND resolved_at IS NULL
+        DB-->>NX: [{metric: stockout_rate, severity: critical}]
+        NX->>Claude: Kirim metric JSON (angka pasti) + pertanyaan manager
+        Claude-->>NX: Penjelasan berbasis angka nyata + saran prioritas
+    end
+
+    NX->>META: POST /messages (jawaban ke WA manager)
+    META-->>Mgr: 📲 "Revenue Sales bulan ini 4.2M, turun 6.67% dari bulan lalu.\nStockout rate juga kritis. Prioritas: stabilkan ketersediaan stok."
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- SECTION 6: METRIC ENGINE DETAIL -->
+<section id="metric-engine" class="sec">
+  <div class="slbl">Section 6</div>
+  <div class="stit">Metric Engine — Cara Kerja Detail</div>
+  <div class="sdsc">Bagaimana KPI dihitung, ditargetkan, dan dikategorikan statusnya — tanpa melibatkan AI.</div>
+
+  <div class="g2" style="margin-top:28px;">
+    <div class="dc">
+      <div class="dct"><span class="dot db"></span> Contoh: Canonical Facts → KPI Calculation</div>
+      <div class="dcb">
+        <div class="mermaid">
+flowchart TD
+    subgraph SALES_F ["facts_sales_daily (Canonical)"]
+        SF["date | dept | leads | meetings | deals_won | revenue\n2026-W10 | Sales | 95 | 32 | 7 | 980,000,000\n2026-W09 | Sales | 88 | 31 | 8 | 1,050,000,000"]
+    end
+
+    subgraph HR_F ["facts_hr_daily (Canonical)"]
+        HF["date | dept | scheduled | present | absent\n2026-W10 | Sales | 20 | 18 | 2\n2026-W10 | HR   | 15 | 13 | 2"]
+    end
+
+    subgraph ME_CALC ["📊 Metric Engine — Formula Baku (deterministik)"]
+        R1["revenue_W10 = SUM(revenue) = 980,000,000"]
+        R2["revenue_growth = (980M - 1050M) / 1050M = -6.67%"]
+        R3["lead_to_meeting = SUM(meetings)/SUM(leads) = 33.7%"]
+        R4["absenteeism_rate = SUM(absent)/SUM(scheduled) = 10%"]
+        R5["quote_to_win = SUM(deals_won)/SUM(quotations) = 29%"]
+    end
+
+    subgraph THRESH ["metric_thresholds"]
+        T1["absenteeism: target=3% warning=5% critical=7%"]
+        T2["revenue_growth: target=+5% warning=0% critical=-5%"]
+    end
+
+    subgraph STATUS ["Status Determination (Sistem)"]
+        S1["absenteeism 10% > critical 7% → 🔴 Priority"]
+        S2["revenue_growth -6.67% < critical -5% → 🔴 Priority"]
+        S3["lead_to_meeting 33.7% > warning 35% → 🟡 At Risk"]
+    end
+
+    SALES_F --> ME_CALC
+    HR_F --> ME_CALC
+    ME_CALC --> THRESH
+    THRESH --> STATUS
+    STATUS --> SNAP["INSERT metric_snapshots\n(nilai + trend + status per periode)"]
+
+    style ME_CALC fill:#0f1535,stroke:#3b82f6,color:#93c5fd
+    style STATUS fill:#1a0a05,stroke:#f59e0b,color:#fcd34d
+        </div>
+      </div>
+    </div>
+
+    <div class="dc">
+      <div class="dct"><span class="dot da"></span> Apa yang Diterima AI vs Apa yang Dihitung Sistem</div>
+      <div class="dcb">
+        <div class="mermaid">
+flowchart TD
+    subgraph SYS ["⚙️ Sistem Hitung Sendiri (tanpa AI)"]
+        C1["✅ Revenue = SUM(penjualan)"]
+        C2["✅ Revenue Growth % = (W10-W09)/W09"]
+        C3["✅ Absenteeism Rate = absent/scheduled"]
+        C4["✅ Stockout Rate = stockout_events / sku_days"]
+        C5["✅ Trend label: Improving/Stable/Declining"]
+        C6["✅ Status: On Track/At Risk/Priority"]
+        C7["✅ Anomali: >2 StdDev dari 8 minggu"]
+    end
+
+    subgraph AI_INPUT ["📥 JSON yang Dikirim ke Claude"]
+        JIN["{\n  period: '2026-W10',\n  metrics: [\n    {name: 'revenue', value: 980000000,\n     trend: -6.67, status: 'Priority'},\n    {name: 'absenteeism', value: 0.10,\n     trend: +133, status: 'Priority'}\n  ],\n  linked_tasks: [],\n  historical_patterns: [...]\n}"]
+    end
+
+    subgraph AI_DO ["🤖 Claude Bertugas Untuk (bukan menghitung)"]
+        A1["📝 Narratif: Jelaskan apa artinya angka ini"]
+        A2["🔗 Korelasi: Absenteeism naik → revenue turun?"]
+        A3["💡 Task suggestion: aksi mitigasi terarah"]
+        A4["📋 Playbook: jika pola berhasil 3x"]
+    end
+
+    SYS --> AI_INPUT --> AI_DO
+
+    style SYS fill:#052e16,stroke:#10b981,color:#6ee7b7
+    style AI_INPUT fill:#1e2d30,stroke:#374151,color:#94a3b8
+    style AI_DO fill:#1e1b4b,stroke:#6366f1,color:#a5b4fc
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: 5-LAYER SYSTEM -->
+<section id="layers" class="sec">
+  <div class="slbl">Section 7</div>
+  <div class="stit">Sistem 5 Lapisan — Dokumentasi B</div>
+  <div class="sdsc">Setiap lapisan punya tanggung jawab yang jelas, tidak tumpang tindih, dan bisa dikembangkan secara independen.</div>
+
+  <div class="lflow" style="margin-top:32px;max-width:900px;">
+    <div class="li2">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="lnum" style="background:rgba(132,204,22,.2);color:#d9f99d;border:1px solid rgba(132,204,22,.4);">1</div>
+        <div class="lcon" style="background:linear-gradient(180deg,rgba(132,204,22,.4),rgba(16,185,129,.2));"></div>
+      </div>
+      <div class="lbody" style="margin-left:16px;border-color:rgba(132,204,22,.3);">
+        <h4>Schema Mapping Layer <span class="lrole">AI-ASSISTED, SEKALI PER TEMPLATE</span></h4>
+        <p>AI membaca header + 5 baris sample dari file yang diupload. Mengusulkan mapping kolom ke skema kanonik. User validasi. Mapping disimpan permanen. Upload berikutnya dengan template sama: langsung skip tahap ini.</p>
+        <div class="tags">
+          <span class="tag twa">column_mappings</span>
+          <span class="tag twa">template_signatures</span>
+          <span class="tag tai">Claude: header detection</span>
+          <span class="tag tsy">Human validation</span>
+        </div>
+      </div>
+    </div>
+    <div class="li2">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="lnum" style="background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.4);">2</div>
+        <div class="lcon" style="background:linear-gradient(180deg,rgba(16,185,129,.4),rgba(59,130,246,.2));"></div>
+      </div>
+      <div class="lbody" style="margin-left:16px;border-color:rgba(16,185,129,.3);">
+        <h4>Data Foundation Layer <span class="lrole">DETERMINISTIK — TANPA AI</span></h4>
+        <p>Parser (library Python/pandas atau xlsx reader) membaca file menggunakan saved mapping. Data dinormalisasi: standarisasi tanggal, konversi satuan, validasi tipe data. Hasilnya: <strong>Canonical Business Facts</strong> — baris data bersih yang siap dihitung.</p>
+        <div class="tags">
+          <span class="tag tdb">raw_uploads</span>
+          <span class="tag tdb">facts_sales_daily</span>
+          <span class="tag tdb">facts_hr_daily</span>
+          <span class="tag tdb">facts_inventory_daily</span>
+          <span class="tag tsy">Deterministic parser</span>
+        </div>
+      </div>
+    </div>
+    <div class="li2">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="lnum" style="background:rgba(59,130,246,.2);color:#93c5fd;border:1px solid rgba(59,130,246,.4);">3</div>
+        <div class="lcon" style="background:linear-gradient(180deg,rgba(59,130,246,.4),rgba(245,158,11,.2));"></div>
+      </div>
+      <div class="lbody" style="margin-left:16px;border-color:rgba(59,130,246,.3);">
+        <h4>Metric Engine Layer <span class="lrole">DETERMINISTIK — TANPA AI</span></h4>
+        <p>Sistem menghitung semua KPI menggunakan formula yang didefinisikan di <code>metric_definitions</code>. Contoh: <code>absenteeism_rate = absent/scheduled</code>, <code>revenue_growth = (W-W-1)/W-1</code>. Semua hasil disimpan sebagai snapshot per periode dengan timestamp. Bisa diaudit kapan saja.</p>
+        <div class="tags">
+          <span class="tag tdb">metric_definitions</span>
+          <span class="tag tdb">metric_snapshots</span>
+          <span class="tag tdb">metric_thresholds</span>
+          <span class="tag tsy">Revenue Growth</span>
+          <span class="tag tsy">Stockout Rate</span>
+          <span class="tag tsy">Quote-to-Win</span>
+          <span class="tag tsy">Absenteeism Rate</span>
+        </div>
+      </div>
+    </div>
+    <div class="li2">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="lnum" style="background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid rgba(245,158,11,.4);">4</div>
+        <div class="lcon" style="background:linear-gradient(180deg,rgba(245,158,11,.4),rgba(99,102,241,.3));"></div>
+      </div>
+      <div class="lbody" style="margin-left:16px;border-color:rgba(245,158,11,.3);">
+        <h4>Analytics Engine Layer <span class="lrole">DETERMINISTIK — TANPA AI</span></h4>
+        <p>Membandingkan snapshot antar periode, menghitung trend %, mencocokan dengan threshold, memberi label status, dan mendeteksi anomali secara statistik. Hasilnya: sinyal priority yang dapat diandalkan — bukan tebakan.</p>
+        <div class="tags">
+          <span class="tag tdb">metric_trends</span>
+          <span class="tag tdb">anomalies</span>
+          <span class="tag tdb">priority_signals</span>
+          <span class="tag tsy">Trend % calc</span>
+          <span class="tag tsy">Threshold check</span>
+          <span class="tag tsy">StdDev anomaly</span>
+          <span class="tag tsy">Cross-dept correlation</span>
+        </div>
+      </div>
+    </div>
+    <div class="li2">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="lnum" style="background:rgba(99,102,241,.25);color:#a5b4fc;border:1px solid rgba(99,102,241,.5);">5</div>
+        <div class="lcon" style="background:linear-gradient(180deg,rgba(99,102,241,.4),rgba(20,184,166,.2));"></div>
+      </div>
+      <div class="lbody" style="margin-left:16px;border-color:rgba(99,102,241,.4);background:rgba(30,27,75,.3);">
+        <h4>AI Strategy Layer <span class="lrole">AI — EXPLANATION & RECOMMENDATION</span></h4>
+        <p>Claude menerima JSON berisi metric values, trend percentages, status labels, dan task history. <strong>Bukan file mentah.</strong> Tugas AI: jelaskan apa artinya angka ini, temukan pola cross-departemen, sarankan task yang relevan, dan susun playbook dari pola yang berhasil.</p>
+        <div class="tags">
+          <span class="tag tai">ai_summaries</span>
+          <span class="tag tai">task_suggestions</span>
+          <span class="tag tai">playbooks</span>
+          <span class="tag tai">Claude API</span>
+          <span class="tag tsy">what_worked</span>
+          <span class="tag tsy">what_didnt_work</span>
+        </div>
+      </div>
+    </div>
+    <div class="li2">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="lnum" style="background:rgba(20,184,166,.2);color:#5eead4;border:1px solid rgba(20,184,166,.4);">6</div>
+        <div class="lcon" style="background:transparent;"></div>
+      </div>
+      <div class="lbody" style="margin-left:16px;border-color:rgba(20,184,166,.3);">
+        <h4>Learning Loop <span class="lrole">SISTEM + AI BERSAMA</span></h4>
+        <p>Setelah task selesai, sistem menghitung apakah KPI target benar-benar membaik (deterministik). Jika ya: dicatat sebagai What Worked. AI merangkum dan menyusun Playbook dari pola yang berhasil berulang kali.</p>
+        <div class="tags">
+          <span class="tag tdb">task_impact_results</span>
+          <span class="tag tdb">what_worked</span>
+          <span class="tag tdb">what_didnt_work</span>
+          <span class="tag tai">playbook_builder (AI)</span>
+          <span class="tag tsy">impact_verification (Sistem)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 8: DATABASE -->
+<section id="database" class="sec">
+  <div class="slbl">Section 8</div>
+  <div class="stit">Model Database — Perbandingan Lengkap</div>
+  <div class="sdsc">Doc A hanya punya 6 tabel untuk RAG pipeline. Doc B memiliki tabel terstruktur untuk seluruh sistem analitik, aksi, dan pembelajaran.</div>
+
+  <div class="g2" style="margin-top:28px;">
+    <div>
+      <div class="gbox">
+        <h4><span style="background:var(--rdb);color:#fca5a5;border:1px solid var(--rdr);padding:2px 8px;border-radius:5px;font-size:10px;">DOC A</span> RAG Schema — 6 Tabel</h4>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:10px;">Cukup untuk chatbot, tidak cukup untuk transformation OS</div>
+        <div class="dbi"><span class="ti tb"></span> organizations</div>
+        <div class="dbi"><span class="ti tb"></span> users</div>
+        <div class="dbi"><span class="ti to"></span> uploads (file metadata + status)</div>
+        <div class="dbi"><span class="ti to"></span> chunks (text + 1536d vector)</div>
+        <div class="dbi"><span class="ti tp"></span> conversations</div>
+        <div class="dbi"><span class="ti tp"></span> messages (role, content, sources JSON)</div>
+        <div class="alert ar" style="margin-top:10px;">🚨 Tidak ada tabel metric, KPI, threshold, anomaly, task, impact, atau playbook.</div>
+      </div>
+    </div>
+    <div>
+      <div class="gbox">
+        <h4><span style="background:var(--grb);color:#6ee7b7;border:1px solid var(--grr);padding:2px 8px;border-radius:5px;font-size:10px;">DOC B</span> Metrics Schema — 25+ Tabel</h4>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:10px;">Mendukung seluruh 6 lapisan sistem</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin:8px 0 5px;">Schema Mapping</div>
+        <div class="dbi"><span class="ti to"></span> column_mappings (template_hash, mapping JSON)</div>
+        <div class="dbi"><span class="ti to"></span> template_signatures</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin:8px 0 5px;">Data Foundation</div>
+        <div class="dbi"><span class="ti tg"></span> facts_sales_daily</div>
+        <div class="dbi"><span class="ti tg"></span> facts_hr_daily</div>
+        <div class="dbi"><span class="ti tg"></span> facts_inventory_daily</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin:8px 0 5px;">Metric Layer</div>
+        <div class="dbi"><span class="ti tb"></span> metric_definitions (name, formula, dept, frequency)</div>
+        <div class="dbi"><span class="ti tb"></span> metric_snapshots (value, period, trend_pct, status)</div>
+        <div class="dbi"><span class="ti tb"></span> metric_thresholds (target, warning, critical)</div>
+        <div class="dbi"><span class="ti tb"></span> metric_trends (period_over_period)</div>
+        <div class="dbi"><span class="ti tr"></span> anomalies (metric, value, expected_range, severity)</div>
+        <div class="dbi"><span class="ti tr"></span> priority_signals (triggered_at, resolved_at)</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin:8px 0 5px;">Action Layer</div>
+        <div class="dbi"><span class="ti tp"></span> task_suggestions (title, target_kpi, impact, difficulty)</div>
+        <div class="dbi"><span class="ti tp"></span> tasks (status, deadline, assignee)</div>
+        <div class="dbi"><span class="ti tp"></span> subtasks, task_assignments, task_status_history</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin:8px 0 5px;">Learning Layer</div>
+        <div class="dbi"><span class="ti tt"></span> task_impact_results (before_kpi, after_kpi, result)</div>
+        <div class="dbi"><span class="ti tt"></span> what_worked, what_didnt_work</div>
+        <div class="dbi"><span class="ti tt"></span> playbooks (situation, action, expected_outcome)</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin:8px 0 5px;">AI Output Layer</div>
+        <div class="dbi"><span class="ti to"></span> ai_summaries (what_happening, what_means, what_watch)</div>
+        <div class="dbi"><span class="ti to"></span> ai_explanations, qa_sessions, messages</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 9: SUMMARY TABLE -->
+<section id="tabel" class="sec">
+  <div class="slbl">Section 9</div>
+  <div class="stit">Tabel Perbandingan Lengkap</div>
+  <div class="sdsc">Semua dimensi dalam satu tabel — termasuk klarifikasi peran AI yang benar di Doc B.</div>
+
+  <div style="margin-top:24px;background:var(--s1);border:1px solid var(--br);border-radius:14px;overflow:hidden;">
+    <table class="smtab">
+      <thead>
+        <tr><th>Dimensi</th><th>Dokumentasi A</th><th>Dokumentasi B (Target)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Fondasi</td><td class="bad">RAG / Vector Search</td><td class="good">Metric Engine deterministik</td></tr>
+        <tr><td>Backend</td><td class="bad">2 backend terpisah penuh</td><td class="good">1 core + 2 channel adapter</td></tr>
+        <tr><td>Handling format acak</td><td class="bad">Claude baca seluruh file mentah</td><td class="good">AI baca 5 baris → mapping → simpan → reuse</td></tr>
+        <tr><td>Parsing data</td><td class="bad">Claude (tidak stabil)</td><td class="good">Deterministic parser (pakai saved mapping)</td></tr>
+        <tr><td>Perhitungan KPI</td><td class="bad">Diserahkan ke semantic retrieval</td><td class="good">Formula baku di metric_definitions</td></tr>
+        <tr><td>Peran AI</td><td class="bad">Parser + retrieval + calculator</td><td class="good">Schema helper (sekali) + Explainer layer</td></tr>
+        <tr><td>AI masuk kapan?</td><td class="bad">Di awal (parsing) dan saat query</td><td class="good">Di awal mapping (sekali) + setelah metric stabil</td></tr>
+        <tr><td>Konsistensi angka</td><td class="bad">Bergantung chunk yang ditemukan</td><td class="good">Selalu konsisten — formula deterministik</td></tr>
+        <tr><td>Auditabilitas</td><td class="bad">Tidak bisa — AI output bukan deterministik</td><td class="good">Bisa — semua metric bisa dilacak ke formula</td></tr>
+        <tr><td>Biaya AI</td><td class="bad">Tinggi — AI parse tiap upload + tiap query</td><td class="good">Rendah — AI hanya sekali mapping + explain layer</td></tr>
+        <tr><td>Trust manajer</td><td class="bad">Rendah jika pernah ada angka meleset</td><td class="good">Tinggi — formula transparan, angka stabil</td></tr>
+        <tr><td>Debugging</td><td class="bad">Sangat sulit — AI black box</td><td class="good">Mudah — metric bisa dilacak per tabel</td></tr>
+        <tr><td>Database schema</td><td class="bad">6 tabel (RAG only)</td><td class="good">25+ tabel (metric + action + learning layer)</td></tr>
+        <tr><td>What Worked / Playbook</td><td class="bad">Sulit — dasar data tidak terstruktur</td><td class="good">Otomatis — task_impact_results yang terukur</td></tr>
+        <tr><td>Cocok untuk fase</td><td class="bad">Terlalu besar untuk validasi awal</td><td class="good">Bertahap: core dulu, scale setelah value terbukti</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:28px;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.08));border:1px solid rgba(99,102,241,.3);border-radius:16px;padding:32px;text-align:center;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a5b4fc;margin-bottom:12px;">Esensi Platform</div>
+    <div style="font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:14px;">Transformation OS — Bukan Chatbot RAG</div>
+    <div style="color:var(--dm);max-width:700px;margin:0 auto 20px;">Platform ini membantu manajer membaca data, mengambil tindakan, memantau hasil, dan menyimpan pelajaran agar perbaikan bisnis bisa diulang.</div>
+    <div style="background:rgba(6,9,18,.5);border:1px solid var(--br);border-radius:10px;padding:14px 20px;display:inline-block;font-size:14px;">
+      Data Masuk → <span style="color:#34d399;font-weight:700;">Fakta Terukur</span> → AI Insight → <span style="color:#34d399;font-weight:700;">Aksi Manajerial</span> → Monitor KPI → <span style="color:#34d399;font-weight:700;">Playbook</span>
+    </div>
+  </div>
+</section>
+
+</div><!-- end wrap -->
+<footer>ImpactLab Architecture Comparison · Dokumentasi Internal · Maret 2026</footer>
+<script>mermaid.initialize({startOnLoad:true,theme:'dark',fontFamily:'Inter',fontSize:13,themeVariables:{darkMode:true,background:'#060912',primaryColor:'#1e2d45',primaryTextColor:'#e8edf5',primaryBorderColor:'#253347',lineColor:'#4b6082',secondaryColor:'#0f1623',tertiaryColor:'#161f30'}});</script>
+</body></html>
